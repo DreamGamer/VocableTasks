@@ -8,12 +8,16 @@ import { Ionicons } from "@expo/vector-icons";
 import OptionsScreen from "../screens/options/OptionsScreen";
 import VocabularysScreen from "../screens/learning/VocabularysScreen";
 import LearnScreen from "../screens/learning/LearnScreen";
+import AddVocableScreen from "../screens/learning/AddVocableScreen";
 
 
 
 const vocabularyStackNavigator = createStackNavigator({
-    vocabularysScreen: {
+    vocabularys: {
         screen: VocabularysScreen
+    },
+    addVocable: {
+        screen: AddVocableScreen
     }
 });
 
@@ -55,10 +59,16 @@ const learningBottomTabNavigator = createBottomTabNavigator({
 
 const DrawerNavigator = createDrawerNavigator({
     learning: {
-        screen: learningBottomTabNavigator
+        screen: learningBottomTabNavigator,
+        navigationOptions: {
+            drawerLabel: "Learning"
+        }
     },
     options: {
-        screen: optionsStackNavigator
+        screen: optionsStackNavigator,
+        navigationOptions: {
+            drawerLabel: "Options"
+        }
     }
 });
 

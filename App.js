@@ -5,6 +5,11 @@ import { enableScreens } from 'react-native-screens';
 import * as Font from "expo-font";
 import { AppLoading } from 'expo';
 import NavigationContainer from "./navigation/NavigationContainer";
+import { combineReducers, createStore, applyMiddleware } from 'redux';
+import vocableReducer from './store/reducers/vocables';
+import ReduxThunk from "redux-thunk";
+import { composeWithDevTools } from "redux-devtools-extension";
+import { Provider } from 'react-redux';
 
 export default function App() {
   // Optimize Screens
@@ -12,12 +17,18 @@ export default function App() {
 
   // States
   const [fontLoaded, setFontLoaded] = useState(false);
-  
+
+  const rootReducer = combineReducers({
+    vocables: vocableReducer
+  });
+
+  const store = createStore(rootReducer, composeWithDevTools(applyMiddleware(ReduxThunk)))
+
   // Function to load Fonts
   const fetchFonts = () => {
     return Font.loadAsync({
       "ms-new-tai-lue": require("./assets/fonts/microsoft-new-tai-lue-regular.ttf"),
-      "ms-new-tai-lue": require("./assets/fonts/microsoft-new-tai-lue-bold.ttf"),
+      "ms-new-tai-lue-bold": require("./assets/fonts/microsoft-new-tai-lue-bold.ttf"),
     });
   }
 
@@ -27,7 +38,9 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer />
+    <Provider store={store}>
+      <NavigationContainer />
+    </Provider>
   );
 }
 
