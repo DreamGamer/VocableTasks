@@ -2,6 +2,7 @@ import Vocable from "../../models/Vocable";
 
 export const ADD_VOCABLE = "ADD_VOCABLE";
 export const SET_VOCABLES = "SET_VOCABLES";
+export const DELETE_VOCABLE = "DELETE_VOCABLE";
 
 
 export const fetchVocables = () => {
@@ -19,7 +20,7 @@ export const fetchVocables = () => {
             const loadedVocables = [];
 
             for (const key in responseData) {
-                loadedVocables.push(new Vocable(responseData[key].wordENG, responseData[key].wordDE, responseData[key].known));
+                loadedVocables.push(new Vocable(key, responseData[key].wordENG, responseData[key].wordDE, responseData[key].known));
             }
 
             dispatch({
@@ -27,7 +28,28 @@ export const fetchVocables = () => {
             })
 
         } catch (error) {
-            
+            throw error;
+        }
+    }
+};
+
+export const deleteVocable = (id) => {
+    return async (dispatch, getState) => {
+        try {
+            const response = await fetch("https://vocabeltasks.firebaseio.com/vocables/" + id + ".json", {
+                method: "DELETE",
+            });
+
+            if (!response.ok) {
+                throw new Error("Something went wrong while deleteing the Vocable!");
+            }
+
+            dispatch({
+                type: DELETE_VOCABLE,
+                id: id
+            })
+        } catch (error) {
+            throw error;
         }
     }
 };
@@ -52,17 +74,19 @@ export const addVocable = (wordENG, wordDE, known) => {
                 throw new Error("Something went wrong while uploading Vocable!");
             }
 
+            const responseData = await response.json();
+
+            dispatch({
+                type: ADD_VOCABLE, data: {
+                    id: responseData.name,
+                    wordENG: wordENG,
+                    wordDE: wordDE,
+                    known: known
+                }
+            })
+
         } catch (error) {
-            throw new Error(error.message)
+            throw error;
         }
-
-
-        dispatch({
-            type: ADD_VOCABLE, data: {
-                wordENG: wordENG,
-                wordDE: wordDE,
-                known: known
-            }
-        })
     }
 };
