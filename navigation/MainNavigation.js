@@ -2,14 +2,18 @@ import { createAppContainer, createSwitchNavigator } from "react-navigation";
 
 import StartScreen from "../screens/StartScreen";
 import AppNavigation from "./AppNavigation";
+import AuthNavigation from "./AuthNavigation";
 
 const MainNavigation = createSwitchNavigator({
-    startup: {
-        screen: StartScreen
+    Startup: {
+        screen: StartScreen,
+    },
+    Auth: {
+        screen: AuthNavigation,
     },
     VokabelTasks: {
-        screen: AppNavigation
-    }
+        screen: AppNavigation,
+    },
 });
 
 export default createAppContainer(MainNavigation);
