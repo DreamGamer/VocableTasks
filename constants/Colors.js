@@ -8,9 +8,11 @@ export default {
     info: "#2296F3",
     light: "#f8f9fa",
     dark: "#343a40",
-    link: "#007bff",
+    linkBlue: "#007bff",
+    link: "#28d8a1",
     grey: "#1b1b1b",
     shadowColor: "#000",
     lightGrey: "#e0e0e0",
     HeaderButtonsColor: "#000",
+    lightWhite: "#f8f8f8",
 }
