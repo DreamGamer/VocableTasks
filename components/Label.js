@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
         marginVertical: 5
     },
     text: {
-        fontFamily: DefaultValues.fontBold,
+        fontFamily: DefaultValues.fontRegular,
         fontSize: 16
     }
 });
