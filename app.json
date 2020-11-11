@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "VokabelTasks",
-    "slug": "VokabelTasks",
+    "name": "VocabelTasks",
+    "slug": "VocabelTasks",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -24,7 +24,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "de.dreamgamer.VokabelTasks"
+      "package": "de.dreamgamer.VocabelTasks"
     },
     "web": {
       "favicon": "./assets/favicon.png"
