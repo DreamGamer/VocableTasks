@@ -7,7 +7,7 @@ import { useDispatch } from "react-redux";
 import * as vocableActions from "../../store/actions/vocables";
 import Colors from "../../constants/Colors";
 import * as yup from "yup";
-import DefaultValues from "../../constants/DefaultValues";
+import GlobalStyles from "../../constants/GlobalStyles";
 
 const yupSchema = yup.object({
   wordENG: yup.string().required(),
@@ -58,7 +58,7 @@ const EditVocableScreen = (props) => {
                 value={formikProps.values.wordENG}
                 editable={isLoading ? false : true}
               />
-              <Text style={styles.errorText}>{formikProps.touched.wordENG && formikProps.errors.wordENG}</Text>
+              <Text style={GlobalStyles.errorText}>{formikProps.touched.wordENG && formikProps.errors.wordENG}</Text>
 
               <Label title="German:" />
               <Input
@@ -68,7 +68,7 @@ const EditVocableScreen = (props) => {
                 value={formikProps.values.wordDE}
                 editable={isLoading ? false : true}
               />
-              <Text style={styles.errorText}>{formikProps.touched.wordDE && formikProps.errors.wordDE}</Text>
+              <Text style={GlobalStyles.errorText}>{formikProps.touched.wordDE && formikProps.errors.wordDE}</Text>
 
               {isLoading ? <ActivityIndicator size="small" color={Colors.grey} /> : <Button title="Change" onPress={formikProps.handleSubmit} />}
             </View>
@@ -88,12 +88,6 @@ EditVocableScreen.navigationOptions = (navigationData) => {
 const styles = StyleSheet.create({
   form: {
     margin: 15,
-  },
-  errorText: {
-    color: "#ee0000",
-    marginTop: 5,
-    marginBottom: 10,
-    fontFamily: DefaultValues.fontBold,
   },
 });
 

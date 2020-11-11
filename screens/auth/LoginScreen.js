@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Button, Dimensions, KeyboardAvoidingView, Pressable, StyleSheet, Text, View, Platform } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { Button, Dimensions, KeyboardAvoidingView, Pressable, StyleSheet, Text, View, Platform, TextInput, ActivityIndicator, Alert } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import Input from "../../components/Input";
 import Colors from "../../constants/Colors";
@@ -8,19 +8,29 @@ import Label from "../../components/Label";
 import DefaultValues from "../../constants/DefaultValues";
 import { Formik } from "formik";
 import * as yup from "yup";
+import GlobalStyles from "../../constants/GlobalStyles";
 
 const yupSchema = yup.object({
     Email: yup.string().email().required().min(5),
-    Password: yup.string().required()
-  });
+    Password: yup.string().required(),
+});
 
 const LoginScreen = props => {
     // States
     const [isLoading, setIsLoading] = useState(false);
+    const [hasError, setHasError] = useState(null);
+
+    const passwordInput = useRef();
+
+    useEffect(() => {
+        if (hasError) {
+            Alert.alert("An error occured!", hasError.message, [{ text: "Okay" }]);
+        }
+    }, [hasError]);
 
     return (
         <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" : "height"} style={styles.screen}>
-            <LinearGradient colors={["#1a3d56", "#363636"]} style={styles.gradient}>
+            <LinearGradient colors={[Colors.backgroundTop, Colors.backgroundBottom]} style={styles.gradient}>
                 <ScrollView contentContainerStyle={styles.scrollViewCentered}>
                     <View style={styles.container}>
                         <View style={styles.centered}>
@@ -33,23 +43,32 @@ const LoginScreen = props => {
                             }}
                             validationSchema={yupSchema}
                             onSubmit={(values, actions) => {
+                                setIsLoading(true);
                                 console.log(values);
+                                setIsLoading(false);
                             }}>
                             {formikProps => (
                                 <View>
                                     <Label title="Email:" style={styles.label} />
-                                    <Input
+                                    <TextInput
+                                        style={{ ...GlobalStyles.input, ...(props.editable ? null : GlobalStyles.input) }}
                                         placeholder="Email"
                                         onBlur={formikProps.handleBlur("Email")}
                                         onChangeText={formikProps.handleChange("Email")}
                                         value={formikProps.values.Email}
                                         editable={isLoading ? false : true}
                                         keyboardType="email-address"
+                                        returnKeyType="next"
+                                        blurOnSubmit={false}
+                                        onSubmitEditing={() => {
+                                            passwordInput.current.focus();
+                                        }}
                                     />
-                                    {formikProps.errors.Email ? <Text style={styles.errorText}>{formikProps.touched.Email && formikProps.errors.Email}</Text> : null}
+                                    {formikProps.errors.Email ? <Text style={GlobalStyles.errorText}>{formikProps.touched.Email && formikProps.errors.Email}</Text> : null}
 
                                     <Label title="Password:" style={styles.label} />
-                                    <Input
+                                    <TextInput
+                                        style={{ ...GlobalStyles.input, ...(props.editable ? null : GlobalStyles.input) }}
                                         placeholder="Password"
                                         onBlur={formikProps.handleBlur("Password")}
                                         onChangeText={formikProps.handleChange("Password")}
@@ -58,16 +77,23 @@ const LoginScreen = props => {
                                         keyboardType="default"
                                         secureTextEntry
                                         autoCapitalize="none"
+                                        returnKeyType="done"
+                                        ref={passwordInput}
+                                        onSubmitEditing={formikProps.handleSubmit}
                                     />
-                                    {formikProps.errors.Password ? <Text style={styles.errorText}>{formikProps.touched.Password && formikProps.errors.Password}</Text> : null}
+                                    {formikProps.errors.Password ? <Text style={GlobalStyles.errorText}>{formikProps.touched.Password && formikProps.errors.Password}</Text> : null}
 
                                     <Pressable style={styles.forgetPasswordContainer}>
                                         <Text style={styles.forgetPasswordText}>Forget Password?</Text>
                                     </Pressable>
 
-                                    <View style={styles.buttonContainer}>
-                                        <Button title="Login" onPress={formikProps.handleSubmit} />
-                                    </View>
+                                    {isLoading ? (
+                                        <ActivityIndicator size="small" />
+                                    ) : (
+                                        <View style={styles.buttonContainer}>
+                                            <Button title="Login" onPress={formikProps.handleSubmit} />
+                                        </View>
+                                    )}
                                 </View>
                             )}
                         </Formik>
@@ -146,12 +172,6 @@ const styles = StyleSheet.create({
         color: Colors.link,
         fontSize: 15,
         fontFamily: DefaultValues.fontRegular,
-    },
-    errorText: {
-        color: "#ee0000",
-        marginTop: 5,
-        marginBottom: 10,
-        fontFamily: DefaultValues.fontBold,
     },
 });
 

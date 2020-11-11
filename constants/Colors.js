@@ -15,4 +15,6 @@ export default {
     lightGrey: "#e0e0e0",
     HeaderButtonsColor: "#000",
     lightWhite: "#f8f8f8",
+    backgroundTop: "#1a3d56",
+    backgroundBottom: "#363636",
 }
