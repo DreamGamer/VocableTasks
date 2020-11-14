@@ -17,4 +17,6 @@ export default {
     lightWhite: "#f8f8f8",
     backgroundTop: "#1a3d56",
     backgroundBottom: "#363636",
+    ActivityIndicatorDark: "#1b1b1b",
+    ActivityIndicatorWhite: "#f8f8f8",
 }

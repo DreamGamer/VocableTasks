@@ -1,74 +1,55 @@
 import React from "react";
-import { createDrawerNavigator } from "react-navigation-drawer";
-import { createStackNavigator } from "react-navigation-stack";
-import { createBottomTabNavigator } from "react-navigation-tabs";
-import { Ionicons } from "@expo/vector-icons";
+import { Button, StyleSheet, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { createDrawerNavigator, DrawerNavigatorItems } from "react-navigation-drawer";
+import { useDispatch } from "react-redux";
+import * as authActions from "../store/actions/auth";
 
-// Import Screens
-import OptionsScreen from "../screens/options/OptionsScreen";
-import VocabularysScreen from "../screens/learning/VocabularysScreen";
-import LearnScreen from "../screens/learning/LearnScreen";
-import AddVocableScreen from "../screens/learning/AddVocableScreen";
-import EditVocableScreen from "../screens/learning/EditVocableScreen";
+// Import Navigations
+import LearningNavigation from "./LearningNavigation";
+import OptionsNavigation from "./OptionsNavigation";
 
-const vocabularyStackNavigator = createStackNavigator({
-  vocabularys: {
-    screen: VocabularysScreen,
-  },
-  addVocable: {
-    screen: AddVocableScreen,
-  },
-  editVocable: {
-    screen: EditVocableScreen,
-  },
-});
-
-const learnStackNavigator = createStackNavigator({
-  learn: {
-    screen: LearnScreen,
-  },
-});
-
-const optionsStackNavigator = createStackNavigator({
-  options: {
-    screen: OptionsScreen,
-  },
-});
-
-const learningBottomTabNavigator = createBottomTabNavigator({
-  vocabulary: {
-    screen: vocabularyStackNavigator,
-    navigationOptions: {
-      tabBarLabel: "Vocabulary",
-      tabBarIcon: (tabInformationn) => {
-        return <Ionicons name="md-book" size={25} color={tabInformationn.tintColor} />;
-      },
+const DrawerNavigator = createDrawerNavigator(
+    {
+        learning: {
+            screen: LearningNavigation,
+            navigationOptions: {
+                drawerLabel: "Learning",
+            },
+        },
+        options: {
+            screen: OptionsNavigation,
+            navigationOptions: {
+                drawerLabel: "Options",
+            },
+        },
     },
-  },
-  learn: {
-    screen: learnStackNavigator,
-    navigationOptions: {
-      tabBarLabel: "Learn",
-      tabBarIcon: (tabInformationn) => {
-        return <Ionicons name="md-create" size={25} color={tabInformationn.tintColor} />;
-      },
-    },
-  },
-});
+    {
+        contentComponent: props => {
+            const dispatch = useDispatch();
 
-const DrawerNavigator = createDrawerNavigator({
-  learning: {
-    screen: learningBottomTabNavigator,
-    navigationOptions: {
-      drawerLabel: "Learning",
+            return (
+                <View style={styles.content}>
+                    <SafeAreaView forceInset={{ top: "always", horizontal: "never" }}>
+                        <DrawerNavigatorItems {...props} />
+                        <Button
+                            title="Logout"
+                            onPress={() => {
+                                dispatch(authActions.logout());
+                            }}
+                        />
+                    </SafeAreaView>
+                </View>
+            );
+        },
+    }
+);
+
+const styles = StyleSheet.create({
+    content: {
+        flex: 1,
+        paddingTop: 35,
     },
-  },
-  options: {
-    screen: optionsStackNavigator,
-    navigationOptions: {
-      drawerLabel: "Options",
-    },
-  },
 });
 
 export default DrawerNavigator;

@@ -21,4 +21,9 @@ export default StyleSheet.create({
         marginBottom: 10,
         fontFamily: DefaultValues.fontBold,
     },
+    centered: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+    }
 });

@@ -9,6 +9,8 @@ import DefaultValues from "../../constants/DefaultValues";
 import { Formik } from "formik";
 import * as yup from "yup";
 import GlobalStyles from "../../constants/GlobalStyles";
+import * as authActions from "../../store/actions/auth";
+import { useDispatch } from "react-redux";
 
 const yupSchema = yup.object({
     Email: yup.string().email().required().min(5),
@@ -19,6 +21,9 @@ const LoginScreen = props => {
     // States
     const [isLoading, setIsLoading] = useState(false);
     const [hasError, setHasError] = useState(null);
+
+    // Redux Dispatch
+    const dispatch = useDispatch();
 
     const passwordInput = useRef();
 
@@ -42,10 +47,18 @@ const LoginScreen = props => {
                                 Password: "",
                             }}
                             validationSchema={yupSchema}
-                            onSubmit={(values, actions) => {
+                            onSubmit={async (values, actions) => {
                                 setIsLoading(true);
+                                setHasError("");
                                 console.log(values);
-                                setIsLoading(false);
+                                try {
+                                    await dispatch(authActions.login(values.Email, values.Password));
+
+                                    setIsLoading(false);
+                                } catch (error) {
+                                    setIsLoading(false);
+                                    setHasError(error);
+                                }
                             }}>
                             {formikProps => (
                                 <View>
@@ -58,13 +71,14 @@ const LoginScreen = props => {
                                         value={formikProps.values.Email}
                                         editable={isLoading ? false : true}
                                         keyboardType="email-address"
+                                        autoCapitalize="none"
                                         returnKeyType="next"
                                         blurOnSubmit={false}
                                         onSubmitEditing={() => {
                                             passwordInput.current.focus();
                                         }}
                                     />
-                                    {formikProps.errors.Email ? <Text style={GlobalStyles.errorText}>{formikProps.touched.Email && formikProps.errors.Email}</Text> : null}
+                                    {formikProps.errors.Email && formikProps.touched.Email ? <Text style={GlobalStyles.errorText}>{formikProps.touched.Email && formikProps.errors.Email}</Text> : null}
 
                                     <Label title="Password:" style={styles.label} />
                                     <TextInput
@@ -81,14 +95,13 @@ const LoginScreen = props => {
                                         ref={passwordInput}
                                         onSubmitEditing={formikProps.handleSubmit}
                                     />
-                                    {formikProps.errors.Password ? <Text style={GlobalStyles.errorText}>{formikProps.touched.Password && formikProps.errors.Password}</Text> : null}
-
+                                    {formikProps.errors.Password && formikProps.touched.Password ? <Text style={GlobalStyles.errorText}>{formikProps.touched.Password && formikProps.errors.Password}</Text> : null}
                                     <Pressable style={styles.forgetPasswordContainer}>
                                         <Text style={styles.forgetPasswordText}>Forget Password?</Text>
                                     </Pressable>
 
                                     {isLoading ? (
-                                        <ActivityIndicator size="small" />
+                                        <ActivityIndicator size="small" color={Colors.ActivityIndicatorWhite} />
                                     ) : (
                                         <View style={styles.buttonContainer}>
                                             <Button title="Login" onPress={formikProps.handleSubmit} />
