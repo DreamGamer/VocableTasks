@@ -85,9 +85,17 @@ const VocabularysScreen = props => {
         );
     }
 
+    if (vocables.length === 0) {
+        return (
+            <View style={GlobalStyles.screen}>
+                <Text style={GlobalStyles.centerText}>No Vocables found, maybe start add some!</Text>
+            </View>
+        )
+    }
+
     if (hasError) {
         return (
-            <View style={GlobalStyles.centered}>
+            <View style={GlobalStyles.screen}>
                 <Text style={styles.text}>An error occured!</Text>
                 <Text style={styles.text}>Error: {hasError.message ? hasError.message : hasError}</Text>
                 <Button title="Refresh" onPress={loadVocables} />
@@ -123,13 +131,6 @@ const VocabularysScreen = props => {
                     </TouchableOpacity>
                 )}
             />
-            <Button title="Email" onPress={() => {
-                try {
-                    dispatch(authActions.sendEmail());
-                } catch (error) {
-                    console.log(error);
-                }
-            }}></Button>
         </View>
     );
 };

@@ -7,7 +7,8 @@ import MainNavigation from "./MainNavigation";
 const NavigationContainer = props => {
     const navRef = useRef();
     const isAuth = useSelector(state => !!state.auth.token);
-    const tryedAutoLogin = useSelector(state => !!state.auth.tryedAutoLogin);
+    const tryedAutoLogin = useSelector(state => state.auth.tryedAutoLogin);
+    const hasDisplayName = useSelector(state => !!state.auth.displayName);
     /*
     useEffect(() => {
         if (!isAuth) {
@@ -15,16 +16,18 @@ const NavigationContainer = props => {
         }
     }, [isAuth]);
     */
-
+    
     useEffect(() => {
-        if (isAuth) {
-            navRef.current.dispatch(NavigationActions.navigate({ routeName: "VokabelTasks" }));
+        if (isAuth && hasDisplayName && tryedAutoLogin) {
+            navRef.current.dispatch(NavigationActions.navigate({ routeName: "VocabelTasks" }));
+        } else if (isAuth && !hasDisplayName) { 
+            navRef.current.dispatch(NavigationActions.navigate({ routeName: "Welcome" }));
         } else if (!isAuth && tryedAutoLogin) {
             navRef.current.dispatch(NavigationActions.navigate({ routeName: "Auth" }));
         } else if (!isAuth && !tryedAutoLogin) {
             navRef.current.dispatch(NavigationActions.navigate({ routeName: "Startup" }));
         }
-    }, [isAuth, tryedAutoLogin])
+    }, [isAuth, tryedAutoLogin, hasDisplayName])
 
     return <MainNavigation ref={navRef} />;
 };

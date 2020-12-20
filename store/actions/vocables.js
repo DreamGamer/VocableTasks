@@ -11,6 +11,7 @@ export const fetchVocables = () => {
       const token = await getState().auth.token;
       const UID = await getState().auth.UID;
 
+
       const response = await fetch("https://vocabeltasks.firebaseio.com/vocables/" + UID + ".json?auth=" + token, {
         method: "GET",
       });
@@ -41,6 +42,8 @@ export const fetchVocables = () => {
 export const deleteVocable = (id) => {
   return async (dispatch, getState) => {
     try {
+      const token = await getState().auth.token;
+      const UID = await getState().auth.UID;
       const response = await fetch("https://vocabeltasks.firebaseio.com/vocables/" + UID + "/" + id + ".json?auth=" + token, {
         method: "DELETE",
       });

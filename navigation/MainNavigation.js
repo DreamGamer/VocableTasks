@@ -1,8 +1,10 @@
+import React from "react";
 import { createAppContainer, createSwitchNavigator } from "react-navigation";
 
 import StartScreen from "../screens/StartScreen";
 import AppNavigation from "./AppNavigation";
 import AuthNavigation from "./AuthNavigation";
+import WelcomeNavigation from "./WelcomeNavigation";
 
 const MainNavigation = createSwitchNavigator({
     Startup: {
@@ -11,7 +13,10 @@ const MainNavigation = createSwitchNavigator({
     Auth: {
         screen: AuthNavigation,
     },
-    VokabelTasks: {
+    Welcome: {
+        screen: WelcomeNavigation,
+    },
+    VocabelTasks: {
         screen: AppNavigation,
     },
 });

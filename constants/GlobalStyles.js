@@ -22,8 +22,35 @@ export default StyleSheet.create({
         fontFamily: DefaultValues.fontBold,
     },
     centered: {
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    screen: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
+    },
+    h1: {
+        color: Colors.lightWhite,
+        fontSize: 32,
+        fontFamily: DefaultValues.fontRegular,
+    },
+    h2: {
+        color: Colors.lightWhite,
+        fontSize: 28,
+        fontFamily: DefaultValues.fontRegular,
+    },
+    h3: {
+        color: Colors.lightWhite,
+        fontSize: 24,
+        fontFamily: DefaultValues.fontRegular,
+    },
+    h4: {
+        color: Colors.lightWhite,
+        fontSize: 20,
+        fontFamily: DefaultValues.fontRegular,
+    },
+    centerText: {
+        textAlign: "center",
     }
 });

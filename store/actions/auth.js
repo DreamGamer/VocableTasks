@@ -13,7 +13,46 @@ export const authenticate = (token, UID, expirationTime) => {
     return async dispatch => {
         dispatch(setLogoutTimer(expirationTime));
         await dispatch(lookupUser(token));
-        dispatch({ type: AUTHENTICATE, token: token, UID: UID, displayName: "test" });
+        dispatch({ type: AUTHENTICATE, token: token, UID: UID });
+    };
+};
+
+export const updateDisplayName = name => {
+    return async (dispatch, getState) => {
+        const token = getState().auth.token;
+        const response = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:update?key=" + config.FIREBASE_API_KEY, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                idToken: token,
+                displayName: name,
+            }),
+        });
+
+        if (!response.ok) {
+            try {
+                const errorReponseData = await response.json();
+                console.log(errorReponseData);
+                const errorCode = errorResponseData.error.message;
+
+                let errorMessage = "Something went wrong while Sign Up! " + errorCode;
+                if ((errorCode = "CREDENTIAL_TOO_OLD_LOGIN_AGAIN")) {
+                    errorMessage = "Please login egain.";
+                } else if ((errorCode = "TOKEN_EXPIRED")) {
+                    errorMessage = "Please login egain.";
+                } else if ((errorCode = "INVALID_ID_TOKEN")) {
+                    errorMessage = "Please login egain.";
+                }
+
+                throw new Error(errorMessage);
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        await dispatch(lookupUser(token));
     };
 };
 
@@ -139,7 +178,7 @@ export const signUp = (email, password) => {
 
         const responseData = await response.json();
 
-        dispatch(authenticate(responseData.idToken, responseData.localId, parseInt(responseData.expiresIn) * 1000));
+        await dispatch(authenticate(responseData.idToken, responseData.localId, parseInt(responseData.expiresIn) * 1000));
 
         const expireDate = new Date(new Date().getTime() + parseInt(responseData.expiresIn) * 1000);
 
@@ -188,7 +227,7 @@ export const login = (email, password) => {
 
         const responseData = await response.json();
 
-        dispatch(authenticate(responseData.idToken, responseData.localId, parseInt(responseData.expiresIn) * 1000));
+        await dispatch(authenticate(responseData.idToken, responseData.localId, parseInt(responseData.expiresIn) * 1000));
 
         const expireDate = new Date(new Date().getTime() + parseInt(responseData.expiresIn) * 1000);
 

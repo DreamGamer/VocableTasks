@@ -38,8 +38,8 @@ const LoginScreen = props => {
             <LinearGradient colors={[Colors.backgroundTop, Colors.backgroundBottom]} style={styles.gradient}>
                 <ScrollView contentContainerStyle={styles.scrollViewCentered}>
                     <View style={styles.container}>
-                        <View style={styles.centered}>
-                            <Text style={styles.h1}>Login</Text>
+                        <View style={GlobalStyles.centered}>
+                            <Text style={GlobalStyles.h1}>Login</Text>
                         </View>
                         <Formik
                             initialValues={{
@@ -92,6 +92,7 @@ const LoginScreen = props => {
                                         secureTextEntry
                                         autoCapitalize="none"
                                         returnKeyType="done"
+                                        blurOnSubmit={false}
                                         ref={passwordInput}
                                         onSubmitEditing={formikProps.handleSubmit}
                                     />
@@ -148,11 +149,6 @@ const styles = StyleSheet.create({
     },
     label: {
         color: Colors.lightWhite,
-    },
-    h1: {
-        color: Colors.lightWhite,
-        fontSize: 32,
-        fontFamily: DefaultValues.fontRegular,
     },
     centered: {
         justifyContent: "center",
