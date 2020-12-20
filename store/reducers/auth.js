@@ -1,9 +1,11 @@
-import { AUTHENTICATE, LOGOUT, SETTRYEDAUTOLOGIN } from "../actions/auth";
+import { AUTHENTICATE, LOGOUT, LOOKUPUSERDATA, SETTRYEDAUTOLOGIN } from "../actions/auth";
 
 const initialState = {
     token: null,
     UID: null,
     displayName: null,
+    isEmailVerified: null,
+    email: "",
     tryedAutoLogin: false,
 };
 
@@ -11,10 +13,10 @@ export default (state = initialState, action) => {
     switch (action.type) {
         case AUTHENTICATE:
             return {
+                ...state,
                 token: action.token,
                 UID: action.UID,
-                displayName: action.displayName,
-                tryedAutoLogin: true
+                tryedAutoLogin: true,
             };
             break;
         case LOGOUT:
@@ -25,8 +27,15 @@ export default (state = initialState, action) => {
         case SETTRYEDAUTOLOGIN:
             return {
                 ...state,
-                tryedAutoLogin: true
-            }
+                tryedAutoLogin: true,
+            };
+        case LOOKUPUSERDATA:
+            return {
+                ...state,
+                displayName: action.displayName,
+                isEmailVerified: action.isEmailVerified,
+                email: action.email,
+            };
         default:
             return state;
     }

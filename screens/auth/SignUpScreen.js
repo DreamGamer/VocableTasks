@@ -14,22 +14,23 @@ import { useDispatch } from "react-redux";
 
 const yupSchema = yup.object({
     Email: yup.string().email().required().min(5),
-    Password: yup.string().required(),
+    Password: yup.string().required().min(6),
+    Confirm_Password: yup.string().required("Confirmed Password is a required field").oneOf([yup.ref('Password'), null], 'Passwords must match'),
 });
 
-const LoginScreen = props => {
+const SignUpScreen = props => {
     // States
     const [isLoading, setIsLoading] = useState(false);
     const [hasError, setHasError] = useState(null);
 
-    // Redux Dispatch
-    const dispatch = useDispatch();
-
     const passwordInput = useRef();
+    const confirmPasswordInput = useRef();
+
+    const dispatch = useDispatch();
 
     useEffect(() => {
         if (hasError) {
-            Alert.alert("An error occured!", hasError.message, [{ text: "Okay" }]);
+            Alert.alert("An Error occured!", hasError.message, [{text: "Okay"}]);
         }
     }, [hasError]);
 
@@ -39,22 +40,25 @@ const LoginScreen = props => {
                 <ScrollView contentContainerStyle={styles.scrollViewCentered}>
                     <View style={styles.container}>
                         <View style={styles.centered}>
-                            <Text style={styles.h1}>Login</Text>
+                            <Text style={styles.h1}>Create Account</Text>
                         </View>
                         <Formik
                             initialValues={{
                                 Email: "",
                                 Password: "",
+                                Confirm_Password: "",
                             }}
                             validationSchema={yupSchema}
                             onSubmit={async (values, actions) => {
                                 setIsLoading(true);
                                 setHasError("");
-                                console.log(values);
-
                                 try {
-                                    await dispatch(authActions.login(values.Email, values.Password));
-                                    setIsLoading(false);
+                                    if (values.Password == values.Confirm_Password) {
+                                        await dispatch(authActions.signUp(values.Email, values.Password))
+                                        setIsLoading(false);
+                                    } else {
+                                        throw new Error("Passwords don't match!");
+                                    }
                                 } catch (error) {
                                     setIsLoading(false);
                                     setHasError(error);
@@ -91,33 +95,48 @@ const LoginScreen = props => {
                                         keyboardType="default"
                                         secureTextEntry
                                         autoCapitalize="none"
-                                        returnKeyType="done"
+                                        returnKeyType="next"
                                         ref={passwordInput}
-                                        onSubmitEditing={formikProps.handleSubmit}
+                                        onSubmitEditing={() => {
+                                            confirmPasswordInput.current.focus();
+                                        }}
                                     />
                                     {formikProps.errors.Password && formikProps.touched.Password ? <Text style={GlobalStyles.errorText}>{formikProps.touched.Password && formikProps.errors.Password}</Text> : null}
-                                    <Pressable style={styles.forgetPasswordContainer}>
-                                        <Text style={styles.forgetPasswordText}>Forget Password?</Text>
-                                    </Pressable>
+
+                                    <Label title="Confirm Password:" style={styles.label} />
+                                    <TextInput
+                                        style={{ ...GlobalStyles.input, ...(isLoading ? GlobalStyles.inputDisabled : null) }}
+                                        placeholder="Confirm Password"
+                                        onBlur={formikProps.handleBlur("Confirm_Password")}
+                                        onChangeText={formikProps.handleChange("Confirm_Password")}
+                                        value={formikProps.values.Confirm_Password}
+                                        editable={isLoading ? false : true}
+                                        keyboardType="default"
+                                        secureTextEntry
+                                        autoCapitalize="none"
+                                        returnKeyType="done"
+                                        ref={confirmPasswordInput}
+                                        onSubmitEditing={formikProps.handleSubmit}
+                                    />
+                                    {formikProps.errors.Confirm_Password && formikProps.touched.Confirm_Password ? <Text style={GlobalStyles.errorText}>{formikProps.touched.Confirm_Password && formikProps.errors.Confirm_Password}</Text> : null}
 
                                     {isLoading ? (
                                         <ActivityIndicator size="small" color={Colors.ActivityIndicatorWhite} />
                                     ) : (
                                         <View style={styles.buttonContainer}>
-                                            <Button title="Login" onPress={formikProps.handleSubmit} />
+                                            <Button title="Sign Up" onPress={formikProps.handleSubmit} />
                                         </View>
                                     )}
                                 </View>
                             )}
                         </Formik>
-
-                        <View style={styles.signupContainer}>
-                            <Text style={styles.signupText}>Don't have an account yet?</Text>
+                        <View style={styles.loginContainer}>
+                            <Text style={styles.loginText}>Already signed up?</Text>
                             <Pressable
                                 onPress={() => {
-                                    props.navigation.navigate({ routeName: "signup" });
+                                    props.navigation.goBack();
                                 }}>
-                                <Text style={styles.signupTextLink}> Signup here</Text>
+                                <Text style={styles.LoginTextLink}> Login here</Text>
                             </Pressable>
                         </View>
                     </View>
@@ -127,9 +146,9 @@ const LoginScreen = props => {
     );
 };
 
-LoginScreen.navigationOptions = navigationData => {
+SignUpScreen.navigationOptions = navigationData => {
     return {
-        title: "Login",
+        title: "",
     };
 };
 
@@ -175,20 +194,20 @@ const styles = StyleSheet.create({
         marginVertical: 5,
         justifyContent: "flex-end",
     },
-    signupContainer: {
+    loginContainer: {
         flexDirection: "row",
         justifyContent: "flex-end",
     },
-    signupText: {
+    loginText: {
         color: Colors.lightWhite,
         fontSize: 15,
         fontFamily: DefaultValues.fontRegular,
     },
-    signupTextLink: {
+    LoginTextLink: {
         color: Colors.link,
         fontSize: 15,
         fontFamily: DefaultValues.fontRegular,
     },
 });
 
-export default LoginScreen;
+export default SignUpScreen;

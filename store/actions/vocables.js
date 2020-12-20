@@ -8,11 +8,16 @@ export const UPDATE_VOCABLE = "UPDATE_VOCABLE";
 export const fetchVocables = () => {
   return async (dispatch, getState) => {
     try {
-      const response = await fetch("https://vocabeltasks.firebaseio.com/vocables.json", {
+      const token = await getState().auth.token;
+      const UID = await getState().auth.UID;
+
+      const response = await fetch("https://vocabeltasks.firebaseio.com/vocables/" + UID + ".json?auth=" + token, {
         method: "GET",
       });
 
       if (!response.ok) {
+        const errorResponseData = await response.json();
+        console.log(errorResponseData)
         throw new Error("Something went wrong while fetching Vocables!");
       }
 
@@ -36,7 +41,7 @@ export const fetchVocables = () => {
 export const deleteVocable = (id) => {
   return async (dispatch, getState) => {
     try {
-      const response = await fetch("https://vocabeltasks.firebaseio.com/vocables/" + id + ".json", {
+      const response = await fetch("https://vocabeltasks.firebaseio.com/vocables/" + UID + "/" + id + ".json?auth=" + token, {
         method: "DELETE",
       });
 
@@ -57,7 +62,10 @@ export const deleteVocable = (id) => {
 export const addVocable = (wordENG, wordDE, known) => {
   return async (dispatch, getState) => {
     try {
-      const response = await fetch("https://vocabeltasks.firebaseio.com/vocables.json", {
+      const token = getState().auth.token;
+      const UID = getState().auth.UID;
+
+      const response = await fetch("https://vocabeltasks.firebaseio.com/vocables/" + UID + ".json?auth=" + token, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -93,7 +101,10 @@ export const addVocable = (wordENG, wordDE, known) => {
 export const updateVocable = (id, wordENG, wordDE) => {
   return async (dispatch, getState) => {
     try {
-      const response = await fetch("https://vocabeltasks.firebaseio.com/vocables/" + id + ".json", {
+      const token = getState().auth.token;
+      const UID = getState().auth.UID;
+
+      const response = await fetch("https://vocabeltasks.firebaseio.com/vocables/" + UID + "/" + id + ".json?auth=" + token, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

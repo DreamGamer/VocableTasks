@@ -10,6 +10,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Colors from "../../constants/Colors";
 import DefaultValues from "../../constants/DefaultValues";
 import GlobalStyles from "../../constants/GlobalStyles";
+import * as authActions from "../../store/actions/auth";
 
 const VocabularysScreen = props => {
     // States
@@ -78,7 +79,7 @@ const VocabularysScreen = props => {
 
     if (isLoading) {
         return (
-            <View> 
+            <View>
                 <ActivityIndicator size="large" color={Colors.ActivityIndicatorDark} />
             </View>
         );
@@ -93,6 +94,8 @@ const VocabularysScreen = props => {
             </View>
         );
     }
+
+    
 
     return (
         <View>
@@ -120,6 +123,13 @@ const VocabularysScreen = props => {
                     </TouchableOpacity>
                 )}
             />
+            <Button title="Email" onPress={() => {
+                try {
+                    dispatch(authActions.sendEmail());
+                } catch (error) {
+                    console.log(error);
+                }
+            }}></Button>
         </View>
     );
 };

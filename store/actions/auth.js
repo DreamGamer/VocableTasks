@@ -5,18 +5,146 @@ export const LOGIN = "LOGIN";
 export const AUTHENTICATE = "AUTHENTICATE";
 export const LOGOUT = "LOGOUT";
 export const SETTRYEDAUTOLOGIN = "SETTRYEDAUTOLOGIN";
+export const LOOKUPUSERDATA = "LOOKUPUSERDATA";
 
 let logoutTimer;
 
-export const authenticate = (token, UID, expirationTime, displayName) => {
-    return dispatch => {
+export const authenticate = (token, UID, expirationTime) => {
+    return async dispatch => {
         dispatch(setLogoutTimer(expirationTime));
+        await dispatch(lookupUser(token));
         dispatch({ type: AUTHENTICATE, token: token, UID: UID, displayName: "test" });
+    };
+};
+
+export const lookupUser = token => {
+    return async (dispatch, getState) => {
+        const response = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=" + config.FIREBASE_API_KEY, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                idToken: token,
+            }),
+        });
+
+        if (!response.ok) {
+            try {
+                const errorReponseData = await response.json();
+                console.log(errorReponseData);
+                const errorCode = errorResponseData.error.message;
+
+                let errorMessage = "Something went wrong while Sign Up!";
+                if ((errorCode = "INVALID_ID_TOKEN")) {
+                    errorMessage = "Please login egain.";
+                } else if ((errorCode = "USER_NOT_FOUND")) {
+                    errorMessage = "User not found.";
+                }
+
+                throw new Error(errorMessage);
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        const responseData = await response.json();
+        const displayName = responseData.users[0].displayName ? responseData.users[0].displayName : null;
+        const isEmailVerified = responseData.users[0].emailVerified;
+        const email = responseData.users[0].email;
+
+        dispatch({ type: LOOKUPUSERDATA, displayName: displayName, isEmailVerified: isEmailVerified, email: email });
     };
 };
 
 export const setTryedAutoLogin = () => {
     return { type: SETTRYEDAUTOLOGIN };
+};
+
+export const sendEmail = () => {
+    return async (dispatch, getState) => {
+        const token = await getState().auth.token;
+        const response = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=" + config.FIREBASE_API_KEY, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                requestType: "VERIFY_EMAIL",
+                idToken: token,
+            }),
+        });
+
+        if (!response.ok) {
+            try {
+                const errorResponseData = await response.json();
+                console.log(errorResponseData);
+                const errorCode = errorResponseData.error.message;
+
+                let errorMessage = "Something went wrong while Sign Up!";
+                if (errorCode === "EMAIL_EXISTS") {
+                    errorMessage = "There is already an account with this Email.";
+                } else if (errorCode === "TOO_MANY_ATTEMPTS_TRY_LATER") {
+                    errorMessage = "Too many attempts, try again later.";
+                } else if (errorCode === "OPERATION_NOT_ALLOWED") {
+                    errorMessage = "Sign up not allowed. Please contact Support.";
+                }
+
+                throw new Error(errorMessage);
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        const responseData = await response.json();
+
+        console.log(responseData);
+    };
+};
+
+export const signUp = (email, password) => {
+    return async dispatch => {
+        const response = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=" + config.FIREBASE_API_KEY, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                email: email,
+                password: password,
+                returnSecureToken: true,
+            }),
+        });
+
+        if (!response.ok) {
+            try {
+                const errorResponseData = await response.json();
+                console.log(errorResponseData);
+                const errorCode = errorResponseData.error.message;
+
+                let errorMessage = "Something went wrong while Sign Up!";
+                if (errorCode === "EMAIL_EXISTS") {
+                    errorMessage = "There is already an account with this Email.";
+                } else if (errorCode === "TOO_MANY_ATTEMPTS_TRY_LATER") {
+                    errorMessage = "Too many attempts, try again later.";
+                } else if (errorCode === "OPERATION_NOT_ALLOWED") {
+                    errorMessage = "Sign up not allowed. Please contact Support.";
+                }
+
+                throw new Error(errorMessage);
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        const responseData = await response.json();
+
+        dispatch(authenticate(responseData.idToken, responseData.localId, parseInt(responseData.expiresIn) * 1000));
+
+        const expireDate = new Date(new Date().getTime() + parseInt(responseData.expiresIn) * 1000);
+
+        saveUserToStorage(responseData.idToken, responseData.localId, expireDate);
+    };
 };
 
 export const login = (email, password) => {
@@ -59,13 +187,12 @@ export const login = (email, password) => {
         }
 
         const responseData = await response.json();
-        console.log(responseData);
 
-        dispatch(authenticate(responseData.localId, responseData.idToken, parseInt(responseData.expiresIn) * 1000, responseData.displayName));
+        dispatch(authenticate(responseData.idToken, responseData.localId, parseInt(responseData.expiresIn) * 1000));
 
         const expireDate = new Date(new Date().getTime() + parseInt(responseData.expiresIn) * 1000);
 
-        saveUserToStorage(responseData.localId, responseData.idToken, expireDate);
+        saveUserToStorage(responseData.idToken, responseData.localId, expireDate);
     };
 };
 

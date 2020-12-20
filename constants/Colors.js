@@ -14,9 +14,10 @@ export default {
     shadowColor: "#000",
     lightGrey: "#e0e0e0",
     HeaderButtonsColor: "#000",
-    lightWhite: "#f8f8f8",
+    // lightWhite: "#f8f8f8",
+    lightWhite: "#ffffff",
     backgroundTop: "#1a3d56",
     backgroundBottom: "#363636",
     ActivityIndicatorDark: "#1b1b1b",
-    ActivityIndicatorWhite: "#f8f8f8",
+    ActivityIndicatorWhite: "#ffffff",
 }
