@@ -50,7 +50,6 @@ const LoginScreen = props => {
                             onSubmit={async (values, actions) => {
                                 setIsLoading(true);
                                 setHasError("");
-                                console.log(values);
 
                                 try {
                                     await dispatch(authActions.login(values.Email, values.Password));
