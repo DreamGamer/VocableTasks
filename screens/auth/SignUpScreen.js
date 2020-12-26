@@ -97,6 +97,7 @@ const SignUpScreen = props => {
                                         autoCapitalize="none"
                                         returnKeyType="next"
                                         ref={passwordInput}
+                                        blurOnSubmit={false}
                                         onSubmitEditing={() => {
                                             confirmPasswordInput.current.focus();
                                         }}
