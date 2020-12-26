@@ -6,7 +6,7 @@ import MainNavigation from "./MainNavigation";
 
 const NavigationContainer = props => {
     const navRef = useRef();
-    const isAuth = useSelector(state => !!state.auth.token);
+    const isAuth = useSelector(state => !!state.auth.idToken);
     const tryedAutoLogin = useSelector(state => state.auth.tryedAutoLogin);
     const hasDisplayName = useSelector(state => !!state.auth.displayName);
     /*
