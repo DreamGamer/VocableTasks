@@ -17,17 +17,17 @@ const StartScreen = props => {
             }
 
             const transformedData = JSON.parse(userData);
-            const { token, UID, expireData, displayName } = transformedData;
+            const { idToken, refreshToken, UID, expireDate, displayName } = transformedData;
 
-            const convertedExpireDate = new Date(expireData);
-            if (convertedExpireDate <= new Date() || !token || !UID) {
+            const convertedExpireDate = new Date(expireDate);
+            if (convertedExpireDate <= new Date() || !idToken || !UID || !refreshToken) {
                 dispatch(authActions.setTryedAutoLogin());
                 return;
             }
 
             const expirationTime = convertedExpireDate.getTime() - new Date().getTime();
 
-            await dispatch(authActions.authenticate(token, UID, expirationTime, displayName));
+            await dispatch(authActions.authenticate(idToken, refreshToken, UID, expirationTime, displayName));
         };
         tryLogin();
     }, [dispatch]);
