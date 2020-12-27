@@ -16,7 +16,7 @@ let logoutTimer;
 // Authenticate User in App
 export const authenticate = (idToken, refreshToken, UID, expirationTime) => {
     return async dispatch => {
-        await dispatch(setLogoutTimer(expirationTime));
+        // await dispatch(setLogoutTimer(expirationTime));
         await dispatch(lookupUser(idToken));
         dispatch({ type: AUTHENTICATE, idToken: idToken, refreshToken: refreshToken, UID: UID });
     };
@@ -43,7 +43,7 @@ export const updateToken = () => {
 
             if (!response.ok) {
                 const errorResponseData = await response.json();
-                console.log(TAG + JSON.stringify(errorResponseData));
+                console.log(TAG + "UpdateToken -> " + JSON.stringify(errorResponseData));
                 const errorCode = errorResponseData.error.message;
 
                 let errorMessage = "Something went wrong while getToken! " + JSON.stringify(errorResponseData);
@@ -53,6 +53,7 @@ export const updateToken = () => {
                     errorMessage = "Your Account is disabled, please contact support!.";
                 } else if (errorCode === "USER_NOT_FOUND") {
                     errorMessage = "User not found.";
+                    dispatch(logout());
                 } else if (errorCode === "INVALID_REFRESH_TOKEN") {
                     errorMessage = "Invalid refresh token. Please login again..";
                 } else if (errorCode === "INVALID_GRANT_TYPE") {
@@ -60,8 +61,7 @@ export const updateToken = () => {
                 } else if (errorCode === "MISSING_REFRESH_TOKEN") {
                     errorMessage = "Missing refresh token. Please login again or contact support!.";
                 }
-                console.log(TAG + errorMessage);
-                dispatch({ type: UPDATETOKEN });
+                console.log(TAG + "UpdateToken -> " + errorMessage);
                 throw new Error(errorMessage);
             }
 
@@ -72,11 +72,11 @@ export const updateToken = () => {
             const NewRefreshToken = responseData.refresh_token;
             const UID = responseData.user_id;
 
-            console.log(TAG + "Sucessfully refreshed token.");
+            console.log(TAG + "UpdateToken -> " + "Sucessfully refreshed token.");
 
             dispatch({ type: UPDATETOKEN, idToken: idToken, refreshToken: NewRefreshToken, UID: UID });
         } catch (error) {
-            console.log(TAG + "Error while refreshToken " + error);
+            console.log(TAG + "UpdateToken -> " + error);
             throw error;
         }
     };
@@ -85,7 +85,8 @@ export const updateToken = () => {
 // Updates the displayName of user
 export const updateDisplayName = name => {
     return async (dispatch, getState) => {
-        const idToken = await getToken();
+        await dispatch(updateToken());
+        const idToken = await getState().auth.idToken;
         const response = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:update?key=" + config.FIREBASE_API_KEY, {
             method: "POST",
             headers: {
@@ -99,8 +100,8 @@ export const updateDisplayName = name => {
 
         if (!response.ok) {
             try {
-                const errorReponseData = await response.json();
-                console.log(errorReponseData);
+                const errorResponseData = await response.json();
+                console.log(TAG + "UpdateToken -> " + JSON.stringify(errorResponseData.error.message));
                 const errorCode = errorResponseData.error.message;
 
                 let errorMessage = "Something went wrong while Sign Up! " + errorCode;
@@ -137,11 +138,10 @@ export const lookupUser = idToken => {
 
         if (!response.ok) {
             try {
-                const errorReponseData = await response.json();
-                console.log(errorReponseData);
+                const errorResponseData = await response.json();
                 const errorCode = errorResponseData.error.message;
 
-                let errorMessage = "Something went wrong while Sign Up!";
+                let errorMessage = "Something went wrong while Sign Up! " + JSON.stringify(errorResponseData.error.message);
                 if (errorCode === "INVALID_ID_TOKEN") {
                     errorMessage = "Please login egain.";
                 } else if (errorCode === "USER_NOT_FOUND") {
@@ -205,6 +205,47 @@ export const sendEmail = () => {
         const responseData = await response.json();
 
         console.log(responseData);
+    };
+};
+
+// Reset Password with Email function
+export const resetPasswordWithEmail = email => {
+    return async (dispatch, getState) => {
+        try {
+            // Send POST request to firebase
+            const response = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=" + config.FIREBASE_API_KEY, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    requestType: "PASSWORD_RESET",
+                    email: email,
+                }),
+            });
+
+            if (!response.ok) {
+                const errorResponseData = await response.json();
+                console.log(TAG + JSON.stringify(errorResponseData));
+                const errorCode = errorResponseData.error.message;
+
+                let errorMessage = "Something went wrong while getToken! " + JSON.stringify(errorResponseData.error.message);
+                if (errorCode === "EMAIL_NOT_FOUND") {
+                    errorMessage = "No account found with this email.";
+                } else if (errorCode === "RESET_PASSWORD_EXCEED_LIMIT") {
+                    errorMessage = "Too many attempts, try again later.";
+                }
+                console.log(TAG + errorMessage);
+                throw new Error(errorMessage);
+            }
+
+            const responseData = await response.json();
+
+            console.log(responseData);
+        } catch (error) {
+            console.log(TAG + "Error while reset password with email! " + error);
+            throw error;
+        }
     };
 };
 

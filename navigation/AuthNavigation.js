@@ -3,6 +3,7 @@ import { createStackNavigator } from "react-navigation-stack";
 // Screens
 import LoginScreen from "../screens/auth/LoginScreen";
 import SignUpScreen from "../screens/auth/SignUpScreen";
+import ForgotPasswordScreen from "../screens/auth/ForgotPasswordScreen";
 
 const AuthNavigation = createStackNavigator({
     login: {
@@ -17,6 +18,12 @@ const AuthNavigation = createStackNavigator({
             headerTransparent: true,
             
         },
+    },
+    forgotPassword: {
+        screen: ForgotPasswordScreen,
+        navigationOptions: {
+            headerTransparent: true,
+        }
     }
 });
 

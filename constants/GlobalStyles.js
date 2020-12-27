@@ -3,6 +3,9 @@ import Colors from "./Colors";
 import DefaultValues from "./DefaultValues";
 
 export default StyleSheet.create({
+    flex1: {
+        flex: 1,
+    },
     input: {
         borderWidth: 1,
         borderColor: "#ccc",
@@ -52,5 +55,5 @@ export default StyleSheet.create({
     },
     centerText: {
         textAlign: "center",
-    }
+    },
 });
