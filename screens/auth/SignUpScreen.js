@@ -35,12 +35,12 @@ const SignUpScreen = props => {
     }, [hasError]);
 
     return (
-        <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" : "height"} style={styles.screen}>
+        <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" : "height"} style={GlobalStyles.flex1}>
             <LinearGradient colors={[Colors.backgroundTop, Colors.backgroundBottom]} style={styles.gradient}>
                 <ScrollView contentContainerStyle={styles.scrollViewCentered}>
                     <View style={styles.container}>
-                        <View style={styles.centered}>
-                            <Text style={styles.h1}>Create Account</Text>
+                        <View style={GlobalStyles.centered}>
+                            <Text style={GlobalStyles.h1}>Create Account</Text>
                         </View>
                         <Formik
                             initialValues={{
@@ -154,9 +154,6 @@ SignUpScreen.navigationOptions = navigationData => {
 };
 
 const styles = StyleSheet.create({
-    screen: {
-        flex: 1,
-    },
     container: {
         width: Dimensions.get("window").width * 0.925,
         backgroundColor: "rgba(3, 5, 8, 0.5)",
@@ -168,15 +165,6 @@ const styles = StyleSheet.create({
     },
     label: {
         color: Colors.lightWhite,
-    },
-    h1: {
-        color: Colors.lightWhite,
-        fontSize: 32,
-        fontFamily: DefaultValues.fontRegular,
-    },
-    centered: {
-        justifyContent: "center",
-        alignItems: "center",
     },
     buttonContainer: {
         marginVertical: 10,

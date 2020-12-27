@@ -34,7 +34,7 @@ const LoginScreen = props => {
     }, [hasError]);
 
     return (
-        <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" : "height"} style={styles.screen}>
+        <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" : "height"} style={GlobalStyles.flex1}>
             <LinearGradient colors={[Colors.backgroundTop, Colors.backgroundBottom]} style={styles.gradient}>
                 <ScrollView contentContainerStyle={styles.scrollViewCentered}>
                     <View style={styles.container}>
@@ -96,7 +96,9 @@ const LoginScreen = props => {
                                         onSubmitEditing={formikProps.handleSubmit}
                                     />
                                     {formikProps.errors.Password && formikProps.touched.Password ? <Text style={GlobalStyles.errorText}>{formikProps.touched.Password && formikProps.errors.Password}</Text> : null}
-                                    <Pressable style={styles.forgetPasswordContainer}>
+                                    <Pressable style={styles.forgetPasswordContainer} onPress={() => {
+                                        props.navigation.navigate({routeName: "forgotPassword"});
+                                    }}>
                                         <Text style={styles.forgetPasswordText}>Forget Password?</Text>
                                     </Pressable>
 
@@ -134,9 +136,6 @@ LoginScreen.navigationOptions = navigationData => {
 };
 
 const styles = StyleSheet.create({
-    screen: {
-        flex: 1,
-    },
     container: {
         width: Dimensions.get("window").width * 0.925,
         backgroundColor: "rgba(3, 5, 8, 0.5)",

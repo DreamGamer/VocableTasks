@@ -5,29 +5,41 @@ import AsyncStorage from "@react-native-community/async-storage";
 import { useDispatch } from "react-redux";
 import * as authActions from "../store/actions/auth";
 
+const TAG = "[StartScreen]: "
+
 const StartScreen = props => {
     const dispatch = useDispatch();
 
     useEffect(() => {
         const tryLogin = async () => {
-            const userData = await AsyncStorage.getItem("userData");
-            if (!userData) {
-                dispatch(authActions.setTryedAutoLogin());
-                return;
+            try {
+                const userData = await AsyncStorage.getItem("userData");
+                if (!userData) {
+                    dispatch(authActions.setTryedAutoLogin());
+                    return;
+                }
+
+                const transformedData = JSON.parse(userData);
+                const { idToken, refreshToken, UID, expireDate, displayName } = transformedData;
+
+                const convertedExpireDate = new Date(expireDate);
+                if (convertedExpireDate <= new Date() || !idToken || !UID || !refreshToken) {
+                    dispatch(authActions.setTryedAutoLogin());
+                    return;
+                }
+
+                const expirationTime = convertedExpireDate.getTime() - new Date().getTime();
+
+                await dispatch(authActions.authenticate(idToken, refreshToken, UID, expirationTime, displayName));
+            } catch (error) {
+                try {
+                    console.log(TAG + error);
+                    dispatch(authActions.setTryedAutoLogin());
+                    dispatch(authActions.logout());
+                } catch (error) {
+                    console.log(TAG + "FATAL ERROR: " + error);
+                }
             }
-
-            const transformedData = JSON.parse(userData);
-            const { idToken, refreshToken, UID, expireDate, displayName } = transformedData;
-
-            const convertedExpireDate = new Date(expireDate);
-            if (convertedExpireDate <= new Date() || !idToken || !UID || !refreshToken) {
-                dispatch(authActions.setTryedAutoLogin());
-                return;
-            }
-
-            const expirationTime = convertedExpireDate.getTime() - new Date().getTime();
-
-            await dispatch(authActions.authenticate(idToken, refreshToken, UID, expirationTime, displayName));
         };
         tryLogin();
     }, [dispatch]);
