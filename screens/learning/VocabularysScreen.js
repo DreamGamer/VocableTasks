@@ -90,7 +90,7 @@ const VocabularysScreen = props => {
             <View style={GlobalStyles.screen}>
                 <Text style={GlobalStyles.centerText}>No Vocables found, maybe start add some!</Text>
             </View>
-        )
+        );
     }
 
     if (hasError) {
@@ -102,8 +102,6 @@ const VocabularysScreen = props => {
             </View>
         );
     }
-
-    
 
     return (
         <View>

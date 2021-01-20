@@ -53,6 +53,11 @@ export default StyleSheet.create({
         fontSize: 20,
         fontFamily: DefaultValues.fontRegular,
     },
+    h5: {
+        color: Colors.lightWhite,
+        fontSize: 16,
+        fontFamily: DefaultValues.fontRegular,
+    },
     centerText: {
         textAlign: "center",
     },

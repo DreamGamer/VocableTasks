@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, ScrollView, Text, Button, ActivityIndicator, Alert } from "react-native";
+import { StyleSheet, View, ScrollView, Text, Button, ActivityIndicator, Alert, TextInput } from "react-native";
 import { Formik } from "formik";
 import Input from "../../components/Input";
 import Label from "../../components/Label";
@@ -51,7 +51,7 @@ const EditVocableScreen = (props) => {
           {(formikProps) => (
             <View>
               <Label title="English:" />
-              <Input
+              <TextInput
                 onBlur={formikProps.handleBlur("wordENG")}
                 placeholder="Enter the english Word"
                 onChangeText={formikProps.handleChange("wordENG")}
@@ -61,7 +61,7 @@ const EditVocableScreen = (props) => {
               <Text style={GlobalStyles.errorText}>{formikProps.touched.wordENG && formikProps.errors.wordENG}</Text>
 
               <Label title="German:" />
-              <Input
+              <TextInput
                 onBlur={formikProps.handleBlur("wordDE")}
                 placeholder="Enter the german Word"
                 onChangeText={formikProps.handleChange("wordDE")}

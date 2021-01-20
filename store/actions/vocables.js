@@ -47,7 +47,7 @@ export const fetchVocables = () => {
 export const deleteVocable = id => {
     return async (dispatch, getState) => {
         try {
-            const token = await getState().auth.token;
+            const token = await getState().auth.idToken;
             const UID = await getState().auth.UID;
             const response = await fetch("https://vocabeltasks.firebaseio.com/vocables/" + UID + "/" + id + ".json?auth=" + token, {
                 method: "DELETE",
@@ -70,7 +70,7 @@ export const deleteVocable = id => {
 export const addVocable = (wordENG, wordDE, known) => {
     return async (dispatch, getState) => {
         try {
-            const token = getState().auth.token;
+            const token = getState().auth.idToken;
             const UID = getState().auth.UID;
 
             const response = await fetch("https://vocabeltasks.firebaseio.com/vocables/" + UID + ".json?auth=" + token, {
@@ -109,7 +109,7 @@ export const addVocable = (wordENG, wordDE, known) => {
 export const updateVocable = (id, wordENG, wordDE) => {
     return async (dispatch, getState) => {
         try {
-            const token = getState().auth.token;
+            const token = getState().auth.idToken;
             const UID = getState().auth.UID;
 
             const response = await fetch("https://vocabeltasks.firebaseio.com/vocables/" + UID + "/" + id + ".json?auth=" + token, {
@@ -124,6 +124,8 @@ export const updateVocable = (id, wordENG, wordDE) => {
             });
 
             if (!response.ok) {
+                const errorResponseData = await response.json();
+                console.log(TAG + JSON.stringify(errorResponseData))
                 throw new Error("Something went wrong while updating Vocable");
             }
 

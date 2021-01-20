@@ -9,7 +9,6 @@ export const AUTHENTICATE = "AUTHENTICATE";
 export const LOGOUT = "LOGOUT";
 export const SETTRYEDAUTOLOGIN = "SETTRYEDAUTOLOGIN";
 export const LOOKUPUSERDATA = "LOOKUPUSERDATA";
-export const UPDATETOKEN = "UPDATETOKEN";
 
 let logoutTimer;
 
@@ -69,12 +68,12 @@ export const updateToken = () => {
             const accessToken = responseData.access_token;
             const expires_in = responseData.expires_in;
             const idToken = responseData.id_token;
-            const NewRefreshToken = responseData.refresh_token;
+            const newRefreshToken = responseData.refresh_token;
             const UID = responseData.user_id;
 
             console.log(TAG + "UpdateToken -> " + "Sucessfully refreshed token.");
 
-            dispatch({ type: UPDATETOKEN, idToken: idToken, refreshToken: NewRefreshToken, UID: UID });
+            await dispatch(authenticate(idToken, newRefreshToken, UID));
         } catch (error) {
             console.log(TAG + "UpdateToken -> " + error);
             throw error;
