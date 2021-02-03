@@ -3,14 +3,14 @@ import { StyleSheet, View, Text, Button, RefreshControl, Pressable, Alert, Touch
 import { FlatList } from "react-native-gesture-handler";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import { useDispatch, useSelector } from "react-redux";
-import HeaderButton from "../../components/HeaderButton";
-import Card from "../../components/Card";
-import * as vocableActions from "../../store/actions/vocables";
+import HeaderButton from "../../../components/HeaderButton";
+import Card from "../../../components/Card";
+import * as vocableActions from "../../../store/actions/vocables";
 import { Ionicons } from "@expo/vector-icons";
-import Colors from "../../constants/Colors";
-import DefaultValues from "../../constants/DefaultValues";
-import GlobalStyles from "../../constants/GlobalStyles";
-import * as authActions from "../../store/actions/auth";
+import Colors from "../../../constants/Colors";
+import DefaultValues from "../../../constants/DefaultValues";
+import GlobalStyles from "../../../constants/GlobalStyles";
+import * as authActions from "../../../store/actions/auth";
 
 const VocabularysScreen = props => {
     // States

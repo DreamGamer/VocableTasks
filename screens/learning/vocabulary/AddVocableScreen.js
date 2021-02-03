@@ -1,24 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View, ScrollView, Text, Button, ActivityIndicator, Alert, TextInput } from "react-native";
 import { Formik } from "formik";
-import Input from "../../components/Input";
-import Label from "../../components/Label";
+import Input from "../../../components/Input";
+import Label from "../../../components/Label";
 import { useDispatch } from "react-redux";
-import * as vocableActions from "../../store/actions/vocables";
-import Colors from "../../constants/Colors";
+import * as vocableActions from "../../../store/actions/vocables";
+import Colors from "../../../constants/Colors";
 import * as yup from "yup";
-import GlobalStyles from "../../constants/GlobalStyles";
+import DefaultValues from "../../../constants/DefaultValues";
+import GlobalStyles from "../../../constants/GlobalStyles";
 
 const yupSchema = yup.object({
   wordENG: yup.string().required(),
   wordDE: yup.string().required(),
 });
 
-const EditVocableScreen = (props) => {
+const AddVocableScreen = (props) => {
   // States
   const [hasError, setHasError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  // Redux dispatch
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -31,16 +33,13 @@ const EditVocableScreen = (props) => {
     <ScrollView>
       <View style={styles.form}>
         <Formik
-          initialValues={{
-            wordENG: props.navigation.getParam("vocable").wordENG ? props.navigation.getParam("vocable").wordENG : "",
-            wordDE: props.navigation.getParam("vocable").wordDE ? props.navigation.getParam("vocable").wordDE : "",
-          }}
+          initialValues={{ wordENG: "", wordDE: "" }}
           validationSchema={yupSchema}
           onSubmit={async (values, actions) => {
             // Submit button pressed
             setIsLoading(true);
             try {
-              await dispatch(vocableActions.updateVocable(props.navigation.getParam("vocable").id, values.wordENG, values.wordDE));
+              await dispatch(vocableActions.addVocable(values.wordENG, values.wordDE, false));
               actions.resetForm();
               props.navigation.goBack();
             } catch (error) {
@@ -70,7 +69,7 @@ const EditVocableScreen = (props) => {
               />
               <Text style={GlobalStyles.errorText}>{formikProps.touched.wordDE && formikProps.errors.wordDE}</Text>
 
-              {isLoading ? <ActivityIndicator size="small" color={Colors.grey} /> : <Button title="Change" onPress={formikProps.handleSubmit} />}
+              {isLoading ? <ActivityIndicator size="small" color={Colors.grey} /> : <Button title="Submit" onPress={formikProps.handleSubmit} />}
             </View>
           )}
         </Formik>
@@ -79,9 +78,9 @@ const EditVocableScreen = (props) => {
   );
 };
 
-EditVocableScreen.navigationOptions = (navigationData) => {
+AddVocableScreen.navigationOptions = (navigationData) => {
   return {
-    title: "Edit Vocable",
+    title: "Add Vocable",
   };
 };
 
@@ -91,4 +90,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EditVocableScreen;
+export default AddVocableScreen;

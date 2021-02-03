@@ -1,10 +1,10 @@
 import React from "react";
-import { StyleSheet, View, Text, ActivityIndicator, Dimensions } from "react-native";
+import { StyleSheet, View, Text, ActivityIndicator, Dimensions, TouchableOpacity } from "react-native";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
-import HeaderButton from "../../components/HeaderButton";
-import GlobalStyles from "../../constants/GlobalStyles";
+import HeaderButton from "../../../components/HeaderButton";
+import GlobalStyles from "../../../constants/GlobalStyles";
 import { Ionicons } from "@expo/vector-icons";
-import Colors from "../../constants/Colors";
+import Colors from "../../../constants/Colors";
 
 const LearnScreen = props => {
     return (
@@ -14,22 +14,23 @@ const LearnScreen = props => {
             </View>
             <View style={styles.content}>
                 <View style={styles.row}>
-                    <View style={styles.item}>
+                    <TouchableOpacity style={styles.item} onPress={() => {}}>
                         <View style={styles.container}>
                             <Ionicons name="md-create" size={45} color={Colors.grey} />
                         </View>
                         <View style={styles.container}>
-                            <Text style={{...GlobalStyles.h5, ...styles.gameModeText}}>Vocabularies</Text>
+                            <Text style={{ ...GlobalStyles.h5, ...styles.gameModeText }}>Vocabularies</Text>
                         </View>
-                    </View>
-                    <View style={styles.item}>
-                    <View style={styles.container}>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.item} onPress={() => {}}>
+                        <View style={styles.container}>
                             <Ionicons name="md-contacts" size={45} color={Colors.grey} />
                         </View>
                         <View style={styles.container}>
-                            <Text style={{...GlobalStyles.h5, ...styles.gameModeText}}>Battle</Text>
+                            <Text style={{ ...GlobalStyles.h5, ...styles.gameModeText }}>Battle</Text>
                         </View>
-                    </View>
+                    </TouchableOpacity>
                 </View>
             </View>
         </View>
@@ -76,14 +77,14 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         justifyContent: "center",
         borderRadius: 100,
-        elevation: 5
+        elevation: 5,
     },
     container: {
-      alignItems: "center"
+        alignItems: "center",
     },
     gameModeText: {
-      color: Colors.black
-    }
+        color: Colors.black,
+    },
 });
 
 export default LearnScreen;

@@ -1,35 +1,15 @@
 import React from "react";
 import { createStackNavigator } from "react-navigation-stack";
 import { Ionicons } from "@expo/vector-icons";
-
-// Import Screens
-import VocabularysScreen from "../screens/learning/VocabularysScreen";
-import LearnScreen from "../screens/learning/LearnScreen";
-import AddVocableScreen from "../screens/learning/AddVocableScreen";
-import EditVocableScreen from "../screens/learning/EditVocableScreen";
 import { createBottomTabNavigator } from "react-navigation-tabs";
 
-const vocabularyStackNavigator = createStackNavigator({
-    vocabularys: {
-        screen: VocabularysScreen,
-    },
-    addVocable: {
-        screen: AddVocableScreen,
-    },
-    editVocable: {
-        screen: EditVocableScreen,
-    },
-});
-
-const learnStackNavigator = createStackNavigator({
-    learn: {
-        screen: LearnScreen,
-    },
-});
+// Import Screens
+import VocabularyNavigation from "./VocabularyNavigation";
+import LearnNavigation from "./LearnNavigation";
 
 const learningBottomTabNavigator = createBottomTabNavigator({
     vocabulary: {
-        screen: vocabularyStackNavigator,
+        screen: VocabularyNavigation,
         navigationOptions: {
             tabBarLabel: "Vocabulary",
             tabBarIcon: tabInformationn => {
@@ -38,7 +18,7 @@ const learningBottomTabNavigator = createBottomTabNavigator({
         },
     },
     learn: {
-        screen: learnStackNavigator,
+        screen: LearnNavigation,
         navigationOptions: {
             tabBarLabel: "Learn",
             tabBarIcon: tabInformationn => {
