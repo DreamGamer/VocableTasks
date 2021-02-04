@@ -11,13 +11,25 @@ import authReducer from "./store/reducers/auth";
 import ReduxThunk from "redux-thunk";
 import { composeWithDevTools } from "redux-devtools-extension";
 import { Provider } from "react-redux";
+import { initLanguage } from "./i18n/translation";
+
+const TAG = "[App.js]: "; // Console Log Tag
+
+// Change Debuuger mode
+const __ENABLED_DEV__ = true;
 
 const rootReducer = combineReducers({
     vocables: vocableReducer,
     auth: authReducer,
 });
+let store;
 
-const store = createStore(rootReducer, composeWithDevTools(applyMiddleware(ReduxThunk)));
+if (__ENABLED_DEV__) {
+    console.log(TAG + "Developer mode enabled");
+    store = createStore(rootReducer, composeWithDevTools(applyMiddleware(ReduxThunk)));
+} else {
+    store = createStore(rootReducer, applyMiddleware(ReduxThunk));
+}
 
 export default function App() {
     // Optimize Screens
@@ -27,7 +39,8 @@ export default function App() {
     const [fontLoaded, setFontLoaded] = useState(false);
 
     // Function to load Fonts
-    const fetchFonts = () => {
+    const fetchFonts = async () => {
+        await initLanguage();
         return Font.loadAsync({
             "ms-new-tai-lue": require("./assets/fonts/microsoft-new-tai-lue-regular.ttf"),
             "ms-new-tai-lue-bold": require("./assets/fonts/microsoft-new-tai-lue-bold.ttf"),
