@@ -54,6 +54,8 @@ export const deleteVocable = id => {
             });
 
             if (!response.ok) {
+                const errorResponseData = await response.json();
+                console.log(TAG + "Error while deleting vocable " + JSON.stringify(errorResponseData));
                 throw new Error("Something went wrong while deleteing the Vocable!");
             }
 
@@ -86,6 +88,8 @@ export const addVocable = (wordENG, wordDE, known) => {
             });
 
             if (!response.ok) {
+                const errorResponseData = await response.json();
+                console.log(TAG + "Error while uploading vocable " + JSON.stringify(errorResponseData));
                 throw new Error("Something went wrong while uploading Vocable!");
             }
 
@@ -125,7 +129,7 @@ export const updateVocable = (id, wordENG, wordDE) => {
 
             if (!response.ok) {
                 const errorResponseData = await response.json();
-                console.log(TAG + JSON.stringify(errorResponseData))
+                console.log(TAG + "Error while updating vocables " + JSON.stringify(errorResponseData));
                 throw new Error("Something went wrong while updating Vocable");
             }
 
