@@ -12,6 +12,9 @@ import GlobalStyles from "../../constants/GlobalStyles";
 import * as authActions from "../../store/actions/auth";
 import { useDispatch } from "react-redux";
 
+// Import Translation function
+import I18n from "../../i18n/translation";
+
 const yupSchema = yup.object({
     Email: yup.string().email().required().min(5),
     Password: yup.string().required().min(6),
@@ -40,7 +43,7 @@ const SignUpScreen = props => {
                 <ScrollView contentContainerStyle={styles.scrollViewCentered}>
                     <View style={styles.container}>
                         <View style={GlobalStyles.centered}>
-                            <Text style={GlobalStyles.h1}>Create Account</Text>
+                            <Text style={GlobalStyles.h1}>{I18n.t("createAccount")}</Text>
                         </View>
                         <Formik
                             initialValues={{
@@ -66,10 +69,10 @@ const SignUpScreen = props => {
                             }}>
                             {formikProps => (
                                 <View>
-                                    <Label title="Email:" style={styles.label} />
+                                    <Label title={I18n.t("labelEmail") + ":"} style={styles.label} />
                                     <TextInput
                                         style={{ ...GlobalStyles.input, ...(isLoading ? GlobalStyles.inputDisabled : null) }}
-                                        placeholder="Email"
+                                        placeholder={I18n.t("labelEmail")}
                                         onBlur={formikProps.handleBlur("Email")}
                                         onChangeText={formikProps.handleChange("Email")}
                                         value={formikProps.values.Email}
@@ -84,10 +87,10 @@ const SignUpScreen = props => {
                                     />
                                     {formikProps.errors.Email && formikProps.touched.Email ? <Text style={GlobalStyles.errorText}>{formikProps.touched.Email && formikProps.errors.Email}</Text> : null}
 
-                                    <Label title="Password:" style={styles.label} />
+                                    <Label title={I18n.t("labelPassword") + ":"} style={styles.label} />
                                     <TextInput
                                         style={{ ...GlobalStyles.input, ...(isLoading ? GlobalStyles.inputDisabled : null) }}
-                                        placeholder="Password"
+                                        placeholder={I18n.t("labelPassword")}
                                         onBlur={formikProps.handleBlur("Password")}
                                         onChangeText={formikProps.handleChange("Password")}
                                         value={formikProps.values.Password}
@@ -104,10 +107,10 @@ const SignUpScreen = props => {
                                     />
                                     {formikProps.errors.Password && formikProps.touched.Password ? <Text style={GlobalStyles.errorText}>{formikProps.touched.Password && formikProps.errors.Password}</Text> : null}
 
-                                    <Label title="Confirm Password:" style={styles.label} />
+                                    <Label title={I18n.t("confirmPassword") + ":"} style={styles.label} />
                                     <TextInput
                                         style={{ ...GlobalStyles.input, ...(isLoading ? GlobalStyles.inputDisabled : null) }}
-                                        placeholder="Confirm Password"
+                                        placeholder={I18n.t("confirmPassword")}
                                         onBlur={formikProps.handleBlur("Confirm_Password")}
                                         onChangeText={formikProps.handleChange("Confirm_Password")}
                                         value={formikProps.values.Confirm_Password}
@@ -125,19 +128,19 @@ const SignUpScreen = props => {
                                         <ActivityIndicator size="small" color={Colors.ActivityIndicatorWhite} />
                                     ) : (
                                         <View style={styles.buttonContainer}>
-                                            <Button title="Sign Up" onPress={formikProps.handleSubmit} />
+                                            <Button title={I18n.t("signUp")} onPress={formikProps.handleSubmit} />
                                         </View>
                                     )}
                                 </View>
                             )}
                         </Formik>
                         <View style={styles.loginContainer}>
-                            <Text style={styles.loginText}>Already signed up?</Text>
+                            <Text style={styles.loginText}>{I18n.t("alreadySignedUp")}</Text>
                             <Pressable
                                 onPress={() => {
                                     props.navigation.goBack();
                                 }}>
-                                <Text style={styles.LoginTextLink}> Login here</Text>
+                                <Text style={styles.LoginTextLink}> {I18n.t("loginHere")}</Text>
                             </Pressable>
                         </View>
                     </View>

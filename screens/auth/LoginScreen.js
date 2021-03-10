@@ -12,9 +12,12 @@ import GlobalStyles from "../../constants/GlobalStyles";
 import * as authActions from "../../store/actions/auth";
 import { useDispatch } from "react-redux";
 
+// Import Translation function
+import I18n from "../../i18n/translation";
+
 const yupSchema = yup.object({
-    Email: yup.string().email().required().min(5),
-    Password: yup.string().required(),
+    Email: yup.string(I18n.t("emailMustBeAString")).email(I18n.t("emailMustBeAValidEmail")).required(I18n.t("emailIsRequired")).min(5),
+    Password: yup.string(I18n.t("passwordMustBeAString")).required(I18n.t("passwordIsRequired")),
 });
 
 const LoginScreen = props => {
@@ -39,7 +42,7 @@ const LoginScreen = props => {
                 <ScrollView contentContainerStyle={styles.scrollViewCentered}>
                     <View style={styles.container}>
                         <View style={GlobalStyles.centered}>
-                            <Text style={GlobalStyles.h1}>Login</Text>
+                            <Text style={GlobalStyles.h1}>{I18n.t("labelLogin")}</Text>
                         </View>
                         <Formik
                             initialValues={{
@@ -61,10 +64,10 @@ const LoginScreen = props => {
                             }}>
                             {formikProps => (
                                 <View>
-                                    <Label title="Email:" style={styles.label} />
+                                    <Label title={I18n.t("labelEmail") + ":"} style={styles.label} />
                                     <TextInput
                                         style={{ ...GlobalStyles.input, ...(isLoading ? GlobalStyles.inputDisabled : null) }}
-                                        placeholder="Email"
+                                        placeholder={I18n.t("labelEmail")}
                                         onBlur={formikProps.handleBlur("Email")}
                                         onChangeText={formikProps.handleChange("Email")}
                                         value={formikProps.values.Email}
@@ -79,10 +82,10 @@ const LoginScreen = props => {
                                     />
                                     {formikProps.errors.Email && formikProps.touched.Email ? <Text style={GlobalStyles.errorText}>{formikProps.touched.Email && formikProps.errors.Email}</Text> : null}
 
-                                    <Label title="Password:" style={styles.label} />
+                                    <Label title={I18n.t("labelPassword") + ":"} style={styles.label} />
                                     <TextInput
                                         style={{ ...GlobalStyles.input, ...(isLoading ? GlobalStyles.inputDisabled : null) }}
-                                        placeholder="Password"
+                                        placeholder={I18n.t("labelPassword")}
                                         onBlur={formikProps.handleBlur("Password")}
                                         onChangeText={formikProps.handleChange("Password")}
                                         value={formikProps.values.Password}
@@ -96,10 +99,12 @@ const LoginScreen = props => {
                                         onSubmitEditing={formikProps.handleSubmit}
                                     />
                                     {formikProps.errors.Password && formikProps.touched.Password ? <Text style={GlobalStyles.errorText}>{formikProps.touched.Password && formikProps.errors.Password}</Text> : null}
-                                    <Pressable style={styles.forgetPasswordContainer} onPress={() => {
-                                        props.navigation.navigate({routeName: "forgotPassword"});
-                                    }}>
-                                        <Text style={styles.forgetPasswordText}>Forget Password?</Text>
+                                    <Pressable
+                                        style={styles.forgetPasswordContainer}
+                                        onPress={() => {
+                                            props.navigation.navigate({ routeName: "forgotPassword" });
+                                        }}>
+                                        <Text style={styles.forgetPasswordText}>{I18n.t("forgotPassword")}</Text>
                                     </Pressable>
 
                                     {isLoading ? (
@@ -114,12 +119,12 @@ const LoginScreen = props => {
                         </Formik>
 
                         <View style={styles.signupContainer}>
-                            <Text style={styles.signupText}>Don't have an account yet?</Text>
+                            <Text style={styles.signupText}>{I18n.t("noAccountYet")}</Text>
                             <Pressable
                                 onPress={() => {
                                     props.navigation.navigate({ routeName: "signup" });
                                 }}>
-                                <Text style={styles.signupTextLink}> Signup here</Text>
+                                <Text style={styles.signupTextLink}> {I18n.t("signUpHere")}</Text>
                             </Pressable>
                         </View>
                     </View>

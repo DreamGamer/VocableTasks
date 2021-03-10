@@ -11,8 +11,11 @@ import * as authActions from "../../store/actions/auth";
 import { useDispatch } from "react-redux";
 import TimerMixin from "react-timer-mixin";
 
+// Import Translation function
+import I18n from "../../i18n/translation";
+
 const yupSchema = yup.object({
-    email: yup.string("Email must be a string").email("Email must be a valid email").required("Email is required").min(5),
+    email: yup.string(I18n.t("emailMustBeAString")).email(I18n.t("emailMustBeAValidEmail")).required(I18n.t("emailIsRequired")).min(5),
 });
 
 const ForgotPasswordScreen = props => {
@@ -55,7 +58,7 @@ const ForgotPasswordScreen = props => {
                 <ScrollView contentContainerStyle={styles.scrollViewCentered}>
                     <View style={styles.container}>
                         <View style={GlobalStyles.centered}>
-                            <Text style={GlobalStyles.h1}>Reset Password</Text>
+                            <Text style={GlobalStyles.h1}>{I18n.t("resetPassword")}</Text>
                         </View>
 
                         <Formik
@@ -78,10 +81,10 @@ const ForgotPasswordScreen = props => {
                             }}>
                             {formikProps => (
                                 <View>
-                                    <Label title="Email:" style={styles.label} />
+                                    <Label title={I18n.t("labelEmail") + ":"} style={styles.label} />
                                     <TextInput
                                         style={{ ...GlobalStyles.input, ...(isLoading || emailSended ? GlobalStyles.inputDisabled : null) }}
-                                        placeholder="Email"
+                                        placeholder={I18n.t("labelEmail")}
                                         onBlur={formikProps.handleBlur("email")}
                                         onChangeText={formikProps.handleChange("email")}
                                         value={formikProps.values.Email}
@@ -95,13 +98,13 @@ const ForgotPasswordScreen = props => {
 
                                     {emailSended ? (
                                         <View>
-                                            <Text style={styles.timer}>Please wait {waitTimer} seconds.</Text>
+                                            <Text style={styles.timer}>{I18n.t("pleaseWait")} {waitTimer} {I18n.t("seconds")}.</Text>
                                         </View>
                                     ) : isLoading ? (
                                         <ActivityIndicator size="small" color={Colors.ActivityIndicatorWhite} />
                                     ) : (
                                         <View style={styles.buttonContainer}>
-                                            <Button title="Send Email" onPress={formikProps.handleSubmit} />
+                                            <Button title={I18n.t("sendEmail")} onPress={formikProps.handleSubmit} />
                                         </View>
                                     )}
                                 </View>
