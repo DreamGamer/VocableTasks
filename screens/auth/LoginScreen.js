@@ -11,6 +11,7 @@ import * as yup from "yup";
 import GlobalStyles from "../../constants/GlobalStyles";
 import * as authActions from "../../store/actions/auth";
 import { useDispatch } from "react-redux";
+import crashlytics from '@react-native-firebase/crashlytics';
 
 // Import Translation function
 import I18n from "../../i18n/translation";
