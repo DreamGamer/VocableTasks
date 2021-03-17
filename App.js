@@ -33,7 +33,7 @@ if (__ENABLED_DEV__) {
 
 export default function App() {
     // Optimize Screens
-    enableScreens();
+    //enableScreens();
 
     // States
     const [fontLoaded, setFontLoaded] = useState(false);
