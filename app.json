@@ -24,7 +24,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "de.dreamgamer.vocabeltasks"
+      "package": "de.dreamgamer.VocabelTasks"
     },
     "web": {
       "favicon": "./assets/favicon.png"
