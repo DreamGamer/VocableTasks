@@ -12,6 +12,7 @@ import ReduxThunk from "redux-thunk";
 import { composeWithDevTools } from "redux-devtools-extension";
 import { Provider } from "react-redux";
 import { initLanguage } from "./i18n/translation";
+import Bugsnag from "@bugsnag/react-native";
 
 const TAG = "[App.js]: "; // Console Log Tag
 
@@ -41,6 +42,7 @@ export default function App() {
     // Function to load Fonts
     const fetchFonts = async () => {
         await initLanguage();
+        Bugsnag.start();
         return Font.loadAsync({
             "ms-new-tai-lue": require("./assets/fonts/microsoft-new-tai-lue-regular.ttf"),
             "ms-new-tai-lue-bold": require("./assets/fonts/microsoft-new-tai-lue-bold.ttf"),

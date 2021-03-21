@@ -84,6 +84,7 @@ project.ext.react = [
 apply from: '../../node_modules/react-native-unimodules/gradle.groovy'
 apply from: "../../node_modules/react-native/react.gradle"
 apply from: "../../node_modules/expo-updates/scripts/create-manifest-android.gradle"
+apply plugin: "com.bugsnag.android.gradle"
 
 /**
  * Set this to true to create two separate APKs instead of one:
@@ -122,9 +123,9 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  */
 def enableHermes = project.ext.react.get("enableHermes", false);
 
-def keystorePropertiesFile = rootProject.file("../environments/keystore.properties");
-def keystoreProperties = new Properties()
-keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+def environmentsPropertiesFile = rootProject.file("../environments/env.properties");
+def propertiesFile = new Properties();
+propertiesFile.load(new FileInputStream(environmentsPropertiesFile));
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -140,6 +141,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0.0"
+        manifestPlaceholders = [BugsnagAPI_KEY: propertiesFile["BugsnagAPI_KEY"]]
     }
     splits {
         abi {
@@ -157,10 +159,10 @@ android {
             keyPassword 'android'
         }
         release {
-            storeFile file(keystoreProperties["MYAPP_UPLOAD_STORE_FILE"])
-            storePassword keystoreProperties["MYAPP_UPLOAD_STORE_PASSWORD"]
-            keyAlias keystoreProperties["MYAPP_UPLOAD_KEY_ALIAS"]
-            keyPassword keystoreProperties["MYAPP_UPLOAD_KEY_PASSWORD"]
+            storeFile file(propertiesFile["MYAPP_UPLOAD_STORE_FILE"])
+            storePassword propertiesFile["MYAPP_UPLOAD_STORE_PASSWORD"]
+            keyAlias propertiesFile["MYAPP_UPLOAD_KEY_ALIAS"]
+            keyPassword propertiesFile["MYAPP_UPLOAD_KEY_PASSWORD"]
         }
     }
     buildTypes {

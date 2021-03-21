@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-community/async-storage";
 import { useSelector } from "react-redux";
-import * as environments from "../../environments/Keys";
+import * as environments from "../../environments/env";
 
 const TAG = "[Auth Action]: "; // Console Log Tag
 
