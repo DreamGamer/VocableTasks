@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-community/async-storage";
 import { useSelector } from "react-redux";
-import * as config from "../../constants/config/Keys";
+import * as environments from "../../environments/Keys";
 
 const TAG = "[Auth Action]: "; // Console Log Tag
 
@@ -29,7 +29,7 @@ export const updateToken = () => {
             const refreshToken = await getState().auth.refreshToken;
 
             // REST request to get new idToken, refreshToken and so on
-            const response = await fetch("https://securetoken.googleapis.com/v1/token?key=" + config.FIREBASE_API_KEY, {
+            const response = await fetch("https://securetoken.googleapis.com/v1/token?key=" + environments.FIREBASE_API_KEY, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -86,7 +86,7 @@ export const updateDisplayName = name => {
     return async (dispatch, getState) => {
         await dispatch(updateToken());
         const idToken = await getState().auth.idToken;
-        const response = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:update?key=" + config.FIREBASE_API_KEY, {
+        const response = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:update?key=" + environments.FIREBASE_API_KEY, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -125,7 +125,7 @@ export const updateDisplayName = name => {
 // Looks for user data like displayName or if email is verified
 export const lookupUser = idToken => {
     return async (dispatch, getState) => {
-        const response = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=" + config.FIREBASE_API_KEY, {
+        const response = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=" + environments.FIREBASE_API_KEY, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -169,7 +169,7 @@ export const setTryedAutoLogin = () => {
 export const sendEmail = () => {
     return async (dispatch, getState) => {
         const idToken = await getState().auth.idToken;
-        const response = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=" + config.FIREBASE_API_KEY, {
+        const response = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=" + environments.FIREBASE_API_KEY, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -212,7 +212,7 @@ export const resetPasswordWithEmail = email => {
     return async (dispatch, getState) => {
         try {
             // Send POST request to firebase
-            const response = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=" + config.FIREBASE_API_KEY, {
+            const response = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=" + environments.FIREBASE_API_KEY, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -250,7 +250,7 @@ export const resetPasswordWithEmail = email => {
 
 export const signUp = (email, password) => {
     return async dispatch => {
-        const response = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=" + config.FIREBASE_API_KEY, {
+        const response = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=" + environments.FIREBASE_API_KEY, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -295,7 +295,7 @@ export const signUp = (email, password) => {
 
 export const login = (email, password) => {
     return async dispatch => {
-        const response = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" + config.FIREBASE_API_KEY, {
+        const response = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" + environments.FIREBASE_API_KEY, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
