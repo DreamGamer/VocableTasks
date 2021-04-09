@@ -2,10 +2,11 @@ import React, { useEffect } from "react";
 import { StyleSheet, View, Text, ActivityIndicator } from "react-native";
 import Colors from "../constants/Colors";
 import AsyncStorage from "@react-native-community/async-storage";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import * as authActions from "../store/actions/auth";
+import Bugsnag from "@bugsnag/react-native";
 
-const TAG = "[StartScreen]: "
+const TAG = "[StartScreen]: ";
 
 const StartScreen = props => {
     const dispatch = useDispatch();
@@ -14,7 +15,9 @@ const StartScreen = props => {
         const tryLogin = async () => {
             try {
                 const userData = await AsyncStorage.getItem("userData");
+
                 if (!userData) {
+                    console.info(TAG + "No userData found in storage");
                     dispatch(authActions.setTryedAutoLogin());
                     return;
                 }
@@ -23,7 +26,14 @@ const StartScreen = props => {
                 const { idToken, refreshToken, UID, expireDate, displayName } = transformedData;
 
                 const convertedExpireDate = new Date(expireDate);
-                if (convertedExpireDate <= new Date() || !idToken || !UID || !refreshToken) {
+                if (convertedExpireDate <= new Date() || refreshToken) {
+                    console.info(TAG + "Token expired");
+                    await dispatch(authActions.updateToken());
+
+                    dispatch(authActions.setTryedAutoLogin());
+                    return;
+                } else if (convertedExpireDate <= new Date() || !refreshToken) {
+                    // Logout user if refreshToken missing in userData
                     dispatch(authActions.setTryedAutoLogin());
                     return;
                 }
@@ -33,11 +43,13 @@ const StartScreen = props => {
                 await dispatch(authActions.authenticate(idToken, refreshToken, UID, expirationTime, displayName));
             } catch (error) {
                 try {
-                    console.log(TAG + error);
+                    console.warn(TAG + "Fatal error catched in tryLogin: " + error);
+                    Bugsnag.notify(error);
                     dispatch(authActions.setTryedAutoLogin());
                     dispatch(authActions.logout());
                 } catch (error) {
-                    console.log(TAG + "FATAL ERROR: " + error);
+                    Bugsnag.notify(error);
+                    console.warn(TAG + "CATCHED FATAL ERROR: " + error);
                 }
             }
         };

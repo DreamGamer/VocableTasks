@@ -16,9 +16,9 @@ const setLanguage = async language => {
         await AsyncStorage.setItem(APP_LANGUAGE, language);
 
         // Log sucessfully
-        console.log(TAG + "Sucessfully set app language to '" + language + "'");
+        console.info(TAG + "Sucessfully set app language to '" + language + "'");
     } catch (error) {
-        console.log(TAG + "setLanguage - " +  error);
+        console.warn(TAG + "Catched error while setting up language: " +  error);
     }
 };
 

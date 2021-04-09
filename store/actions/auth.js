@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-community/async-storage";
 import { useSelector } from "react-redux";
 import * as environments from "../../environments/env";
+import Bugsnag from "@bugsnag/react-native";
 
 const TAG = "[Auth Action]: "; // Console Log Tag
 
@@ -15,9 +16,13 @@ let logoutTimer;
 // Authenticate User in App
 export const authenticate = (idToken, refreshToken, UID, expirationTime) => {
     return async dispatch => {
-        // await dispatch(setLogoutTimer(expirationTime));
-        await dispatch(lookupUser(idToken));
-        dispatch({ type: AUTHENTICATE, idToken: idToken, refreshToken: refreshToken, UID: UID });
+        try {
+            await dispatch(lookupUser(idToken));
+            dispatch({ type: AUTHENTICATE, idToken: idToken, refreshToken: refreshToken, UID: UID });
+        } catch (error) {
+            console.warn(TAG + "Catched fatal error in authenticate: " + error);
+            Bugsnag.notify(error);
+        }
     };
 };
 
@@ -25,8 +30,14 @@ export const authenticate = (idToken, refreshToken, UID, expirationTime) => {
 export const updateToken = () => {
     return async (dispatch, getState) => {
         try {
-            // Get current refreshToken
-            const refreshToken = await getState().auth.refreshToken;
+            let refreshToken;
+            // Get refreshToken from memory
+            refreshToken = await getState().auth.refreshToken;
+
+            // Check if no refreshToken found in memory
+            if (!refreshToken) {
+                refreshToken = await getRefreshTokenFromStorage();
+            }
 
             // REST request to get new idToken, refreshToken and so on
             const response = await fetch("https://securetoken.googleapis.com/v1/token?key=" + environments.FIREBASE_API_KEY, {
@@ -47,7 +58,7 @@ export const updateToken = () => {
 
                 let errorMessage = "Something went wrong while getToken! " + JSON.stringify(errorResponseData);
                 if (errorCode === "TOKEN_EXPIRED") {
-                    errorMessage = "Please login again.";
+                    errorMessage = "Token expired please login again.";
                 } else if (errorCode === "USER_DISABLED") {
                     errorMessage = "Your Account is disabled, please contact support!.";
                 } else if (errorCode === "USER_NOT_FOUND") {
@@ -60,6 +71,7 @@ export const updateToken = () => {
                 } else if (errorCode === "MISSING_REFRESH_TOKEN") {
                     errorMessage = "Missing refresh token. Please login again or contact support!.";
                 }
+                Bugsnag.notify(new Error(errorMessage));
                 console.log(TAG + "UpdateToken -> " + errorMessage);
                 throw new Error(errorMessage);
             }
@@ -75,7 +87,8 @@ export const updateToken = () => {
 
             await dispatch(authenticate(idToken, newRefreshToken, UID));
         } catch (error) {
-            console.log(TAG + "UpdateToken -> " + error);
+            console.warn(TAG + "Catched fatal error in updateToken: " + error);
+            Bugsnag.notify(error);
             throw error;
         }
     };
@@ -114,6 +127,8 @@ export const updateDisplayName = name => {
 
                 throw new Error(errorMessage);
             } catch (error) {
+                console.warn(TAG + "Catched fatal error in updateDisplayName: " + error);
+                Bugsnag.notify(error);
                 throw error;
             }
         }
@@ -125,40 +140,47 @@ export const updateDisplayName = name => {
 // Looks for user data like displayName or if email is verified
 export const lookupUser = idToken => {
     return async (dispatch, getState) => {
-        const response = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=" + environments.FIREBASE_API_KEY, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                idToken: idToken,
-            }),
-        });
+        try {
+            const response = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=" + environments.FIREBASE_API_KEY, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    idToken: idToken,
+                }),
+            });
 
-        if (!response.ok) {
-            try {
-                const errorResponseData = await response.json();
-                const errorCode = errorResponseData.error.message;
+            if (!response.ok) {
+                try {
+                    const errorResponseData = await response.json();
+                    const errorCode = errorResponseData.error.message;
 
-                let errorMessage = "Something went wrong while Sign Up! " + JSON.stringify(errorResponseData.error.message);
-                if (errorCode === "INVALID_ID_TOKEN") {
-                    errorMessage = "Please login egain.";
-                } else if (errorCode === "USER_NOT_FOUND") {
-                    errorMessage = "User not found.";
+                    let errorMessage = "Something went wrong while Sign Up! " + JSON.stringify(errorResponseData.error.message);
+                    if (errorCode === "INVALID_ID_TOKEN") {
+                        errorMessage = "Please login egain.";
+                    } else if (errorCode === "USER_NOT_FOUND") {
+                        errorMessage = "User not found.";
+                    }
+
+                    throw new Error(errorMessage);
+                } catch (error) {
+                    Bugsnag.notify(error);
+                    throw error;
                 }
-
-                throw new Error(errorMessage);
-            } catch (error) {
-                throw error;
             }
+
+            const responseData = await response.json();
+            const displayName = responseData.users[0].displayName ? responseData.users[0].displayName : null;
+            const isEmailVerified = responseData.users[0].emailVerified;
+            const email = responseData.users[0].email;
+
+            dispatch({ type: LOOKUPUSERDATA, displayName: displayName, isEmailVerified: isEmailVerified, email: email });
+        } catch (error) {
+            console.warn(TAG + "Catched fatal error in lookupUser: " + error);
+            Bugsnag.notify(error);
+            throw error;
         }
-
-        const responseData = await response.json();
-        const displayName = responseData.users[0].displayName ? responseData.users[0].displayName : null;
-        const isEmailVerified = responseData.users[0].emailVerified;
-        const email = responseData.users[0].email;
-
-        dispatch({ type: LOOKUPUSERDATA, displayName: displayName, isEmailVerified: isEmailVerified, email: email });
     };
 };
 
@@ -197,6 +219,7 @@ export const sendEmail = () => {
 
                 throw new Error(errorMessage);
             } catch (error) {
+                Bugsnag.notify(error);
                 throw error;
             }
         }
@@ -242,7 +265,8 @@ export const resetPasswordWithEmail = email => {
 
             console.log(responseData);
         } catch (error) {
-            console.log(TAG + "Error while reset password with email! " + error);
+            console.warn(TAG + "Catched fatal error in resetPasswordWithEmail: " + error);
+            Bugsnag.notify(error);
             throw error;
         }
     };
@@ -250,95 +274,110 @@ export const resetPasswordWithEmail = email => {
 
 export const signUp = (email, password) => {
     return async dispatch => {
-        const response = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=" + environments.FIREBASE_API_KEY, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                email: email,
-                password: password,
-                returnSecureToken: true,
-            }),
-        });
+        try {
+            const response = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=" + environments.FIREBASE_API_KEY, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password,
+                    returnSecureToken: true,
+                }),
+            });
 
-        if (!response.ok) {
-            try {
-                const errorResponseData = await response.json();
-                console.log(errorResponseData);
-                const errorCode = errorResponseData.error.message;
+            if (!response.ok) {
+                try {
+                    const errorResponseData = await response.json();
+                    console.log(errorResponseData);
+                    const errorCode = errorResponseData.error.message;
 
-                let errorMessage = "Something went wrong while Sign Up!";
-                if (errorCode === "EMAIL_EXISTS") {
-                    errorMessage = "There is already an account with this Email.";
-                } else if (errorCode === "TOO_MANY_ATTEMPTS_TRY_LATER") {
-                    errorMessage = "Too many attempts, try again later.";
-                } else if (errorCode === "OPERATION_NOT_ALLOWED") {
-                    errorMessage = "Sign up not allowed. Please contact Support.";
+                    let errorMessage = "Something went wrong while Sign Up!";
+                    if (errorCode === "EMAIL_EXISTS") {
+                        errorMessage = "There is already an account with this Email.";
+                    } else if (errorCode === "TOO_MANY_ATTEMPTS_TRY_LATER") {
+                        errorMessage = "Too many attempts, try again later.";
+                    } else if (errorCode === "OPERATION_NOT_ALLOWED") {
+                        errorMessage = "Sign up not allowed. Please contact Support.";
+                    }
+
+                    throw new Error(errorMessage);
+                } catch (error) {
+                    Bugsnag.notify(error);
+                    throw error;
                 }
-
-                throw new Error(errorMessage);
-            } catch (error) {
-                throw error;
             }
+
+            const responseData = await response.json();
+
+            await dispatch(authenticate(responseData.idToken, responseData.refreshToken, responseData.localId, parseInt(responseData.expiresIn) * 1000));
+
+            const expireDate = new Date(new Date().getTime() + parseInt(responseData.expiresIn) * 1000);
+
+            saveUserToStorage(responseData.idToken, responseData.refreshToken, responseData.localId, expireDate);
+        } catch (error) {
+            console.warn(TAG + "Catched fatal error in signUp: " + error);
+            Bugsnag.notify(error);
+            throw error;
         }
-
-        const responseData = await response.json();
-
-        await dispatch(authenticate(responseData.idToken, responseData.refreshToken, responseData.localId, parseInt(responseData.expiresIn) * 1000));
-
-        const expireDate = new Date(new Date().getTime() + parseInt(responseData.expiresIn) * 1000);
-
-        saveUserToStorage(responseData.idToken, responseData.refreshToken, responseData.localId, expireDate);
     };
 };
 
 export const login = (email, password) => {
     return async dispatch => {
-        const response = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" + environments.FIREBASE_API_KEY, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                email: email,
-                password: password,
-                returnSecureToken: true,
-            }),
-        });
+        try {
+            const response = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" + environments.FIREBASE_API_KEY, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password,
+                    returnSecureToken: true,
+                }),
+            });
 
-        if (!response.ok) {
-            try {
-                const errorResponseData = await response.json();
-                const errorCode = errorResponseData.error.message;
-                let errorMessage = "Something went wrong while login!";
-                if (errorCode === "EMAIL_NOT_FOUND") {
-                    errorMessage = "No user with this Email found.";
-                } else if (errorCode === "INVALID_PASSWORD") {
-                    errorMessage = "Invalid Password.";
-                } else if (errorCode === "USER_DISABLED") {
-                    errorMessage = "You account is disabled. Please contact Support.";
-                } else if (errorCode === "INVALID_EMAIL") {
-                    errorMessage = "No valid Email entered.";
-                } else if (errorCode === "MISSING_EMAIL") {
-                    errorMessage = "No Email entered.";
-                } else if (errorCode === "MISSING_PASSWORD") {
-                    errorMessage = "No Password entered.";
+            if (!response.ok) {
+                try {
+                    const errorResponseData = await response.json();
+                    const errorCode = errorResponseData.error.message;
+                    let errorMessage = "Something went wrong while login!";
+                    if (errorCode === "EMAIL_NOT_FOUND") {
+                        errorMessage = "No user with this Email found.";
+                    } else if (errorCode === "INVALID_PASSWORD") {
+                        errorMessage = "Invalid Password.";
+                    } else if (errorCode === "USER_DISABLED") {
+                        errorMessage = "You account is disabled. Please contact Support.";
+                    } else if (errorCode === "INVALID_EMAIL") {
+                        errorMessage = "No valid Email entered.";
+                    } else if (errorCode === "MISSING_EMAIL") {
+                        errorMessage = "No Email entered.";
+                    } else if (errorCode === "MISSING_PASSWORD") {
+                        errorMessage = "No Password entered.";
+                    }
+
+                    throw new Error(errorMessage);
+                } catch (error) {
+                    Bugsnag.notify(error);
+                    throw error;
                 }
-
-                throw new Error(errorMessage);
-            } catch (error) {
-                throw error;
             }
+
+            const responseData = await response.json();
+
+            const expireDate = new Date(new Date().getTime() + parseInt(responseData.expiresIn) * 1000);
+            const time = parseInt(responseData.expiresIn) * 1000;
+
+            saveUserToStorage(responseData.idToken, responseData.refreshToken, responseData.localId, expireDate);
+
+            await dispatch(authenticate(responseData.idToken, responseData.refreshToken, responseData.localId, parseInt(responseData.expiresIn) * 1000));
+        } catch (error) {
+            console.warn(TAG + "Catched fatal error in signUp: " + error);
+            Bugsnag.notify(error);
+            throw error;
         }
-
-        const responseData = await response.json();
-
-        await dispatch(authenticate(responseData.idToken, responseData.refreshToken, responseData.localId, parseInt(responseData.expiresIn) * 1000));
-
-        const expireDate = new Date(new Date().getTime() + parseInt(responseData.expiresIn) * 1000);
-
-        saveUserToStorage(responseData.idToken, responseData.refreshToken, responseData.localId, expireDate);
     };
 };
 
@@ -353,6 +392,8 @@ export const logout = () => {
             // Dispatch to logout user
             dispatch({ type: LOGOUT });
         } catch (error) {
+            console.warn(TAG + "Catched fatal error in logout: " + error);
+            Bugsnag.notify(error);
             throw error;
         }
     };
@@ -386,7 +427,22 @@ const saveUserToStorage = (idToken, refreshToken, UID, expireDate, displayName) 
         );
         console.log(TAG + "Sucessfully saved user");
     } catch (error) {
-        console.log(error);
+        console.warn(TAG + "Catched fatal error in saveUserToStorage: " + error);
+        Bugsnag.notify(error);
+        throw error;
+    }
+};
+
+const getRefreshTokenFromStorage = async () => {
+    try {
+        const userData = await AsyncStorage.getItem("userData");
+        const transformedUserData = JSON.parse(userData);
+        const refreshToken = transformedUserData.refreshToken;
+
+        return refreshToken;
+    } catch (error) {
+        console.warn(TAG + "Catched fatal error in getRefreshTokenFromStorage: " + error);
+        Bugsnag.notify(error);
         throw error;
     }
 };

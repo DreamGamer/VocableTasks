@@ -26,7 +26,7 @@ const rootReducer = combineReducers({
 let store;
 
 if (__ENABLED_DEV__) {
-    console.log(TAG + "Developer mode enabled");
+    console.info(TAG + "Developer mode enabled");
     store = createStore(rootReducer, composeWithDevTools(applyMiddleware(ReduxThunk)));
 } else {
     store = createStore(rootReducer, applyMiddleware(ReduxThunk));

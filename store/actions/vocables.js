@@ -23,6 +23,7 @@ export const fetchVocables = () => {
             if (!response.ok) {
                 const errorResponseData = await response.json();
                 console.log(TAG + "Error while fetching vocables " + JSON.stringify(errorResponseData));
+                Bugsnag.notify(new Error(JSON.stringify(errorResponseData)));
                 throw new Error("Something went wrong while fetching Vocables!");
             }
 
@@ -32,13 +33,15 @@ export const fetchVocables = () => {
             for (const key in responseData) {
                 loadedVocables.push(new Vocable(key, responseData[key].wordENG, responseData[key].wordDE, responseData[key].known));
             }
-            console.log(TAG + "Successfully loaded vocables.")
+            console.log(TAG + "Successfully loaded vocables.");
 
             dispatch({
                 type: SET_VOCABLES,
                 vocables: loadedVocables,
             });
         } catch (error) {
+            console.warn(TAG + "Catched fatal error in fetchVocables: " + error);
+            Bugsnag.notify(error);
             throw error;
         }
     };
@@ -64,6 +67,8 @@ export const deleteVocable = id => {
                 id: id,
             });
         } catch (error) {
+            console.warn(TAG + "Catched fatal error in deleteVocable: " + error);
+            Bugsnag.notify(error);
             throw error;
         }
     };
@@ -105,6 +110,8 @@ export const addVocable = (wordENG, wordDE, known) => {
                 },
             });
         } catch (error) {
+            console.warn(TAG + "Catched fatal error in addVocable: " + error);
+            Bugsnag.notify(error);
             throw error;
         }
     };
@@ -140,6 +147,8 @@ export const updateVocable = (id, wordENG, wordDE) => {
                 wordDE: wordDE,
             });
         } catch (error) {
+            console.warn(TAG + "Catched fatal error in updateVocable: " + error);
+            Bugsnag.notify(error);
             throw error;
         }
     };
