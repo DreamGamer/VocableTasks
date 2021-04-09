@@ -144,3 +144,4 @@ buck-out/
 *.jsbundle
 
 environments/
+*.hprof
