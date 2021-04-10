@@ -136,7 +136,7 @@ android {
     }
 
     defaultConfig {
-        applicationId 'de.dreamgamer.VocabelTasks'
+        applicationId 'de.dreamgamer.vocabeltasks'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
