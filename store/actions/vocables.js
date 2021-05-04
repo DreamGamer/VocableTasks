@@ -1,4 +1,5 @@
 import Vocable from "../../models/Vocable";
+import firestore from "@react-native-firebase/firestore";
 
 const TAG = "[Vocables Action]: ";
 
@@ -80,14 +81,20 @@ export const addVocable = (wordENG, wordDE, known) => {
             const token = getState().auth.idToken;
             const UID = getState().auth.UID;
 
+            const englishVocableLowerCase = wordENG.toLowerCase();
+            const germanVocableLowerCase = wordDE.toLowerCase();
+
+            const engVocableFirstLetter = englishVocableLowerCase.charAt(0).toUpperCase() + englishVocableLowerCase.slice(1);
+            const germanVocableFirstLetter = germanVocableLowerCase.charAt(0).toUpperCase() + germanVocableLowerCase.slice(1);
+
             const response = await fetch("https://vocabeltasks.firebaseio.com/vocables/" + UID + ".json?auth=" + token, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    wordENG: wordENG,
-                    wordDE: wordDE,
+                    wordENG: engVocableFirstLetter,
+                    wordDE: germanVocableFirstLetter,
                     known: known,
                 }),
             });
@@ -99,6 +106,41 @@ export const addVocable = (wordENG, wordDE, known) => {
             }
 
             const responseData = await response.json();
+
+            const currentTime = firestore.Timestamp.now().toDate();
+
+            const vocableFirestoreDatabase = firestore().collection("vocables").doc(englishVocableLowerCase);
+
+            // Upload the vocables to Firestore and update timesSearched
+            // and list the word in database to find it easier
+            await vocableFirestoreDatabase
+                .get()
+                .then(data => {
+                    if (data.exists) {
+                        vocableFirestoreDatabase
+                            .update({ timesSearched: firestore.FieldValue.increment(1), lastUpdate: currentTime })
+                            .then(() => {
+                                console.log(TAG + `Successfully updated timesSearched for Vocable en: '${engVocableFirstLetter}'`);
+                            })
+                            .catch(error => {
+                                console.log(TAG + "Catched Error: " + error);
+                                Bugsnag.notify(error);
+                            });
+                    } else {
+                        vocableFirestoreDatabase
+                            .set({ timesSearched: firestore.FieldValue.increment(1), english: engVocableFirstLetter, german: germanVocableFirstLetter, firstAdd: currentTime })
+                            .then(() => {
+                                console.log(TAG + `Successfully uploaded Vocable en: '${engVocableFirstLetter}' | de: '${germanVocableFirstLetter}'`);
+                            })
+                            .catch(error => {
+                                console.log(TAG + "Catched Error: " + error);
+                                Bugsnag.notify(error);
+                            });
+                    }
+                })
+                .catch(error => {
+                    console.log("Error: " + error);
+                });
 
             dispatch({
                 type: ADD_VOCABLE,

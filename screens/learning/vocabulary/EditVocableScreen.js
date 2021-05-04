@@ -51,7 +51,7 @@ const EditVocableScreen = (props) => {
           {(formikProps) => (
             <View>
               <Label title="English:" />
-              <TextInput
+              <Input
                 onBlur={formikProps.handleBlur("wordENG")}
                 placeholder="Enter the english Word"
                 onChangeText={formikProps.handleChange("wordENG")}
@@ -61,7 +61,7 @@ const EditVocableScreen = (props) => {
               <Text style={GlobalStyles.errorText}>{formikProps.touched.wordENG && formikProps.errors.wordENG}</Text>
 
               <Label title="German:" />
-              <TextInput
+              <Input
                 onBlur={formikProps.handleBlur("wordDE")}
                 placeholder="Enter the german Word"
                 onChangeText={formikProps.handleChange("wordDE")}
