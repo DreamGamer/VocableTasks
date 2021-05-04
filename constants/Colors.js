@@ -6,7 +6,7 @@ export default {
     danger: "#dc3545",
     warning: "#ffc107",
     info: "#2296F3",
-    light: "#f8f9fa",
+    light: "#f2f2f2",
     dark: "#343a40",
     linkBlue: "#007bff",
     link: "#28d8a1",
@@ -21,4 +21,5 @@ export default {
     ActivityIndicatorDark: "#1b1b1b",
     ActivityIndicatorWhite: "#ffffff",
     black: "#000",
+    white: "#fff"
 }

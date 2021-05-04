@@ -19,4 +19,12 @@ export default {
     signUp: "Registrieren",
     alreadySignedUp: "Bereits registriert?",
     loginHere: "Hier einloggen",
+    wordENGMustBeAString: "Das englische Wort muss eine Zeichenkette sein",
+    wordENGIsRequired: "Das englische Wort ist ein Pflichtfeld",
+    wordDEMustBeAString: "Das deutsche Wort muss eine Zeichenkette sein",
+    wordDEIsRequired: "Das deutsche Wort ist ein Pflichtfeld",
+    english: "Englisch",
+    german: "Deutsch",
+    enterTheEnglishWord: "Trage das englische Wort ein",
+    enterTheGermanWord: "Trage das deutsche Wort ein",
 };

@@ -15,15 +15,15 @@ import { useDispatch } from "react-redux";
 // Import Translation function
 import I18n from "../../i18n/translation";
 
-const yupSchema = yup.object({
-    Email: yup.string(I18n.t("emailMustBeAString")).email(I18n.t("emailMustBeAValidEmail")).required(I18n.t("emailIsRequired")).min(5),
-    Password: yup.string(I18n.t("passwordMustBeAString")).required(I18n.t("passwordIsRequired")),
-});
-
 const LoginScreen = props => {
     // States
     const [isLoading, setIsLoading] = useState(false);
     const [hasError, setHasError] = useState(null);
+
+    const yupSchema = yup.object({
+        Email: yup.string(I18n.t("emailMustBeAString")).email(I18n.t("emailMustBeAValidEmail")).required(I18n.t("emailIsRequired")).min(5),
+        Password: yup.string(I18n.t("passwordMustBeAString")).required(I18n.t("passwordIsRequired")),
+    });
 
     // Redux Dispatch
     const dispatch = useDispatch();
@@ -37,7 +37,7 @@ const LoginScreen = props => {
     }, [hasError]);
 
     return (
-        <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" : "height"} style={GlobalStyles.flex1}>
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={GlobalStyles.flex1}>
             <LinearGradient colors={[Colors.backgroundTop, Colors.backgroundBottom]} style={styles.gradient}>
                 <ScrollView contentContainerStyle={styles.scrollViewCentered}>
                     <View style={styles.container}>
@@ -65,13 +65,12 @@ const LoginScreen = props => {
                             {formikProps => (
                                 <View>
                                     <Label title={I18n.t("labelEmail") + ":"} style={styles.label} />
-                                    <TextInput
-                                        style={{ ...GlobalStyles.input, ...(isLoading ? GlobalStyles.inputDisabled : null) }}
+                                    <Input
                                         placeholder={I18n.t("labelEmail")}
                                         onBlur={formikProps.handleBlur("Email")}
                                         onChangeText={formikProps.handleChange("Email")}
                                         value={formikProps.values.Email}
-                                        editable={isLoading ? false : true}
+                                        editable={!isLoading}
                                         keyboardType="email-address"
                                         autoCapitalize="none"
                                         returnKeyType="next"
@@ -83,18 +82,17 @@ const LoginScreen = props => {
                                     {formikProps.errors.Email && formikProps.touched.Email ? <Text style={GlobalStyles.errorText}>{formikProps.touched.Email && formikProps.errors.Email}</Text> : null}
 
                                     <Label title={I18n.t("labelPassword") + ":"} style={styles.label} />
-                                    <TextInput
-                                        style={{ ...GlobalStyles.input, ...(isLoading ? GlobalStyles.inputDisabled : null) }}
+                                    <Input
                                         placeholder={I18n.t("labelPassword")}
                                         onBlur={formikProps.handleBlur("Password")}
                                         onChangeText={formikProps.handleChange("Password")}
                                         value={formikProps.values.Password}
-                                        editable={isLoading ? false : true}
+                                        editable={!isLoading}
                                         keyboardType="default"
                                         secureTextEntry
                                         autoCapitalize="none"
                                         returnKeyType="done"
-                                        blurOnSubmit={false}
+                                        blurOnSubmit={true}
                                         ref={passwordInput}
                                         onSubmitEditing={formikProps.handleSubmit}
                                     />

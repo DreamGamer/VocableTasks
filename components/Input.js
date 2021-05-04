@@ -1,11 +1,10 @@
-import React, { useRef } from "react";
+import React, { forwardRef, useRef } from "react";
 import { StyleSheet, View, TextInput, Text } from "react-native";
 import Colors from "../constants/Colors";
 
-const Input = props => {
-    return <Text>PLEASE UPDATE INPUT</Text>
-    //<TextInput {...props} style={{ ...styles.input, ...(props.editable ? null : styles.inputDisabled) }} />;
-};
+const Input = forwardRef((props, ref) => {
+    return <TextInput {...props} style={{ ...styles.input, ...(props.editable ? null : styles.inputDisabled) }} ref={ref} />;
+});
 
 const styles = StyleSheet.create({
     input: {

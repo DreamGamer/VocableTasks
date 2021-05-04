@@ -18,7 +18,10 @@ import I18n from "../../i18n/translation";
 const yupSchema = yup.object({
     Email: yup.string().email().required().min(5),
     Password: yup.string().required().min(6),
-    Confirm_Password: yup.string().required("Confirmed Password is a required field").oneOf([yup.ref('Password'), null], 'Passwords must match'),
+    Confirm_Password: yup
+        .string()
+        .required("Confirmed Password is a required field")
+        .oneOf([yup.ref("Password"), null], "Passwords must match"),
 });
 
 const SignUpScreen = props => {
@@ -33,7 +36,7 @@ const SignUpScreen = props => {
 
     useEffect(() => {
         if (hasError) {
-            Alert.alert("An Error occured!", hasError.message, [{text: "Okay"}]);
+            Alert.alert("An Error occured!", hasError.message, [{ text: "Okay" }]);
         }
     }, [hasError]);
 
@@ -57,7 +60,7 @@ const SignUpScreen = props => {
                                 setHasError("");
                                 try {
                                     if (values.Password == values.Confirm_Password) {
-                                        await dispatch(authActions.signUp(values.Email, values.Password))
+                                        await dispatch(authActions.signUp(values.Email, values.Password));
                                         setIsLoading(false);
                                     } else {
                                         throw new Error("Passwords don't match!");
@@ -70,8 +73,7 @@ const SignUpScreen = props => {
                             {formikProps => (
                                 <View>
                                     <Label title={I18n.t("labelEmail") + ":"} style={styles.label} />
-                                    <TextInput
-                                        style={{ ...GlobalStyles.input, ...(isLoading ? GlobalStyles.inputDisabled : null) }}
+                                    <Input
                                         placeholder={I18n.t("labelEmail")}
                                         onBlur={formikProps.handleBlur("Email")}
                                         onChangeText={formikProps.handleChange("Email")}
@@ -88,8 +90,7 @@ const SignUpScreen = props => {
                                     {formikProps.errors.Email && formikProps.touched.Email ? <Text style={GlobalStyles.errorText}>{formikProps.touched.Email && formikProps.errors.Email}</Text> : null}
 
                                     <Label title={I18n.t("labelPassword") + ":"} style={styles.label} />
-                                    <TextInput
-                                        style={{ ...GlobalStyles.input, ...(isLoading ? GlobalStyles.inputDisabled : null) }}
+                                    <Input
                                         placeholder={I18n.t("labelPassword")}
                                         onBlur={formikProps.handleBlur("Password")}
                                         onChangeText={formikProps.handleChange("Password")}
@@ -122,7 +123,9 @@ const SignUpScreen = props => {
                                         ref={confirmPasswordInput}
                                         onSubmitEditing={formikProps.handleSubmit}
                                     />
-                                    {formikProps.errors.Confirm_Password && formikProps.touched.Confirm_Password ? <Text style={GlobalStyles.errorText}>{formikProps.touched.Confirm_Password && formikProps.errors.Confirm_Password}</Text> : null}
+                                    {formikProps.errors.Confirm_Password && formikProps.touched.Confirm_Password ? (
+                                        <Text style={GlobalStyles.errorText}>{formikProps.touched.Confirm_Password && formikProps.errors.Confirm_Password}</Text>
+                                    ) : null}
 
                                     {isLoading ? (
                                         <ActivityIndicator size="small" color={Colors.ActivityIndicatorWhite} />

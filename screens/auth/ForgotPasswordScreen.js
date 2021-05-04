@@ -4,6 +4,7 @@ import { Formik } from "formik";
 import { StyleSheet, View, Text, KeyboardAvoidingView, Dimensions, ScrollView, Button, ActivityIndicator, Alert } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import Label from "../../components/Label";
+import Input from "../../components/Input";
 import Colors from "../../constants/Colors";
 import GlobalStyles from "../../constants/GlobalStyles";
 import * as yup from "yup";
@@ -14,16 +15,16 @@ import TimerMixin from "react-timer-mixin";
 // Import Translation function
 import I18n from "../../i18n/translation";
 
-const yupSchema = yup.object({
-    email: yup.string(I18n.t("emailMustBeAString")).email(I18n.t("emailMustBeAValidEmail")).required(I18n.t("emailIsRequired")).min(5),
-});
-
 const ForgotPasswordScreen = props => {
     // States
     const [isLoading, setIsLoading] = useState(false);
     const [hasError, setHasError] = useState(null);
     const [emailSended, setEmailSended] = useState(false);
     const [waitTimer, setWaitTimer] = useState(0);
+
+    const yupSchema = yup.object({
+        email: yup.string(I18n.t("emailMustBeAString")).email(I18n.t("emailMustBeAValidEmail")).required(I18n.t("emailIsRequired")).min(5),
+    });
 
     // Redux Dispatch
     const dispatch = useDispatch();
@@ -82,8 +83,7 @@ const ForgotPasswordScreen = props => {
                             {formikProps => (
                                 <View>
                                     <Label title={I18n.t("labelEmail") + ":"} style={styles.label} />
-                                    <TextInput
-                                        style={{ ...GlobalStyles.input, ...(isLoading || emailSended ? GlobalStyles.inputDisabled : null) }}
+                                    <Input
                                         placeholder={I18n.t("labelEmail")}
                                         onBlur={formikProps.handleBlur("email")}
                                         onChangeText={formikProps.handleChange("email")}
@@ -98,7 +98,9 @@ const ForgotPasswordScreen = props => {
 
                                     {emailSended ? (
                                         <View>
-                                            <Text style={styles.timer}>{I18n.t("pleaseWait")} {waitTimer} {I18n.t("seconds")}.</Text>
+                                            <Text style={styles.timer}>
+                                                {I18n.t("pleaseWait")} {waitTimer} {I18n.t("seconds")}.
+                                            </Text>
                                         </View>
                                     ) : isLoading ? (
                                         <ActivityIndicator size="small" color={Colors.ActivityIndicatorWhite} />

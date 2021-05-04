@@ -19,5 +19,12 @@ export default {
     signUp: "Sign up",
     alreadySignedUp: "Already signed up?",
     loginHere: "Login here",
-
+    wordENGMustBeAString: "English word must be a string",
+    wordENGIsRequired: "English word is required",
+    wordDEMustBeAString: "German word must be a string",
+    wordDEIsRequired: "German word is required",
+    english: "English",
+    german: "German",
+    enterTheEnglishWord: "Enter the english word",
+    enterTheGermanWord: "Enter the german word",
 };
