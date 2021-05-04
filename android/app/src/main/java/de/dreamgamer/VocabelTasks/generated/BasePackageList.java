@@ -1,4 +1,4 @@
-package de.dreamgamer.vocabeltasks.generated;
+package de.dreamgamer.vocabletasks.generated;
 
 import java.util.Arrays;
 import java.util.List;

@@ -1,4 +1,4 @@
-package de.dreamgamer.vocabeltasks;
+package de.dreamgamer.vocabletasks;
 
 import android.app.Application;
 import android.content.Context;
@@ -12,7 +12,7 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
-import de.dreamgamer.vocabeltasks.generated.BasePackageList;
+import de.dreamgamer.vocabletasks.generated.BasePackageList;
 
 import org.unimodules.adapters.react.ReactAdapterPackage;
 import org.unimodules.adapters.react.ModuleRegistryAdapter;
@@ -29,6 +29,8 @@ import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
 
+
+
 public class MainApplication extends Application implements ReactApplication {
   private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(
     new BasePackageList().getPackageList()
@@ -40,12 +42,14 @@ public class MainApplication extends Application implements ReactApplication {
       return BuildConfig.DEBUG;
     }
 
+
     @Override
     protected List<ReactPackage> getPackages() {
       List<ReactPackage> packages = new PackageList(this).getPackages();
       packages.add(new ModuleRegistryAdapter(mModuleRegistryProvider));
       return packages;
     }
+    
 
     @Override
     protected String getJSMainModuleName() {
@@ -104,7 +108,7 @@ public class MainApplication extends Application implements ReactApplication {
          We use reflection here to pick up the class that initializes Flipper,
         since Flipper library is not available in release mode
         */
-        Class<?> aClass = Class.forName("de.dreamgamer.vocabeltasks.ReactNativeFlipper");
+        Class<?> aClass = Class.forName("de.dreamgamer.vocabletasks.ReactNativeFlipper");
         aClass
             .getMethod("initializeFlipper", Context.class, ReactInstanceManager.class)
             .invoke(null, context, reactInstanceManager);

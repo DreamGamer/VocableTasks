@@ -1,4 +1,4 @@
-package de.dreamgamer.vocabeltasks;
+package de.dreamgamer.vocabletasks;
 
 import android.os.Bundle;
 
