@@ -58,7 +58,7 @@ const DisplayNameScreen = props => {
                                 setHasError("");
 
                                 try {
-                                    await dispatch(authActions.updateDisplayName(values.name));
+                                    await dispatch(authActions.changeDisplayName(values.name));
                                     setIsLoading(false);
                                 } catch (error) {
                                     setIsLoading(false);

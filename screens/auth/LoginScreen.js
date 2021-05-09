@@ -10,7 +10,7 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import GlobalStyles from "../../constants/GlobalStyles";
 import * as authActions from "../../store/actions/auth";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 // Import Translation function
 import I18n from "../../i18n/translation";
@@ -31,9 +31,14 @@ const LoginScreen = props => {
     const passwordInput = useRef();
 
     useEffect(() => {
-        if (hasError) {
-            Alert.alert("An error occured!", hasError.message, [{ text: "Okay" }]);
+        let isMounted = true;
+        if (hasError && isMounted) {
+            console.log("SOLLLLLLL")
+            Alert.alert("An error occured!", hasError, [{ text: "Okay" }]);
         }
+        return () => {
+            isMounted = false;
+        };
     }, [hasError]);
 
     return (

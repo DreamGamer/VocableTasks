@@ -17,6 +17,7 @@ const VocabularysScreen = props => {
     const [isLoading, setIsLoading] = useState(false);
     const [hasError, setHasError] = useState("");
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const idToken = useSelector(state => state.auth.idToken);
 
     // Get Vocables
     const vocables = useSelector(state => state.vocables.vocables).sort(function (a, b) {
@@ -28,6 +29,37 @@ const VocabularysScreen = props => {
         }
         return 0;
     });
+
+    /*
+    const addHandler = async () => {
+        const response = await fetch(`https://firestore.googleapis.com/v1/projects/vocabeltasks/databases/(default)/documents:commit`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${idToken}`,
+                
+            },
+            body: {
+                writes: [
+                    {
+                        transform: {
+                            document: `projects/vocabeltasks/databases/(default)/documents/vocables/hacker`,
+                            fieldTransforms: [
+                                {
+                                    fieldPath: "timesSearched",
+                                    increment: {
+                                        integerValue: 1,
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        });
+        const responseData = await response.json();
+        console.log(responseData);
+    };
+    */
 
     // Redux Dispatch
     const dispatch = useDispatch();
@@ -46,10 +78,17 @@ const VocabularysScreen = props => {
     }, [setHasError, setIsRefreshing, setIsLoading, dispatch]);
 
     useEffect(() => {
-        setIsLoading(true);
-        loadVocables().then(() => {
-            setIsLoading(false);
-        });
+        let isMounted = true;
+        if (isMounted) {
+            setIsLoading(true);
+            loadVocables().then(() => {
+                setIsLoading(false);
+            });
+        }
+
+        return () => {
+            isMounted = false;
+        };
     }, [dispatch, loadVocables]);
 
     useEffect(() => {

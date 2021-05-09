@@ -27,4 +27,20 @@ export default {
     german: "German",
     enterTheEnglishWord: "Enter the english word",
     enterTheGermanWord: "Enter the german word",
+
+    // Error's
+    somethingWentWrong: "Ups... Something went wrong!",
+    authEmailAlreadyInUse: "Email already in use.",
+    authInvalidEmail: "Invalid email.",
+    authOperationNotAllowed: "Operation not allowed, please contact support!",
+    authWeakPassword: "Your password is too weak.",
+    authUserDisabled: "Your Account got disabled. Please contact support!",
+    authUserNotFound: "User not found.",
+    authWrongPassword: "Wrong password.",
+    authMissingAndroidPKGName: "Missing android package name. Please contact support!",
+    authMissingContinueURL: "Missing continue url. Please contact support!",
+    authMissingIOSBundleID: "Missing ios bundle id. Please contact support!",
+    authInvalidContinueURL: "Invalid continue url. Please contact support!",
+    authUnauthorizedContinueURL: "Unauthorized continue url. Please contact support!",
+    authTooManyRequests: "Too many attempts, try again later!"
 };

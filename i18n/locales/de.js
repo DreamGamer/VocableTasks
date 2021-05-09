@@ -27,4 +27,21 @@ export default {
     german: "Deutsch",
     enterTheEnglishWord: "Trage das englische Wort ein",
     enterTheGermanWord: "Trage das deutsche Wort ein",
+
+
+    // Error's
+    somethingWentWrong: "Ups... Etwas ist schiefgelaufen!",
+    authEmailAlreadyInUse: "Email bereits in benutzung.",
+    authInvalidEmail: "Ung\u00fcltige Email Adresse.",
+    authOperationNotAllowed: "Operation nicht erlaubt. Bitte kontaktiere den Support!",
+    authWeakPassword: "Dein Passwort ist zu schwach.",
+    authUserDisabled: "Dein Account wurde deaktiviert. Bitte kontaktiere den Support!",
+    authUserNotFound: "Nutzer nicht gefunden.",
+    authWrongPassword: "Falsches Passwort.",
+    authMissingAndroidPKGName: "Fehlender Android Package Name. Bitte kontaktiere den Support!",
+    authMissingContinueURL: "Fehlende weiterleitungs URL. Bitte kontaktiere den Support!",
+    authMissingIOSBundleID: "Missing ios bundle id. Please contact support! Fehlende IOS Bundle ID. Bitte kontaktiere den Support!",
+    authInvalidContinueURL: "Ungültige weiterleitungs URL. Bitte kontaktiere den Support!",
+    authUnauthorizedContinueURL: "Unberechtigte weiterleitungs URL. Bitte kontaktiere den Support",
+    authTooManyRequests: "Zu viele versuche, versuche es später erneut!",
 };

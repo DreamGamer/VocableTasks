@@ -36,7 +36,7 @@ const SignUpScreen = props => {
 
     useEffect(() => {
         if (hasError) {
-            Alert.alert("An Error occured!", hasError.message, [{ text: "Okay" }]);
+            Alert.alert("An Error occured!", hasError, [{ text: "Okay" }]);
         }
     }, [hasError]);
 
@@ -60,8 +60,9 @@ const SignUpScreen = props => {
                                 setHasError("");
                                 try {
                                     if (values.Password == values.Confirm_Password) {
-                                        await dispatch(authActions.signUp(values.Email, values.Password));
-                                        setIsLoading(false);
+                                        await dispatch(authActions.signUp(values.Email, values.Password)).then(() => {
+                                            setIsLoading(false);
+                                        });
                                     } else {
                                         throw new Error("Passwords don't match!");
                                     }

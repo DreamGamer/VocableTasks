@@ -1,9 +1,8 @@
 import Vocable from "../../models/Vocable";
 import firestore from "@react-native-firebase/firestore";
+import auth from "@react-native-firebase/auth";
 
 const TAG = "[Vocables Action]: ";
-
-import * as authActions from "./auth";
 
 export const ADD_VOCABLE = "ADD_VOCABLE";
 export const SET_VOCABLES = "SET_VOCABLES";
@@ -13,9 +12,8 @@ export const UPDATE_VOCABLE = "UPDATE_VOCABLE";
 export const fetchVocables = () => {
     return async (dispatch, getState) => {
         try {
-            await dispatch(authActions.updateToken());
-            const idToken = await getState().auth.idToken;
-            const UID = await getState().auth.UID;
+            const idToken = await auth().currentUser.getIdToken(true);
+            const UID = auth().currentUser.uid;
 
             const response = await fetch("https://vocabeltasks.firebaseio.com/vocables/" + UID + ".json?auth=" + idToken, {
                 method: "GET",
