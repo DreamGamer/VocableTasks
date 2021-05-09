@@ -4,7 +4,9 @@ import android.app.Application;
 import android.content.Context;
 import android.net.Uri;
 
+import com.bugsnag.android.BreadcrumbType;
 import com.bugsnag.android.Bugsnag;
+import com.bugsnag.android.Configuration;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
@@ -26,6 +28,7 @@ import expo.modules.updates.UpdatesController;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -83,7 +86,18 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
-    Bugsnag.start(this);
+    Configuration config = Configuration.load(this);
+    config.setEnabledBreadcrumbTypes(new HashSet<BreadcrumbType>() {{
+      add(BreadcrumbType.NAVIGATION);
+      add(BreadcrumbType.REQUEST);
+      add(BreadcrumbType.ERROR);
+      add(BreadcrumbType.LOG);
+      add(BreadcrumbType.USER);
+      add(BreadcrumbType.PROCESS);
+      add(BreadcrumbType.STATE);
+      add(BreadcrumbType.MANUAL);
+    }});
+    Bugsnag.start(this, config);
     SoLoader.init(this, /* native exopackage */ false);
 
     if (!BuildConfig.DEBUG) {
