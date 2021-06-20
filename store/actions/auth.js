@@ -74,6 +74,9 @@ export const resetPasswordWithEmail = email => {
                     case "auth/too-many-requests":
                         return Promise.reject(I18n.t("authTooManyRequests"));
 
+                    case "auth/network-request-failed":
+                        return Promise.reject(I18n.t("authNetworkRequestFailed"));
+
                     default:
                         Bugsnag.notify(error);
                         console.warn(TAG + "Undefined error while resetPasswordWithEmail: " + error.message);
@@ -95,7 +98,7 @@ export const updateUserInfo = user => {
             }
 
             console.info(TAG + `Sucessfully updated user info to displayName: '${displayName}', emailVerified: '${emailVerified}'`);
-            return dispatch({ type: UPDATEUSERINFO, displayName, emailVerified });
+            await dispatch({ type: UPDATEUSERINFO, displayName, emailVerified });
         } catch (error) {
             console.log(TAG + "Catched error in updateUserInfo: " + error);
             Bugsnag.notify(error);
@@ -124,6 +127,12 @@ export const signUp = (email, password) => {
 
                     case "auth/weak-password":
                         return Promise.reject(I18n.t("authWeakPassword"));
+
+                    case "auth/too-many-requests":
+                        return Promise.reject(I18n.t("authTooManyRequests"));
+
+                    case "auth/network-request-failed":
+                        return Promise.reject(I18n.t("authNetworkRequestFailed"));
 
                     default:
                         Bugsnag.notify(error);
@@ -156,6 +165,12 @@ export const login = (email, password) => {
                     case "auth/wrong-password":
                         return Promise.reject(I18n.t("authWrongPassword"));
 
+                    case "auth/too-many-requests":
+                        return Promise.reject(I18n.t("authTooManyRequests"));
+
+                    case "auth/network-request-failed":
+                        return Promise.reject(I18n.t("authNetworkRequestFailed"));
+
                     default:
                         Bugsnag.notify(error);
                         console.warn(TAG + "Undefined error while signUp: " + error.message);
@@ -182,8 +197,8 @@ export const logout = () => {
 };
 
 export const deleteUserInfo = () => {
-    return { type: DELETEUSERINFO }
-}
+    return { type: DELETEUSERINFO };
+};
 
 const saveUserToStorage = (idToken, refreshToken, UID, expireDate, displayName) => {
     try {
