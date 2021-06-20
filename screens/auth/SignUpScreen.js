@@ -36,7 +36,7 @@ const SignUpScreen = props => {
 
     useEffect(() => {
         if (hasError) {
-            Alert.alert("An Error occured!", hasError, [{ text: "Okay" }]);
+            Alert.alert(I18n.t("anErrorOccurred"), hasError, [{ text: "Okay" }]);
         }
     }, [hasError]);
 

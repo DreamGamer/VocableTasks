@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { StyleSheet, View, ScrollView, Text, Button, ActivityIndicator, Alert, TextInput, KeyboardAvoidingView } from "react-native";
 import { Formik } from "formik";
 import Input from "../../../components/Input";
@@ -9,9 +9,8 @@ import Colors from "../../../constants/Colors";
 import * as yup from "yup";
 import DefaultValues from "../../../constants/DefaultValues";
 import GlobalStyles from "../../../constants/GlobalStyles";
+import * as environments from "../../../environments/env";
 
-import firestore from "@react-native-firebase/firestore";
-import Bugsnag from "@bugsnag/react-native";
 import algoliasearch from "algoliasearch/lite";
 import { FlatList } from "react-native-gesture-handler";
 import SearchHits from "../../../components/SearchHits";
@@ -33,11 +32,13 @@ const AddVocableScreen = props => {
     const [searchedEnglishWords, setSearchedEnglishWords] = useState({});
     const [searchedGermanWords, setSearchedGermanWords] = useState({});
 
+    const secondInput = useRef();
+
     // Redux dispatch
     const dispatch = useDispatch();
 
     // Basic Variables for AlgoliaSearch
-    const searchClient = algoliasearch("4U9EIYQLBO", "c51b0fe694b15d3608b34d07ad4fd8ab");
+    const searchClient = algoliasearch(environments.algoliaSearchAppID, environments.algoliaSearchApiKey);
     const searchIndex = searchClient.initIndex("VocableTasks");
 
     const searchVocable = async (letters, lang) => {
@@ -51,7 +52,7 @@ const AddVocableScreen = props => {
             case "en":
                 await searchIndex
                     .search(letters, {
-                        hitsPerPage: 5,
+                        hitsPerPage: 3,
                         restrictSearchableAttributes: ["english"],
                     })
                     .then(hits => {
@@ -62,7 +63,7 @@ const AddVocableScreen = props => {
             case "de":
                 await searchIndex
                     .search(letters, {
-                        hitsPerPage: 5,
+                        hitsPerPage: 3,
                         restrictSearchableAttributes: ["german"],
                     })
                     .then(hits => {
@@ -74,7 +75,7 @@ const AddVocableScreen = props => {
 
     useEffect(() => {
         if (hasError) {
-            Alert.alert("An error occured!", hasError.message, [{ text: "Okay" }]);
+            Alert.alert(I18n.t("anErrorOccurred"), hasError, [{ text: I18n.t("okay") }]);
         }
     }, [hasError]);
 
@@ -106,7 +107,10 @@ const AddVocableScreen = props => {
                                 searchVocable(value, "en");
                             }}
                             value={formikProps.values.wordENG}
-                            editable={isLoading ? false : true}
+                            editable={!isLoading}
+                            onSubmitEditing={() => {
+                                secondInput.current.focus();
+                            }}
                         />
                         <FlatList
                             data={searchedEnglishWords.hits}
@@ -117,7 +121,10 @@ const AddVocableScreen = props => {
                                         secondWord={item.item.german}
                                         onPress={(choosedWord, complementaryWord) => {
                                             formikProps.setFieldValue("wordENG", choosedWord);
-                                            formikProps.setFieldValue("wordDE", complementaryWord);
+                                            if (!formikProps.values.wordDE) {
+                                                formikProps.setFieldValue("wordDE", complementaryWord);
+                                            }
+
                                             setSearchedEnglishWords({});
                                             setSearchedGermanWords({});
                                         }}
@@ -139,7 +146,9 @@ const AddVocableScreen = props => {
                                 searchVocable(value, "de");
                             }}
                             value={formikProps.values.wordDE}
-                            editable={isLoading ? false : true}
+                            editable={!isLoading}
+                            ref={secondInput}
+                            onSubmitEditing={formikProps.handleSubmit}
                         />
 
                         <FlatList
@@ -151,7 +160,9 @@ const AddVocableScreen = props => {
                                         secondWord={item.item.english}
                                         onPress={(choosedWord, complementaryWord) => {
                                             formikProps.setFieldValue("wordDE", choosedWord);
-                                            formikProps.setFieldValue("wordENG", complementaryWord);
+                                            if (!formikProps.values.wordENG) {
+                                                formikProps.setFieldValue("wordENG", complementaryWord);
+                                            }
                                             setSearchedGermanWords({});
                                             setSearchedEnglishWords({});
                                         }}
@@ -164,7 +175,7 @@ const AddVocableScreen = props => {
 
                         <Text style={GlobalStyles.errorText}>{formikProps.touched.wordDE && formikProps.errors.wordDE}</Text>
 
-                        {isLoading ? <ActivityIndicator size="small" color={Colors.grey} /> : <Button title="Submit" onPress={formikProps.handleSubmit} />}
+                        {isLoading ? <ActivityIndicator size="small" color={Colors.grey} /> : <Button title={I18n.t("addButton")} onPress={formikProps.handleSubmit} />}
                     </View>
                 )}
             </Formik>

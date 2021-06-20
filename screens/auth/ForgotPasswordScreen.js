@@ -31,7 +31,7 @@ const ForgotPasswordScreen = props => {
 
     useEffect(() => {
         if (hasError) {
-            Alert.alert("An error occured!", hasError, [{ text: "Okay" }]);
+            Alert.alert(I18n.t("anErrorOccurred"), hasError, [{ text: "Okay" }]);
         }
     }, [hasError]);
 

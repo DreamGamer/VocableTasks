@@ -19,6 +19,7 @@ const LoginScreen = props => {
     // States
     const [isLoading, setIsLoading] = useState(false);
     const [hasError, setHasError] = useState(null);
+    let isMounted = true;
 
     const yupSchema = yup.object({
         Email: yup.string(I18n.t("emailMustBeAString")).email(I18n.t("emailMustBeAValidEmail")).required(I18n.t("emailIsRequired")).min(5),
@@ -31,10 +32,8 @@ const LoginScreen = props => {
     const passwordInput = useRef();
 
     useEffect(() => {
-        let isMounted = true;
         if (hasError && isMounted) {
-            console.log("SOLLLLLLL")
-            Alert.alert("An error occured!", hasError, [{ text: "Okay" }]);
+            Alert.alert(I18n.t("anErrorOccurred"), hasError, [{ text: I18n.t("okay") }]);
         }
         return () => {
             isMounted = false;
