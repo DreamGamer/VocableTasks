@@ -27,9 +27,11 @@ export default {
     german: "German",
     enterTheEnglishWord: "Enter the english word",
     enterTheGermanWord: "Enter the german word",
+    okay: "Okay",
 
     // Error's
     somethingWentWrong: "Ups... Something went wrong!",
+    anErrorOccurred: "An error occurred!",
     authEmailAlreadyInUse: "Email already in use.",
     authInvalidEmail: "Invalid email.",
     authOperationNotAllowed: "Operation not allowed, please contact support!",
@@ -42,5 +44,7 @@ export default {
     authMissingIOSBundleID: "Missing ios bundle id. Please contact support!",
     authInvalidContinueURL: "Invalid continue url. Please contact support!",
     authUnauthorizedContinueURL: "Unauthorized continue url. Please contact support!",
-    authTooManyRequests: "Too many attempts, try again later!"
+    authTooManyRequests: "Too many attempts, try again later!",
+    authNetworkRequestFailed: "Network request failed! Check your internet or try again later.",
+    addButton: "Add",
 };

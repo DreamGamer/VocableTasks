@@ -27,10 +27,12 @@ export default {
     german: "Deutsch",
     enterTheEnglishWord: "Trage das englische Wort ein",
     enterTheGermanWord: "Trage das deutsche Wort ein",
+    okay: "Okay",
 
 
     // Error's
     somethingWentWrong: "Ups... Etwas ist schiefgelaufen!",
+    anErrorOccurred: "Ein Fehler ist aufgetreten!",
     authEmailAlreadyInUse: "Email bereits in benutzung.",
     authInvalidEmail: "Ung\u00fcltige Email Adresse.",
     authOperationNotAllowed: "Operation nicht erlaubt. Bitte kontaktiere den Support!",
@@ -44,4 +46,6 @@ export default {
     authInvalidContinueURL: "Ungültige weiterleitungs URL. Bitte kontaktiere den Support!",
     authUnauthorizedContinueURL: "Unberechtigte weiterleitungs URL. Bitte kontaktiere den Support",
     authTooManyRequests: "Zu viele versuche, versuche es später erneut!",
+    authNetworkRequestFailed: "Netzwerk anfrage gescheitert! Überprüfe deine Internetverbindung oder versuche es später erneut.",
+    addButton: "Hinzuf\u00fcgen",
 };
