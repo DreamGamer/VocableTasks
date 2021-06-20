@@ -1,6 +1,8 @@
 import Vocable from "../../models/Vocable";
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
+import database from "@react-native-firebase/database";
+import Bugsnag from "@bugsnag/react-native";
 
 const TAG = "[Vocables Action]: ";
 
@@ -8,12 +10,46 @@ export const ADD_VOCABLE = "ADD_VOCABLE";
 export const SET_VOCABLES = "SET_VOCABLES";
 export const DELETE_VOCABLE = "DELETE_VOCABLE";
 export const UPDATE_VOCABLE = "UPDATE_VOCABLE";
+export const END_REACHED = "END_REACHED";
 
 export const fetchVocables = () => {
     return async (dispatch, getState) => {
         try {
-            const idToken = await auth().currentUser.getIdToken(true);
             const UID = auth().currentUser.uid;
+            const lastVocable = await getState().vocables.vocables.pop();
+            console.log(TAG + "Fetching Vocables");
+            console.log(TAG + "Last Vocable:");
+            console.log(lastVocable);
+
+            await database()
+                .ref(`vocables/${UID}`)
+                .orderByChild("wordENG")
+                .startAt(lastVocable ? lastVocable.wordENG : 0)
+                .limitToFirst(40)
+                .once("value")
+                .then(snap => {
+                    const responseData = snap.val();
+                    const loadedVocables = [];
+                    for (const key in responseData) {
+                        loadedVocables.push(new Vocable(key, responseData[key].wordENG, responseData[key].wordDE, responseData[key].known));
+                    }
+                    console.log("LOADED VOCABLES: ");
+                    console.log(loadedVocables);
+                    console.log("-------");
+
+                    if (loadedVocables.length < 2) {
+                        dispatch(setEndReached(true));
+                    }
+
+                    dispatch({
+                        type: SET_VOCABLES,
+                        vocables: loadedVocables,
+                    });
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+            /*
 
             const response = await fetch("https://vocabeltasks.firebaseio.com/vocables/" + UID + ".json?auth=" + idToken, {
                 method: "GET",
@@ -38,12 +74,17 @@ export const fetchVocables = () => {
                 type: SET_VOCABLES,
                 vocables: loadedVocables,
             });
+            */
         } catch (error) {
             console.warn(TAG + "Catched fatal error in fetchVocables: " + error);
             Bugsnag.notify(error);
             throw error;
         }
     };
+};
+
+export const setEndReached = bool => {
+    return { type: END_REACHED, endReached: bool };
 };
 
 export const deleteVocable = id => {
@@ -76,34 +117,24 @@ export const deleteVocable = id => {
 export const addVocable = (wordENG, wordDE, known) => {
     return async (dispatch, getState) => {
         try {
-            const token = getState().auth.idToken;
-            const UID = getState().auth.UID;
-
+            const UID = auth().currentUser.uid;
             const englishVocableLowerCase = wordENG.toLowerCase();
             const germanVocableLowerCase = wordDE.toLowerCase();
 
             const engVocableFirstLetter = englishVocableLowerCase.charAt(0).toUpperCase() + englishVocableLowerCase.slice(1);
             const germanVocableFirstLetter = germanVocableLowerCase.charAt(0).toUpperCase() + germanVocableLowerCase.slice(1);
 
-            const response = await fetch("https://vocabeltasks.firebaseio.com/vocables/" + UID + ".json?auth=" + token, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    wordENG: engVocableFirstLetter,
-                    wordDE: germanVocableFirstLetter,
-                    known: known,
-                }),
-            });
+            const newReference = await database().ref(`vocables/${UID}`).push();
 
-            if (!response.ok) {
-                const errorResponseData = await response.json();
-                console.log(TAG + "Error while uploading vocable " + JSON.stringify(errorResponseData));
-                throw new Error("Something went wrong while uploading Vocable!");
-            }
-
-            const responseData = await response.json();
+            await newReference
+                .set({ wordENG: engVocableFirstLetter, wordDE: germanVocableFirstLetter, known: known })
+                .then(() => {
+                    console.info(TAG + `Successfully uploaded vocable '${englishVocableLowerCase}' to '${newReference.key}'`);
+                })
+                .catch(error => {
+                    console.log("Error:");
+                    console.log(error);
+                });
 
             const currentTime = firestore.Timestamp.now().toDate();
 
@@ -118,7 +149,7 @@ export const addVocable = (wordENG, wordDE, known) => {
                         vocableFirestoreDatabase
                             .update({ timesSearched: firestore.FieldValue.increment(1), lastUpdate: currentTime })
                             .then(() => {
-                                console.log(TAG + `Successfully updated timesSearched for Vocable en: '${engVocableFirstLetter}'`);
+                                console.log(TAG + `Successfully updated timesSearched for Vocable '${engVocableFirstLetter}'`);
                             })
                             .catch(error => {
                                 console.log(TAG + "Catched Error: " + error);
@@ -128,7 +159,7 @@ export const addVocable = (wordENG, wordDE, known) => {
                         vocableFirestoreDatabase
                             .set({ timesSearched: firestore.FieldValue.increment(1), english: engVocableFirstLetter, german: germanVocableFirstLetter, firstAdd: currentTime })
                             .then(() => {
-                                console.log(TAG + `Successfully uploaded Vocable en: '${engVocableFirstLetter}' | de: '${germanVocableFirstLetter}'`);
+                                console.log(TAG + `Successfully added Vocable en: '${engVocableFirstLetter}' | de: '${germanVocableFirstLetter}' to firestore`);
                             })
                             .catch(error => {
                                 console.log(TAG + "Catched Error: " + error);
@@ -143,7 +174,7 @@ export const addVocable = (wordENG, wordDE, known) => {
             dispatch({
                 type: ADD_VOCABLE,
                 data: {
-                    id: responseData.name,
+                    id: newReference.key,
                     wordENG: wordENG,
                     wordDE: wordDE,
                     known: known,
@@ -160,25 +191,11 @@ export const addVocable = (wordENG, wordDE, known) => {
 export const updateVocable = (id, wordENG, wordDE) => {
     return async (dispatch, getState) => {
         try {
-            const token = getState().auth.idToken;
-            const UID = getState().auth.UID;
-
-            const response = await fetch("https://vocabeltasks.firebaseio.com/vocables/" + UID + "/" + id + ".json?auth=" + token, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    wordENG: wordENG,
-                    wordDE: wordDE,
-                }),
+            const UID = auth().currentUser.uid;
+            await database().ref(`vocables/${UID}/${id}`).update({
+                wordENG: wordENG,
+                wordDE: wordDE,
             });
-
-            if (!response.ok) {
-                const errorResponseData = await response.json();
-                console.log(TAG + "Error while updating vocables " + JSON.stringify(errorResponseData));
-                throw new Error("Something went wrong while updating Vocable");
-            }
 
             dispatch({
                 type: UPDATE_VOCABLE,

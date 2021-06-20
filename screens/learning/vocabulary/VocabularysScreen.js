@@ -17,6 +17,7 @@ const VocabularysScreen = props => {
     const [isLoading, setIsLoading] = useState(false);
     const [hasError, setHasError] = useState("");
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const endReached = useSelector(state => state.vocables.endReached);
     const idToken = useSelector(state => state.auth.idToken);
 
     // Get Vocables
@@ -30,48 +31,19 @@ const VocabularysScreen = props => {
         return 0;
     });
 
-    /*
-    const addHandler = async () => {
-        const response = await fetch(`https://firestore.googleapis.com/v1/projects/vocabeltasks/databases/(default)/documents:commit`, {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${idToken}`,
-                
-            },
-            body: {
-                writes: [
-                    {
-                        transform: {
-                            document: `projects/vocabeltasks/databases/(default)/documents/vocables/hacker`,
-                            fieldTransforms: [
-                                {
-                                    fieldPath: "timesSearched",
-                                    increment: {
-                                        integerValue: 1,
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-        });
-        const responseData = await response.json();
-        console.log(responseData);
-    };
-    */
-
     // Redux Dispatch
     const dispatch = useDispatch();
 
     const loadVocables = useCallback(async () => {
-        setHasError("");
+        if (isRefreshing) return;
         setIsRefreshing(true);
+        setHasError("");
 
         try {
             await dispatch(vocableActions.fetchVocables());
+            setIsLoading(false);
         } catch (error) {
-            setHasError(error.message ? error.message : error);
+            setHasError(error);
         }
 
         setIsRefreshing(false);
@@ -79,24 +51,24 @@ const VocabularysScreen = props => {
 
     useEffect(() => {
         let isMounted = true;
-        if (isMounted) {
+        if (isMounted && !isLoading) {
             setIsLoading(true);
-            loadVocables().then(() => {
-                setIsLoading(false);
-            });
+            loadVocables();
         }
 
         return () => {
             isMounted = false;
         };
-    }, [dispatch, loadVocables]);
+    }, [loadVocables]);
 
+    /*
     useEffect(() => {
         const willFocusListener = props.navigation.addListener("willFocus", loadVocables);
         return () => {
             willFocusListener.remove();
         };
     }, [loadVocables]);
+    */
 
     const handleLongPress = id => {
         Alert.alert("Are you sure?", "Do you really want to delete this Vocable?", [
@@ -143,11 +115,26 @@ const VocabularysScreen = props => {
     }
 
     return (
-        <View>
+        <View style={GlobalStyles.flex1}>
             <FlatList
-                refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={loadVocables} />}
+                showsVerticalScrollIndicator={false}
+                style={GlobalStyles.flex1}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={isRefreshing}
+                        onRefresh={() => {
+                            console.log("onRefresh loadVocable");
+                            loadVocables();
+                        }}
+                    />
+                }
                 data={vocables}
-                keyExtractor={vocable => vocable.wordENG}
+                keyExtractor={vocable => vocable.id}
+                onEndReached={() => {
+                    if (!isRefreshing && !endReached) {
+                        loadVocables();
+                    }
+                }}
                 renderItem={vocable => (
                     <TouchableOpacity
                         onPress={() => {
