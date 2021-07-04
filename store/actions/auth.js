@@ -1,4 +1,4 @@
-import AsyncStorage from "@react-native-community/async-storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSelector } from "react-redux";
 import * as environments from "../../environments/env";
 import Bugsnag from "@bugsnag/react-native";
@@ -97,7 +97,7 @@ export const updateUserInfo = user => {
                 emailVerified = user.emailVerified;
             }
 
-            console.info(TAG + `Sucessfully updated user info to displayName: '${displayName}', emailVerified: '${emailVerified}'`);
+            console.info(TAG + `Successfully updated user info to displayName: '${displayName}', emailVerified: '${emailVerified}'`);
             await dispatch({ type: UPDATEUSERINFO, displayName, emailVerified });
         } catch (error) {
             console.log(TAG + "Catched error in updateUserInfo: " + error);
@@ -187,7 +187,7 @@ export const logout = () => {
             await auth()
                 .signOut()
                 .catch(error => {});
-            console.info(TAG + "Sucessfully logged out!");
+            console.info(TAG + "Successfully logged out!");
         } catch (error) {
             console.warn(TAG + "Catched fatal error in logout: " + error);
             Bugsnag.notify(error);

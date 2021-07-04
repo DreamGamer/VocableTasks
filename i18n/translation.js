@@ -2,7 +2,7 @@ import * as Localization from "expo-localization";
 import I18n from "i18n-js";
 import en from "./locales/en";
 import de from "./locales/de";
-import AsyncStorage from "@react-native-community/async-storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const TAG = "[I18n Translation]: "; // Console Log Tag
 const APP_LANGUAGE = "app_language"; // AsyncStorage key

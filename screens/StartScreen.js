@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { StyleSheet, View, Text, ActivityIndicator } from "react-native";
 import Colors from "../constants/Colors";
-import AsyncStorage from "@react-native-community/async-storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
 import * as authActions from "../store/actions/auth";
 import Bugsnag from "@bugsnag/react-native";
