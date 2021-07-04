@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { StyleSheet, View, Text, Button, RefreshControl, Pressable, Alert, TouchableOpacity, ActivityIndicator } from "react-native";
-import { FlatList } from "react-native-gesture-handler";
+import { StyleSheet, View, Text, Button, RefreshControl, Alert, TouchableOpacity, ActivityIndicator, FlatList } from "react-native";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import { useDispatch, useSelector } from "react-redux";
 import HeaderButton from "../../../components/HeaderButton";
@@ -118,7 +117,7 @@ const VocabularysScreen = props => {
         <View style={GlobalStyles.flex1}>
             <FlatList
                 showsVerticalScrollIndicator={false}
-                style={GlobalStyles.flex1}
+                contentContainerStyle={GlobalStyles.flexGrow1}
                 refreshControl={
                     <RefreshControl
                         refreshing={isRefreshing}
@@ -138,7 +137,7 @@ const VocabularysScreen = props => {
                 renderItem={vocable => (
                     <TouchableOpacity
                         onPress={() => {
-                            props.navigation.navigate({ routeName: "editVocable", params: { vocable: vocable.item } });
+                            props.navigation.navigate("editVocable", { vocable: vocable.item });
                         }}
                         onLongPress={() => {
                             handleLongPress(vocable.item.id);
@@ -159,7 +158,7 @@ const VocabularysScreen = props => {
     );
 };
 
-VocabularysScreen.navigationOptions = navigationData => {
+export const VocabularysScreenOptions = navigationData => {
     return {
         title: "Vocabulary",
         headerLeft: () => (
@@ -180,7 +179,7 @@ VocabularysScreen.navigationOptions = navigationData => {
                     title="Add"
                     iconName="md-add"
                     onPress={() => {
-                        navigationData.navigation.navigate({ routeName: "addVocable" });
+                        navigationData.navigation.navigate("addVocable");
                     }}
                 />
             </HeaderButtons>

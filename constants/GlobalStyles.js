@@ -61,4 +61,7 @@ export default StyleSheet.create({
     centerText: {
         textAlign: "center",
     },
+    flexGrow1: {
+        flexGrow: 1,
+    }
 });
