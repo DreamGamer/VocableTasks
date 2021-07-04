@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, ActivityIndicator } from "react-native";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import HeaderButton from "../../components/HeaderButton";
 
-const OptionsScreen = (props) => {
+const SettingsScreen = (props) => {
   return (
     <View>
       <Text>Options</Text>
@@ -11,9 +11,9 @@ const OptionsScreen = (props) => {
   );
 };
 
-OptionsScreen.navigationOptions = (navigationData) => {
+export const SettingsScreenOptions = (navigationData) => {
   return {
-    title: "Options",
+    title: "Settings",
     headerLeft: () => (
       // HeaderButton to toggle the Drawer
       <HeaderButtons HeaderButtonComponent={HeaderButton}>
@@ -31,4 +31,4 @@ OptionsScreen.navigationOptions = (navigationData) => {
 
 const styles = StyleSheet.create({});
 
-export default OptionsScreen;
+export default SettingsScreen;
