@@ -104,7 +104,7 @@ const LoginScreen = props => {
                                     <Pressable
                                         style={styles.forgetPasswordContainer}
                                         onPress={() => {
-                                            props.navigation.navigate({ routeName: "forgotPassword" });
+                                            props.navigation.navigate("forgotPassword");
                                         }}>
                                         <Text style={styles.forgetPasswordText}>{I18n.t("forgotPassword")}</Text>
                                     </Pressable>
@@ -124,7 +124,7 @@ const LoginScreen = props => {
                             <Text style={styles.signupText}>{I18n.t("noAccountYet")}</Text>
                             <Pressable
                                 onPress={() => {
-                                    props.navigation.navigate({ routeName: "signup" });
+                                    props.navigation.navigate("signup");
                                 }}>
                                 <Text style={styles.signupTextLink}> {I18n.t("signUpHere")}</Text>
                             </Pressable>
@@ -136,9 +136,10 @@ const LoginScreen = props => {
     );
 };
 
-LoginScreen.navigationOptions = navigationData => {
+export const LoginScreenOptions = navigationData => {
     return {
-        title: "Login",
+        title: "",
+        headerTransparent: true,
     };
 };
 

@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { enableScreens } from "react-native-screens";
 import * as Font from "expo-font";
-import { AppLoading } from "expo";
-import NavigationContainer from "./navigation/NavigationContainer";
+import AppLoading from 'expo-app-loading';
+import AppNavigator from "./navigation/AppNavigator";
 import { combineReducers, createStore, applyMiddleware } from "redux";
 import vocableReducer from "./store/reducers/vocables";
 import authReducer from "./store/reducers/auth";
@@ -15,6 +15,7 @@ import { initLanguage } from "./i18n/translation";
 import Bugsnag from "@bugsnag/react-native";
 
 const TAG = "[App.js]: "; // Console Log Tag
+
 
 // Change Debuuger mode
 const __ENABLED_DEV__ = true;
@@ -57,16 +58,18 @@ export default function App() {
                 onFinish={() => {
                     setFontLoaded(true);
                 }}
+                onError={console.error}
             />
         );
     }
 
     return (
         <Provider store={store}>
-            <NavigationContainer />
+            <AppNavigator />
         </Provider>
     );
 }
+
 
 const styles = StyleSheet.create({
     container: {

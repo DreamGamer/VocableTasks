@@ -183,7 +183,7 @@ const AddVocableScreen = props => {
     );
 };
 
-AddVocableScreen.navigationOptions = navigationData => {
+export const AddVocableScreenOptions = navigationData => {
     return {
         title: "Add Vocable",
     };

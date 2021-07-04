@@ -119,9 +119,10 @@ const ForgotPasswordScreen = props => {
     );
 };
 
-ForgotPasswordScreen.navigationOptions = navigationData => {
+export const ForgotPasswordScreenOptions = navigationData => {
     return {
         title: "",
+        headerTransparent: true,
     };
 };
 

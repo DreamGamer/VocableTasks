@@ -14,10 +14,12 @@ const yupSchema = yup.object({
   wordDE: yup.string().required(),
 });
 
-const EditVocableScreen = (props) => {
+const EditVocableScreen = props => {
   // States
   const [hasError, setHasError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const { vocable } = props.route.params ? props.route.params : null;
 
   const dispatch = useDispatch();
 
@@ -32,15 +34,15 @@ const EditVocableScreen = (props) => {
       <View style={styles.form}>
         <Formik
           initialValues={{
-            wordENG: props.navigation.getParam("vocable").wordENG ? props.navigation.getParam("vocable").wordENG : "",
-            wordDE: props.navigation.getParam("vocable").wordDE ? props.navigation.getParam("vocable").wordDE : "",
+            wordENG: vocable ? vocable.wordENG : "",
+            wordDE: vocable ? vocable.wordDE : "",
           }}
           validationSchema={yupSchema}
           onSubmit={async (values, actions) => {
             // Submit button pressed
             setIsLoading(true);
             try {
-              await dispatch(vocableActions.updateVocable(props.navigation.getParam("vocable").id, values.wordENG, values.wordDE));
+              await dispatch(vocableActions.updateVocable(vocable.id, values.wordENG, values.wordDE));
               actions.resetForm();
               props.navigation.goBack();
             } catch (error) {
@@ -79,7 +81,7 @@ const EditVocableScreen = (props) => {
   );
 };
 
-EditVocableScreen.navigationOptions = (navigationData) => {
+export const EditVocableScreenOptions = (navigationData) => {
   return {
     title: "Edit Vocable",
   };

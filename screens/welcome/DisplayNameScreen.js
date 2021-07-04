@@ -24,15 +24,21 @@ const DisplayNameScreen = props => {
     // Init redux Dispatch
     const dispatch = useDispatch();
 
-    // Setup logoutHandler to logout over NavigationData
-    useEffect(() => {
-        props.navigation.setParams({ logout: logoutHandler });
-    }, [logoutHandler]);
-
     // Handler to logout user
     const logoutHandler = () => {
         dispatch(authActions.logout());
     };
+
+    // Setup logoutHandler to logout over NavigationData
+    useEffect(() => {
+        props.navigation.setOptions({
+            headerRight: () => (
+                <HeaderButtons HeaderButtonComponent={HeaderButton}>
+                    <Item title="Logout" iconName="log-out" onPress={logoutHandler} />
+                </HeaderButtons>
+            ),
+        });
+    }, [logoutHandler]);
 
     // Only appears if hasError change
     useEffect(() => {
@@ -80,7 +86,6 @@ const DisplayNameScreen = props => {
                                     />
                                     {formikProps.errors.name && formikProps.touched.name ? <Text style={GlobalStyles.errorText}>{formikProps.touched.name && formikProps.errors.name}</Text> : null}
 
-
                                     {isLoading ? (
                                         <ActivityIndicator size="small" color={Colors.ActivityIndicatorWhite} />
                                     ) : (
@@ -98,15 +103,10 @@ const DisplayNameScreen = props => {
     );
 };
 
-DisplayNameScreen.navigationOptions = navigationData => {
-    const logout = navigationData.navigation.getParam("logout");
+export const DisplayNameScreenOptions = navigationData => {
+    const logout = navigationData.route.params ? navigationData.route.params.logout : null;
     return {
         title: "",
-        headerRight: () => (
-            <HeaderButtons HeaderButtonComponent={HeaderButton}>
-                <Item title="Logout" iconName="ios-log-out" onPress={logout} />
-            </HeaderButtons>
-        ),
     };
 };
 
@@ -135,8 +135,8 @@ const styles = StyleSheet.create({
         marginVertical: 10,
     },
     heading: {
-        marginBottom: 10
-    }
+        marginBottom: 10,
+    },
 });
 
 export default DisplayNameScreen;

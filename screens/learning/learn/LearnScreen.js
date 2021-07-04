@@ -25,7 +25,7 @@ const LearnScreen = props => {
 
                     <TouchableOpacity style={styles.item} onPress={() => {}}>
                         <View style={styles.container}>
-                            <Ionicons name="md-contacts" size={45} color={Colors.grey} />
+                            <Ionicons name="people" size={45} color={Colors.grey} />
                         </View>
                         <View style={styles.container}>
                             <Text style={{ ...GlobalStyles.h5, ...styles.gameModeText }}>Battle</Text>
@@ -37,7 +37,7 @@ const LearnScreen = props => {
     );
 };
 
-LearnScreen.navigationOptions = navigationData => {
+export const LearnScreenOptions = navigationData => {
     return {
         title: "Learn",
         headerLeft: () => (

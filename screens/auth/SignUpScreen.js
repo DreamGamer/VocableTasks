@@ -154,9 +154,10 @@ const SignUpScreen = props => {
     );
 };
 
-SignUpScreen.navigationOptions = navigationData => {
+export const SignUpScreenOptions = navigationData => {
     return {
         title: "",
+        headerTransparent: true,
     };
 };
 
