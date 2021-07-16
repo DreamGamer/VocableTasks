@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { enableScreens } from "react-native-screens";
 import * as Font from "expo-font";
-import AppLoading from 'expo-app-loading';
+import AppLoading from "expo-app-loading";
 import AppNavigator from "./navigation/AppNavigator";
 import { combineReducers, createStore, applyMiddleware } from "redux";
 import vocableReducer from "./store/reducers/vocables";
@@ -17,21 +17,20 @@ import Bugsnag from "@bugsnag/react-native";
 const TAG = "[App.js]: "; // Console Log Tag
 
 
-// Change Debuuger mode
-const __ENABLED_DEV__ = true;
-
 const rootReducer = combineReducers({
     vocables: vocableReducer,
     auth: authReducer,
 });
-let store;
 
-if (__ENABLED_DEV__) {
+const middlewares = [ReduxThunk];
+
+if (__DEV__) {
     console.info(TAG + "Developer mode enabled");
-    store = createStore(rootReducer, composeWithDevTools(applyMiddleware(ReduxThunk)));
-} else {
-    store = createStore(rootReducer, applyMiddleware(ReduxThunk));
+    const createDebugger = require("redux-flipper").default;
+    middlewares.push(createDebugger());
 }
+
+const store = createStore(rootReducer, applyMiddleware(...middlewares));
 
 export default function App() {
     // Optimize Screens
@@ -69,7 +68,6 @@ export default function App() {
         </Provider>
     );
 }
-
 
 const styles = StyleSheet.create({
     container: {
