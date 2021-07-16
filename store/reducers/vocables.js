@@ -1,4 +1,4 @@
-import { ADD_VOCABLE, DELETE_VOCABLE, SET_VOCABLES, UPDATE_VOCABLE, END_REACHED } from "../actions/vocables";
+import { ADD_VOCABLE, DELETE_VOCABLE, SET_VOCABLES, UPDATE_VOCABLE, END_REACHED, INITIALSTATES } from "../actions/vocables";
 import Vocable from "../../models/Vocable";
 
 const initStates = {
@@ -43,6 +43,8 @@ const vocableReducer = (state = initStates, action) => {
                 ...state,
                 endReached: action.endReached,
             };
+        case INITIALSTATES:
+            return initStates;
 
         default:
             return state;

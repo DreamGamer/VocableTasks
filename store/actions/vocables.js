@@ -11,6 +11,7 @@ export const SET_VOCABLES = "SET_VOCABLES";
 export const DELETE_VOCABLE = "DELETE_VOCABLE";
 export const UPDATE_VOCABLE = "UPDATE_VOCABLE";
 export const END_REACHED = "END_REACHED";
+export const INITIALSTATES = "INITIALSTATES";
 
 export const fetchVocables = () => {
     return async (dispatch, getState) => {
@@ -82,6 +83,10 @@ export const fetchVocables = () => {
         }
     };
 };
+
+export const initialStates = () => {
+    return { type: INITIALSTATES }
+}
 
 export const setEndReached = bool => {
     return { type: END_REACHED, endReached: bool };

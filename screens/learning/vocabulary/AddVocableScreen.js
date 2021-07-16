@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { StyleSheet, View, ScrollView, Text, Button, ActivityIndicator, Alert, TextInput, KeyboardAvoidingView } from "react-native";
+import { StyleSheet, View, ScrollView, Text, Button, ActivityIndicator, Alert, TextInput, KeyboardAvoidingView, FlatList } from "react-native";
 import { Formik } from "formik";
 import Input from "../../../components/Input";
 import Label from "../../../components/Label";
@@ -10,12 +10,9 @@ import * as yup from "yup";
 import DefaultValues from "../../../constants/DefaultValues";
 import GlobalStyles from "../../../constants/GlobalStyles";
 import * as environments from "../../../environments/env";
-
 import algoliasearch from "algoliasearch/lite";
-import { FlatList } from "react-native-gesture-handler";
 import SearchHits from "../../../components/SearchHits";
 
-// Import Translation function
 import I18n from "../../../i18n/translation";
 
 const TAG = "[AddVocable Screen]: "; // Console Log Tag
@@ -185,7 +182,7 @@ const AddVocableScreen = props => {
 
 export const AddVocableScreenOptions = navigationData => {
     return {
-        title: "Add Vocable",
+        title: I18n.t("addVocable"),
     };
 };
 

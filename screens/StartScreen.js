@@ -25,6 +25,13 @@ const StartScreen = props => {
     );
 };
 
+export const StartScreenOptions = navigationData => {
+    return {
+        title: "",
+        headerTransparent: true,
+    };
+};
+
 const styles = StyleSheet.create({
     screen: {
         flex: 1,

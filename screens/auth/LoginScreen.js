@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Button, Dimensions, KeyboardAvoidingView, Pressable, StyleSheet, Text, View, Platform, TextInput, ActivityIndicator, Alert } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
+import { Button, Dimensions, KeyboardAvoidingView, Pressable, StyleSheet, Text, View, Platform, TextInput, ActivityIndicator, Alert, ScrollView } from "react-native";
 import Input from "../../components/Input";
 import Colors from "../../constants/Colors";
 import { LinearGradient } from "expo-linear-gradient";

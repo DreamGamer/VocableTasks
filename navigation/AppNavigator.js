@@ -7,6 +7,7 @@ import auth from "@react-native-firebase/auth";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import * as authActions from "../store/actions/auth";
+import * as vocablesActions from "../store/actions/vocables";
 import { VocableTasksNavigator, AuthNavigator, StartupNavigator, WelcomeNavigator } from "./VocableTasksNavigator";
 
 const TestStack = createStackNavigator();
@@ -30,6 +31,7 @@ const AppNavigator = props => {
             await dispatch(authActions.updateUserInfo(user));
             setIsAuth(true);
         } else {
+            await dispatch(vocablesActions.initialStates());
             await dispatch(authActions.deleteUserInfo());
             setIsAuth(false);
         }
