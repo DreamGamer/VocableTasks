@@ -5,6 +5,7 @@ import HeaderButton from "../../../components/HeaderButton";
 import GlobalStyles from "../../../constants/GlobalStyles";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "../../../constants/Colors";
+import I18n from "i18n-js";
 
 const LearnScreen = props => {
     return (
@@ -39,7 +40,7 @@ const LearnScreen = props => {
 
 export const LearnScreenOptions = navigationData => {
     return {
-        title: "Learn",
+        title: I18n.t("learn"),
         headerLeft: () => (
             // HeaderButton to toggle the Drawer
             <HeaderButtons HeaderButtonComponent={HeaderButton}>

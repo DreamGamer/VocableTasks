@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Button, Dimensions, KeyboardAvoidingView, Pressable, StyleSheet, Text, View, Platform, TextInput, ActivityIndicator, Alert } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
+import { Button, Dimensions, KeyboardAvoidingView, Pressable, StyleSheet, Text, View, Platform, TextInput, ActivityIndicator, Alert, ScrollView } from "react-native";
 import Input from "../../components/Input";
 import Colors from "../../constants/Colors";
 import { LinearGradient } from "expo-linear-gradient";
@@ -11,8 +10,6 @@ import * as yup from "yup";
 import GlobalStyles from "../../constants/GlobalStyles";
 import * as authActions from "../../store/actions/auth";
 import { useDispatch } from "react-redux";
-
-// Import Translation function
 import I18n from "../../i18n/translation";
 
 const yupSchema = yup.object({
@@ -20,8 +17,8 @@ const yupSchema = yup.object({
     Password: yup.string().required().min(6),
     Confirm_Password: yup
         .string()
-        .required("Confirmed Password is a required field")
-        .oneOf([yup.ref("Password"), null], "Passwords must match"),
+        .required(I18n.t("confirmPasswordIsRequired"))
+        .oneOf([yup.ref("Password"), null], I18n.t("passwordsMustMatch")),
 });
 
 const SignUpScreen = props => {

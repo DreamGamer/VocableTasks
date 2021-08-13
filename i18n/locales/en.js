@@ -28,6 +28,12 @@ export default {
     enterTheEnglishWord: "Enter the english word",
     enterTheGermanWord: "Enter the german word",
     okay: "Okay",
+    logout: "Sign out",
+    confirmPasswordIsRequired: "Confirmed Password is a required field",
+    passwordsMustMatch: "Passwords must match",
+    noVocablesFoundMaybeStartAddSome: "No Vocables found, maybe start add some!",
+    areYouSure: "Are you sure?",
+    doYouReallyWantToDeleteThisVocable: "Do you really want to delete this Vocable?",
 
     // Error's
     somethingWentWrong: "Ups... Something went wrong!",
@@ -47,4 +53,20 @@ export default {
     authTooManyRequests: "Too many attempts, try again later!",
     authNetworkRequestFailed: "Network request failed! Check your internet or try again later.",
     addButton: "Add",
+    error: "Error",
+
+    learn: "Learn",
+    settings: "Settings",
+    vocabulary: "Vocabulary",
+
+    addVocable: "Add Vocable",
+    editVocable: "Edit Vocable",
+
+    // Settings
+    account: "Account",
+    editProfile: "Edit Profile",
+    changePassword: "Change Password",
+    general: "General",
+    changeLanguage: "Change Language",
+    helpAndSupport: "Help and Support",
 };

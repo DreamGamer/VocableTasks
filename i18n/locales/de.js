@@ -28,7 +28,12 @@ export default {
     enterTheEnglishWord: "Trage das englische Wort ein",
     enterTheGermanWord: "Trage das deutsche Wort ein",
     okay: "Okay",
-
+    logout: "Ausloggen",
+    confirmPasswordIsRequired: "Passwort best\u00e4tigen ist ein Pflichtfeld",
+    passwordsMustMatch: "Passwords must match",
+    noVocablesFoundMaybeStartAddSome: "Keine Vokabeln gefunden, fang an welche hinzuzuf\u00fcgen",
+    areYouSure: "Bist du sicher?",
+    doYouReallyWantToDeleteThisVocable: "M\u00fchtest du diese Vokabel wirklich l\u00fcschen?",
 
     // Error's
     somethingWentWrong: "Ups... Etwas ist schiefgelaufen!",
@@ -48,4 +53,20 @@ export default {
     authTooManyRequests: "Zu viele versuche, versuche es später erneut!",
     authNetworkRequestFailed: "Netzwerk anfrage gescheitert! Überprüfe deine Internetverbindung oder versuche es später erneut.",
     addButton: "Hinzuf\u00fcgen",
+    error: "Error",
+
+    learn: "Lernen",
+    settings: "Einstellungen",
+    vocabulary: "Wortschatz",
+
+    addVocable: "Vokabel hinzufügen",
+    editVocable: "Vokabel bearbeiten",
+
+    // Settings
+    account: "Konto",
+    editProfile: "Profil bearbeiten",
+    changePassword: "Password \u00e4ndern",
+    general: "Allgemein",
+    changeLanguage: "Sprache \u00e4ndern",
+    helpAndSupport: "Hilfe und Support",
 };

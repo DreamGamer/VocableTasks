@@ -10,6 +10,7 @@ import Colors from "../../../constants/Colors";
 import DefaultValues from "../../../constants/DefaultValues";
 import GlobalStyles from "../../../constants/GlobalStyles";
 import * as authActions from "../../../store/actions/auth";
+import I18n from "../../../i18n/translation";
 
 const VocabularysScreen = props => {
     // States
@@ -70,7 +71,7 @@ const VocabularysScreen = props => {
     */
 
     const handleLongPress = id => {
-        Alert.alert("Are you sure?", "Do you really want to delete this Vocable?", [
+        Alert.alert(I18n.t("areYouSure"), I18n.t("doYouReallyWantToDeleteThisVocable"), [
             { text: "No", style: "default" },
             {
                 text: "Yes",
@@ -98,7 +99,7 @@ const VocabularysScreen = props => {
     if (vocables.length === 0) {
         return (
             <View style={GlobalStyles.screen}>
-                <Text style={GlobalStyles.centerText}>No Vocables found, maybe start add some!</Text>
+                <Text style={GlobalStyles.centerText}>{I18n.t("noVocablesFoundMaybeStartAddSome")}</Text>
             </View>
         );
     }
@@ -106,8 +107,10 @@ const VocabularysScreen = props => {
     if (hasError) {
         return (
             <View style={GlobalStyles.screen}>
-                <Text style={styles.text}>An error occured!</Text>
-                <Text style={styles.text}>Error: {hasError.message ? hasError.message : hasError}</Text>
+                <Text style={styles.text}>{I18n.t("anErrorOccurred")}</Text>
+                <Text style={styles.text}>
+                    {I18n.t("error")}: {hasError.message ? hasError.message : hasError}
+                </Text>
                 <Button title="Refresh" onPress={loadVocables} />
             </View>
         );
@@ -160,7 +163,7 @@ const VocabularysScreen = props => {
 
 export const VocabularysScreenOptions = navigationData => {
     return {
-        title: "Vocabulary",
+        title: I18n.t("vocabulary"),
         headerLeft: () => (
             // HeaderButton to toggle the Drawer
             <HeaderButtons HeaderButtonComponent={HeaderButton}>

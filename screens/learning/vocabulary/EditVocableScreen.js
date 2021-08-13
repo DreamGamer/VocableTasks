@@ -8,6 +8,7 @@ import * as vocableActions from "../../../store/actions/vocables";
 import Colors from "../../../constants/Colors";
 import * as yup from "yup";
 import GlobalStyles from "../../../constants/GlobalStyles";
+import I18n from "../../../i18n/translation";
 
 const yupSchema = yup.object({
   wordENG: yup.string().required(),
@@ -25,7 +26,7 @@ const EditVocableScreen = props => {
 
   useEffect(() => {
     if (hasError) {
-      Alert.alert("An error occured!", hasError.message, [{ text: "Okay" }]);
+      Alert.alert(I18n.t("anErrorOccurred"), hasError.message, [{ text: I18n.t("okay") }]);
     }
   }, [hasError]);
 
@@ -83,7 +84,7 @@ const EditVocableScreen = props => {
 
 export const EditVocableScreenOptions = (navigationData) => {
   return {
-    title: "Edit Vocable",
+    title: I18n.t("editVocable"),
   };
 };
 
