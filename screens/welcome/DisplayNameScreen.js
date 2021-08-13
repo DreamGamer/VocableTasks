@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Text, KeyboardAvoidingView, Dimensions, TextInput, ActivityIndicator, Button, Alert } from "react-native";
+import { StyleSheet, View, Text, KeyboardAvoidingView, Dimensions, TextInput, ActivityIndicator, Button, Alert, ScrollView } from "react-native";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import { useDispatch } from "react-redux";
 import HeaderButton from "../../components/HeaderButton";
 import * as authActions from "../../store/actions/auth";
 import { LinearGradient } from "expo-linear-gradient";
-import { ScrollView } from "react-native-gesture-handler";
 import Colors from "../../constants/Colors";
 import GlobalStyles from "../../constants/GlobalStyles";
 import { Formik } from "formik";
 import Label from "../../components/Label";
 import * as yup from "yup";
+import I18n from "../../i18n/translation";
 
 const yupSchema = yup.object({
-    name: yup.string("Name must be a string").required("Name is required"),
+    name: yup.string("Name must be a string").required("Name is required").matches("^[A-z0-9]+$", "Name can't have symbols"),
 });
 
 const DisplayNameScreen = props => {
@@ -43,7 +43,7 @@ const DisplayNameScreen = props => {
     // Only appears if hasError change
     useEffect(() => {
         if (hasError) {
-            Alert.alert("An error occured!", hasError.message, [{ text: "Okay" }]);
+            Alert.alert(I18n.t("anErrorOccurred"), hasError.message, [{ text: I18n.t("okay") }]);
         }
     }, [hasError]);
 
@@ -104,9 +104,9 @@ const DisplayNameScreen = props => {
 };
 
 export const DisplayNameScreenOptions = navigationData => {
-    const logout = navigationData.route.params ? navigationData.route.params.logout : null;
     return {
         title: "",
+        headerTransparent: true,
     };
 };
 

@@ -1,4 +1,4 @@
-import { DELETEUSERINFO, UPDATEUSERINFO } from "../actions/auth";
+import { DELETEUSERINFO, UPDATEUSERINFO, CHANGEDISPLAYNAME } from "../actions/auth";
 
 const initialState = {
     displayName: null,
@@ -17,6 +17,11 @@ export default (state = initialState, action) => {
             return {
                 ...initialState,
             };
+            case CHANGEDISPLAYNAME:
+                return {
+                    ...state,
+                    displayName: action.displayName
+                };
         default:
             return state;
     }

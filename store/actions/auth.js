@@ -10,6 +10,7 @@ const TAG = "[Auth Action]: "; // Console Log Tag
 
 export const DELETEUSERINFO = "DELETEUSERINFO";
 export const UPDATEUSERINFO = "UPDATEUSERINFO";
+export const CHANGEDISPLAYNAME = "CHANGEDISPLAYNAME";
 
 // Change the Display Name of user
 export const changeDisplayName = name => {
@@ -21,9 +22,13 @@ export const changeDisplayName = name => {
                 })
                 .then(userInfo => {
                     console.info(TAG + `Sucessfully updated displayName to '${name}'`);
-                    dispatch(updateUserInfo(userInfo.user));
+                    console.log(userInfo)
+                    dispatch( {type: CHANGEDISPLAYNAME, displayName: name} );
                 })
-                .catch(error => {});
+                .catch(error => {
+                    Bugsnag.notify(error);
+                    console.log(TAG + error);
+                });
         } catch (error) {
             console.warn(TAG + "Catched fatal error in updateDisplayName: " + error);
             Bugsnag.notify(error);
@@ -91,6 +96,8 @@ export const updateUserInfo = user => {
         try {
             let displayName = null;
             let emailVerified = null;
+
+            console.log(user);
 
             if (user != null) {
                 displayName = user.displayName ? user.displayName : null;
