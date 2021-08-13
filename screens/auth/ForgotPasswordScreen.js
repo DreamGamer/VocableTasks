@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { Formik } from "formik";
 import { StyleSheet, View, Text, KeyboardAvoidingView, Dimensions, ScrollView, Button, ActivityIndicator, Alert } from "react-native";
-import { TextInput } from "react-native-gesture-handler";
 import Label from "../../components/Label";
 import Input from "../../components/Input";
 import Colors from "../../constants/Colors";
