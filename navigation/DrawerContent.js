@@ -22,7 +22,7 @@ const DrawerContent = props => {
             <DrawerContentScrollView {...props}>
                 <View style={GlobalStyles.flex1}>
                     <View style={styles.userInfoContainer}>
-                        {photoURL ? <Avatar.Image source={{ uri: photoURL }} size={50} /> : <Avatar.Text size={50} label={firstLetter} />}
+                        {photoURL ? <Avatar.Image source={{ uri: photoURL }} size={50} style={styles.avatarStyle} /> : <Avatar.Text size={50} label={firstLetter} style={styles.avatarStyle} />}
                         <View style={{ marginLeft: 15, flexDirection: "column" }}>
                             <Title style={styles.displayName}>{auth().currentUser.displayName}</Title>
                             <Caption style={styles.email}>{auth().currentUser.email}</Caption>
@@ -62,6 +62,9 @@ const styles = StyleSheet.create({
     email: {
         fontSize: 12,
         fontFamily: DefaultValues.fontRegular,
+    },
+    avatarStyle: {
+        backgroundColor: Colors.lightWhite,
     },
 });
 

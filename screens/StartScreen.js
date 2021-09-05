@@ -20,7 +20,7 @@ const StartScreen = props => {
 
     return (
         <View style={styles.screen}>
-            <ActivityIndicator size="large" color={Colors.lightGrey} />
+            <ActivityIndicator size="large" color={Colors.ActivityIndicatorDark} />
         </View>
     );
 };
