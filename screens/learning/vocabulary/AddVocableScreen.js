@@ -95,8 +95,8 @@ const AddVocableScreen = props => {
                 }}>
                 {formikProps => (
                     <View>
-                        <Label title={I18n.t("english") + ":"} />
                         <Input
+                            title={I18n.t("english")}
                             onBlur={formikProps.handleBlur("wordENG")}
                             placeholder={I18n.t("enterTheEnglishWord")}
                             onChangeText={value => {
@@ -133,9 +133,9 @@ const AddVocableScreen = props => {
                         />
 
                         {formikProps.errors.wordENG && formikProps.touched.wordENG ? <Text style={GlobalStyles.errorText}>{formikProps.errors.wordENG}</Text> : null}
-
-                        <Label title={I18n.t("german") + ":"} />
+                        <View style={styles.placeholder} />
                         <Input
+                            title={I18n.t("german")}
                             onBlur={formikProps.handleBlur("wordDE")}
                             placeholder={I18n.t("enterTheGermanWord")}
                             onChangeText={value => {
@@ -190,6 +190,9 @@ const styles = StyleSheet.create({
     form: {
         margin: 15,
     },
+    placeholder: {
+        marginVertical: 15
+    }
 });
 
 export default AddVocableScreen;

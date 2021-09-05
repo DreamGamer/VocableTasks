@@ -6,7 +6,7 @@ import DefaultValues from "../constants/DefaultValues";
 const SearchHits = props => {
     return (
         <View style={styles.container}>
-            <TouchableHighlight underlayColor={Colors.lightGrey} onPress={() => {
+            <TouchableHighlight onPress={() => {
                 props.onPress(props.word, props.secondWord);
             }}>
                 <Text style={styles.text}>{props.word}</Text>
