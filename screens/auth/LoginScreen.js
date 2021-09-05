@@ -18,6 +18,8 @@ const LoginScreen = props => {
     // States
     const [isLoading, setIsLoading] = useState(false);
     const [hasError, setHasError] = useState(null);
+    const [showPassword, setShowPassword] = useState(false);
+
     let isMounted = true;
 
     const yupSchema = yup.object({
@@ -42,7 +44,7 @@ const LoginScreen = props => {
     return (
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={GlobalStyles.flex1}>
             <LinearGradient colors={[Colors.backgroundTop, Colors.backgroundBottom]} style={styles.gradient}>
-                <ScrollView contentContainerStyle={styles.scrollViewCentered}>
+                <ScrollView contentContainerStyle={styles.scrollViewCentered} keyboardShouldPersistTaps="handled">
                     <View style={styles.container}>
                         <View style={GlobalStyles.centered}>
                             <Text style={GlobalStyles.h1}>{I18n.t("labelLogin")}</Text>
@@ -92,12 +94,17 @@ const LoginScreen = props => {
                                         value={formikProps.values.Password}
                                         editable={!isLoading}
                                         keyboardType="default"
-                                        secureTextEntry
+                                        secureTextEntry={!showPassword}
                                         autoCapitalize="none"
                                         returnKeyType="done"
                                         blurOnSubmit={true}
                                         ref={passwordInput}
                                         onSubmitEditing={formikProps.handleSubmit}
+                                        showIcon
+                                        iconName={showPassword ? "eye-sharp" : "eye-off-sharp"}
+                                        onPressIcon={() => {
+                                            setShowPassword(!showPassword);
+                                        }}
                                     />
                                     {formikProps.errors.Password && formikProps.touched.Password ? <Text style={GlobalStyles.errorText}>{formikProps.touched.Password && formikProps.errors.Password}</Text> : null}
                                     <Pressable
