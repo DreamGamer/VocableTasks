@@ -31,7 +31,7 @@ const EditVocableScreen = props => {
   }, [hasError]);
 
   return (
-    <ScrollView>
+    <ScrollView keyboardShouldPersistTaps="handled">
       <View style={styles.form}>
         <Formik
           initialValues={{

@@ -55,7 +55,7 @@ const ForgotPasswordScreen = props => {
     return (
         <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" : "height"} style={GlobalStyles.flex1}>
             <LinearGradient colors={[Colors.backgroundTop, Colors.backgroundBottom]} style={GlobalStyles.flex1}>
-                <ScrollView contentContainerStyle={styles.scrollViewCentered}>
+                <ScrollView contentContainerStyle={styles.scrollViewCentered} keyboardShouldPersistTaps="handled">
                     <View style={styles.container}>
                         <View style={GlobalStyles.centered}>
                             <Text style={GlobalStyles.h1}>{I18n.t("resetPassword")}</Text>
