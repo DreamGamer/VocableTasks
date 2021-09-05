@@ -72,9 +72,9 @@ const VocabularysScreen = props => {
 
     const handleLongPress = id => {
         Alert.alert(I18n.t("areYouSure"), I18n.t("doYouReallyWantToDeleteThisVocable"), [
-            { text: "No", style: "default" },
+            { text: I18n.t("no"), style: "default" },
             {
-                text: "Yes",
+                text: I18n.t("yes"),
                 style: "destructive",
                 onPress: async () => {
                     setHasError("");
