@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ActivityIndicator, Button, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
+import { Alert, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import GlobalStyles from "../../constants/GlobalStyles";
 import I18n from "../../i18n/translation";
 import { Avatar } from "react-native-paper";
@@ -11,13 +11,20 @@ import SettingsButton from "../../components/SettingsButton";
 import ImagePicker from "react-native-image-crop-picker";
 import Bugsnag from "@bugsnag/react-native";
 import Spinner from "react-native-loading-spinner-overlay";
-import { Ionicons } from "@expo/vector-icons";
+import Input from "../../components/Input";
+import { Formik } from "formik";
+import * as yup from "yup";
 
 const TAG = "[EditProfileScreen]: "; // Console Log Tag
+
+const yupSchema = yup.object({
+    username: yup.string(I18n.t("usernameMustBeAString")).required(I18n.t("usernameRequired")),
+});
 
 const EditProfileScreen = props => {
     const [showModal, setShowModal] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [usernameEditable, setUsernameEditable] = useState(Auth().currentUser.displayName ? false : true);
 
     const user = Auth().currentUser;
     const photoURL = Auth().currentUser.photoURL;
@@ -28,33 +35,43 @@ const EditProfileScreen = props => {
     };
 
     const deleteAvatar = async () => {
-        setShowModal(false);
-        setIsLoading(true);
-        try {
-            await user.updateProfile({ photoURL: null });
-            await user.reload();
-        } catch (error) {
-            Bugsnag.notify(error);
-            console.warn(TAG + "Catched error in deleteAvatar: " + error);
-        }
-        setIsLoading(false);
+        Alert.alert(I18n.t("areYouSure"), I18n.t("doYouReallyWantToDeleteYourAvatar"), [
+            { text: I18n.t("no"), style: "default" },
+            {
+                text: I18n.t("yes"),
+                style: "destructive",
+                onPress: async () => {
+                    setShowModal(false);
+                    setIsLoading(true);
+                    try {
+                        await user.updateProfile({ photoURL: null });
+                        await user.reload();
+                    } catch (error) {
+                        Bugsnag.notify(error);
+                        console.warn(TAG + "Catched error in deleteAvatar: " + error);
+                    }
+                    setIsLoading(false);
+                },
+            },
+        ]);
     };
 
     const updateProfilePicture = async image => {
         setShowModal(false);
         setIsLoading(true);
-        const storageRef = Storage().ref(user.uid + "/profilePicture.jpg");
+        const storageRef = Storage().ref("avatars/" + user.uid + "/profilePicture.jpg");
         const task = storageRef.putFile(image.path);
 
         try {
             await task;
-            console.info(TAG + `Successfully uploaded profile picture for user'${user.uid}'`);
+            console.info(TAG + `Successfully uploaded profile picture for user: '${user.uid}'`);
 
             const imageURL = await storageRef.getDownloadURL();
             await user.updateProfile({ photoURL: imageURL });
-            console.info(TAG + `Successfully set profile picture for user '${user.uid}'`);
+            console.info(TAG + `Successfully set profile picture for user: '${user.uid}'`);
             await user.reload();
         } catch (error) {
+            console.log(error.code);
             Bugsnag.notify(error);
             console.warn(TAG + "Catched error in ImagePicker: " + error);
         }
@@ -62,45 +79,91 @@ const EditProfileScreen = props => {
     };
 
     return (
-        <View style={GlobalStyles.flex1}>
-            <Spinner visible={isLoading} />
-            <Modal isVisible={showModal} animationIn="slideInDown" animationOut="slideOutUp" style={styles.modal} onBackdropPress={toggleModal}>
-                <View style={styles.whiteBox}>
-                    <SettingsButton
-                        iconName="camera"
-                        title="Choose Avatar"
-                        arrow
-                        onPress={() => {
-                            ImagePicker.openPicker({
-                                cropping: true,
-                                mediaType: "photo",
-                                multiple: false,
-                                width: 400,
-                                height: 400,
-                                cropperToolbarTitle: "Choose Profile Picture",
-                            })
-                                .then(async image => {
-                                    await updateProfilePicture(image);
+        <ScrollView>
+            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={GlobalStyles.flex1}>
+                <Spinner visible={isLoading} />
+                <Modal isVisible={showModal} animationIn="slideInDown" animationOut="slideOutUp" style={styles.modal} onBackdropPress={toggleModal} backdropTransitionOutTiming={0}>
+                    <View style={styles.whiteBox}>
+                        <SettingsButton
+                            iconName="camera"
+                            title={I18n.t("chooseAvatar")}
+                            arrow
+                            onPress={() => {
+                                ImagePicker.openPicker({
+                                    cropping: true,
+                                    mediaType: "photo",
+                                    multiple: false,
+                                    width: 400,
+                                    height: 400,
+                                    cropperToolbarTitle: I18n.t("chooseAvatar"),
                                 })
-                                .catch(error => {
-                                    setIsLoading(false);
-                                    Bugsnag.notify(error);
-                                    console.warn(TAG + "Catched error in ImagePicker: " + error);
-                                });
-                        }}
-                    />
-                    <SettingsButton iconName="trash" title="Delete Avatar" arrow onPress={deleteAvatar} />
-                </View>
-            </Modal>
+                                    .then(async image => {
+                                        await updateProfilePicture(image);
+                                    })
+                                    .catch(error => {
+                                        setIsLoading(false);
+                                        switch (error.code) {
+                                            case "E_PICKER_CANCELLED":
+                                                console.info(TAG + "User cancelled image selection");
+                                                return;
+                                        }
+                                        Bugsnag.notify(error);
+                                        console.warn(TAG + "Catched error in ImagePicker: " + error + " Error code: " + error.code);
+                                    });
+                            }}
+                        />
+                        {photoURL ? <SettingsButton iconName="trash" title={I18n.t("deleteAvatar")} arrow onPress={deleteAvatar} /> : null}
+                    </View>
+                </Modal>
 
-            <ScrollView contentContainerStyle={styles.scrollView}>
-                <View style={styles.avatarContainer}>
-                    <TouchableOpacity onPress={toggleModal}>
-                        {photoURL ? <Avatar.Image source={{ uri: photoURL }} size={125} style={styles.avatarStyle} /> : <Avatar.Text size={125} style={styles.avatarStyle} label={firstLetter} />}
-                    </TouchableOpacity>
-                </View>
-            </ScrollView>
-        </View>
+                <ScrollView contentContainerStyle={styles.scrollView}>
+                    <View style={styles.avatarContainer}>
+                        <TouchableOpacity onPress={toggleModal}>
+                            {photoURL ? <Avatar.Image source={{ uri: photoURL }} size={125} style={styles.avatarStyle} /> : <Avatar.Text size={125} style={styles.avatarStyle} label={firstLetter} />}
+                        </TouchableOpacity>
+                    </View>
+                    <Formik
+                        initialValues={{ username: Auth().currentUser.displayName ? Auth().currentUser.displayName : "" }}
+                        validationSchema={yupSchema}
+                        onSubmit={async (values, actions) => {
+                            if (usernameEditable) {
+                                setIsLoading(true);
+                                await Auth()
+                                    .currentUser.updateProfile({ displayName: values.username })
+                                    .then(() => {
+                                        console.log(TAG + `Successfully updated username to '${values.username}'`);
+                                        setUsernameEditable(false);
+                                    })
+                                    .catch(error => {
+                                        Bugsnag.notify(error);
+                                        console.warn(TAG + "Error in submit username: " + error);
+                                    });
+                                await Auth().currentUser.reload();
+                                setIsLoading(false);
+                            } else {
+                                setUsernameEditable(true);
+                            }
+                        }}>
+                        {formikProps => (
+                            <View style={styles.userdataContainer}>
+                                <Input
+                                    title={I18n.t("username")}
+                                    value={formikProps.values.username}
+                                    onChangeText={formikProps.handleChange("username")}
+                                    editable={usernameEditable}
+                                    showIcon
+                                    iconName={usernameEditable ? "checkmark-sharp" : "pencil-sharp"}
+                                    onPressIcon={formikProps.handleSubmit}
+                                    returnKeyType="done"
+                                    onSubmitEditing={formikProps.handleSubmit}
+                                />
+                                {formikProps.errors.username && formikProps.touched.username ? <Text style={GlobalStyles.errorText}>{formikProps.touched.username && formikProps.errors.username}</Text> : null}
+                            </View>
+                        )}
+                    </Formik>
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </ScrollView>
     );
 };
 
@@ -124,6 +187,9 @@ const styles = StyleSheet.create({
         borderRadius: 5,
 
         justifyContent: "center",
+    },
+    userdataContainer: {
+        marginHorizontal: 20,
     },
 });
 
