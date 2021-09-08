@@ -87,4 +87,9 @@ export default {
     currentPassword: "Current password",
     newPassword: "New password",
     confirmNewPassword: "Confirm new password",
+    passwordsDontMatch: "Passwords don't match",
+    currentPasswordWrong: "Current password was wrong, please try again.",
+    passwordChanged: "Password Changed",
+    yourPasswordHasBeenChangedSuccessfully: "Your password has been changed successfully",
+    continue: "Continue",
 };

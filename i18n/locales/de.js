@@ -65,7 +65,7 @@ export default {
     // Settings
     account: "Konto",
     editProfile: "Profil bearbeiten",
-    changePassword: "Password \u00e4ndern",
+    changePassword: "Passwort \u00e4ndern",
     general: "Allgemein",
     changeLanguage: "Sprache \u00e4ndern",
     helpAndSupport: "Hilfe und Support",
@@ -87,4 +87,8 @@ export default {
     currentPassword: "Aktuelles Passwort",
     newPassword: "Neues Passwort",
     confirmNewPassword: "Best\u00e4tige neues Passwort",
+    currentPasswordWrong: "Das aktuelle Passwort war falsch, bitte versuche es erneut.",
+    passwordChanged: "Passwort Ge\u00e4ndert",
+    yourPasswordHasBeenChangedSuccessfully: "Dein Passwort wurde erfolgreich ge\u00e4ndert",
+    continue: "Weiter",
 };
