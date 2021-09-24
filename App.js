@@ -16,7 +16,6 @@ import Bugsnag from "@bugsnag/react-native";
 
 const TAG = "[App.js]: "; // Console Log Tag
 
-
 const rootReducer = combineReducers({
     vocables: vocableReducer,
     auth: authReducer,
@@ -44,8 +43,8 @@ export default function App() {
         await initLanguage();
         Bugsnag.start();
         return Font.loadAsync({
-            "ms-new-tai-lue": require("./assets/fonts/microsoft-new-tai-lue-regular.ttf"),
-            "ms-new-tai-lue-bold": require("./assets/fonts/microsoft-new-tai-lue-bold.ttf"),
+            "roboto": require("./assets/fonts/roboto-regular.ttf"),
+            "roboto-bold": require("./assets/fonts/roboto-bold.ttf"),
         });
     };
 
