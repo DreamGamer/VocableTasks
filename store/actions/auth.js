@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import * as environments from "../../environments/env";
 import Bugsnag from "@bugsnag/react-native";
 import auth from "@react-native-firebase/auth";
-import I18n from "i18n-js";
+import { useTranslation } from "react-i18next";
 import { firebase } from "@react-native-firebase/firestore";
 
 const TAG = "[Auth Action]: "; // Console Log Tag
@@ -48,6 +48,7 @@ export const sendEmail = () => {
 // Reset Password with Email function
 export const resetPasswordWithEmail = email => {
     return async (dispatch, getState) => {
+        const { t } = useTranslation();
         await auth()
             .sendPasswordResetEmail(email)
             .then(() => {
@@ -56,36 +57,36 @@ export const resetPasswordWithEmail = email => {
             .catch(error => {
                 switch (error.code) {
                     case "auth/invalid-email":
-                        return Promise.reject(I18n.t("authInvalidEmail"));
+                        return Promise.reject(t("authInvalidEmail"));
 
                     case "auth/missing-android-pkg-name":
-                        return Promise.reject(I18n.t("authMissingAndroidPKGName"));
+                        return Promise.reject(t("authMissingAndroidPKGName"));
 
                     case "auth/missing-continue-uri":
-                        return Promise.reject(I18n.t("authMissingContinueURL"));
+                        return Promise.reject(t("authMissingContinueURL"));
 
                     case "auth/missing-ios-bundle-id":
-                        return Promise.reject(I18n.t("authMissingIOSBundleID"));
+                        return Promise.reject(t("authMissingIOSBundleID"));
 
                     case "auth/invalid-continue-uri":
-                        return Promise.reject(I18n.t("authInvalidContinueURL"));
+                        return Promise.reject(t("authInvalidContinueURL"));
 
                     case "auth/unauthorized-continue-uri":
-                        return Promise.reject(I18n.t("authUnauthorizedContinueURL"));
+                        return Promise.reject(t("authUnauthorizedContinueURL"));
 
                     case "auth/user-not-found":
-                        return Promise.reject(I18n.t("authUserNotFound"));
+                        return Promise.reject(t("authUserNotFound"));
 
                     case "auth/too-many-requests":
-                        return Promise.reject(I18n.t("authTooManyRequests"));
+                        return Promise.reject(t("authTooManyRequests"));
 
                     case "auth/network-request-failed":
-                        return Promise.reject(I18n.t("authNetworkRequestFailed"));
+                        return Promise.reject(t("authNetworkRequestFailed"));
 
                     default:
                         Bugsnag.notify(error);
                         console.warn(TAG + "Undefined error while resetPasswordWithEmail: " + error.message);
-                        return Promise.reject(I18n.t("somethingWentWrong"));
+                        return Promise.reject(t("somethingWentWrong"));
                 }
             });
     };
@@ -115,6 +116,7 @@ export const updateUserInfo = user => {
 
 export const signUp = (email, password) => {
     return async dispatch => {
+        const { t } = useTranslation();
         await auth()
             .createUserWithEmailAndPassword(email, password)
             .then(userInfo => {
@@ -124,27 +126,27 @@ export const signUp = (email, password) => {
             .catch(error => {
                 switch (error.code) {
                     case "auth/email-already-in-use":
-                        return Promise.reject(I18n.t("authEmailAlreadyInUse"));
+                        return Promise.reject(t("authEmailAlreadyInUse"));
 
                     case "auth/invalid-email":
-                        return Promise.reject(I18n.t("authInvalidEmail"));
+                        return Promise.reject(t("authInvalidEmail"));
 
                     case "auth/operation-not-allowed":
-                        return Promise.reject(I18n.t("authOperationNotAllowed"));
+                        return Promise.reject(t("authOperationNotAllowed"));
 
                     case "auth/weak-password":
-                        return Promise.reject(I18n.t("authWeakPassword"));
+                        return Promise.reject(t("authWeakPassword"));
 
                     case "auth/too-many-requests":
-                        return Promise.reject(I18n.t("authTooManyRequests"));
+                        return Promise.reject(t("authTooManyRequests"));
 
                     case "auth/network-request-failed":
-                        return Promise.reject(I18n.t("authNetworkRequestFailed"));
+                        return Promise.reject(t("authNetworkRequestFailed"));
 
                     default:
                         Bugsnag.notify(error);
                         console.warn(TAG + "Undefined error while signUp: " + error.message);
-                        return Promise.reject(I18n.t("somethingWentWrong"));
+                        return Promise.reject(t("somethingWentWrong"));
                 }
             });
     };
@@ -152,6 +154,7 @@ export const signUp = (email, password) => {
 
 export const login = (email, password) => {
     return async dispatch => {
+        const { t } = useTranslation();
         await auth()
             .signInWithEmailAndPassword(email, password)
             .then(userInfo => {
@@ -161,27 +164,27 @@ export const login = (email, password) => {
             .catch(error => {
                 switch (error.code) {
                     case "auth/invalid-email":
-                        return Promise.reject(I18n.t("authInvalidEmail"));
+                        return Promise.reject(t("authInvalidEmail"));
 
                     case "auth/user-disabled":
-                        return Promise.reject(I18n.t("authUserDisabled"));
+                        return Promise.reject(t("authUserDisabled"));
 
                     case "auth/user-not-found":
-                        return Promise.reject(I18n.t("authUserNotFound"));
+                        return Promise.reject(t("authUserNotFound"));
 
                     case "auth/wrong-password":
-                        return Promise.reject(I18n.t("authWrongPassword"));
+                        return Promise.reject(t("authWrongPassword"));
 
                     case "auth/too-many-requests":
-                        return Promise.reject(I18n.t("authTooManyRequests"));
+                        return Promise.reject(t("authTooManyRequests"));
 
                     case "auth/network-request-failed":
-                        return Promise.reject(I18n.t("authNetworkRequestFailed"));
+                        return Promise.reject(t("authNetworkRequestFailed"));
 
                     default:
                         Bugsnag.notify(error);
                         console.warn(TAG + "Undefined error while signUp: " + error.message);
-                        return Promise.reject(I18n.t("somethingWentWrong"));
+                        return Promise.reject(t("somethingWentWrong"));
                 }
             });
     };

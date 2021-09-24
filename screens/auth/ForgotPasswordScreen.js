@@ -12,9 +12,10 @@ import { useDispatch } from "react-redux";
 import TimerMixin from "react-timer-mixin";
 
 // Import Translation function
-import I18n from "../../i18n/translation";
+import { useTranslation } from "react-i18next";
 
 const ForgotPasswordScreen = props => {
+    const { t } = useTranslation();
     // States
     const [isLoading, setIsLoading] = useState(false);
     const [hasError, setHasError] = useState(null);
@@ -22,7 +23,7 @@ const ForgotPasswordScreen = props => {
     const [waitTimer, setWaitTimer] = useState(0);
 
     const yupSchema = yup.object({
-        email: yup.string(I18n.t("emailMustBeAString")).email(I18n.t("emailMustBeAValidEmail")).required(I18n.t("emailIsRequired")).min(5),
+        email: yup.string(t("emailMustBeAString")).email(t("emailMustBeAValidEmail")).required(t("emailIsRequired")).min(5),
     });
 
     // Redux Dispatch
@@ -30,7 +31,7 @@ const ForgotPasswordScreen = props => {
 
     useEffect(() => {
         if (hasError) {
-            Alert.alert(I18n.t("anErrorOccurred"), hasError, [{ text: "Okay" }]);
+            Alert.alert(t("anErrorOccurred"), hasError, [{ text: "Okay" }]);
         }
     }, [hasError]);
 
@@ -58,7 +59,7 @@ const ForgotPasswordScreen = props => {
                 <ScrollView contentContainerStyle={styles.scrollViewCentered} keyboardShouldPersistTaps="handled">
                     <View style={styles.container}>
                         <View style={GlobalStyles.centered}>
-                            <Text style={GlobalStyles.h1}>{I18n.t("resetPassword")}</Text>
+                            <Text style={GlobalStyles.h1}>{t("resetPassword")}</Text>
                         </View>
 
                         <Formik
@@ -81,9 +82,9 @@ const ForgotPasswordScreen = props => {
                             }}>
                             {formikProps => (
                                 <View>
-                                    <Label title={I18n.t("labelEmail") + ":"} style={styles.label} />
+                                    <Label title={t("labelEmail") + ":"} style={styles.label} />
                                     <Input
-                                        placeholder={I18n.t("labelEmail")}
+                                        placeholder={t("labelEmail")}
                                         onBlur={formikProps.handleBlur("email")}
                                         onChangeText={formikProps.handleChange("email")}
                                         value={formikProps.values.Email}
@@ -98,14 +99,14 @@ const ForgotPasswordScreen = props => {
                                     {emailSended ? (
                                         <View>
                                             <Text style={styles.timer}>
-                                                {I18n.t("pleaseWait")} {waitTimer} {I18n.t("seconds")}.
+                                                {t("pleaseWait")} {waitTimer} {t("seconds")}.
                                             </Text>
                                         </View>
                                     ) : isLoading ? (
                                         <ActivityIndicator size="small" color={Colors.ActivityIndicatorWhite} />
                                     ) : (
                                         <View style={styles.buttonContainer}>
-                                            <Button title={I18n.t("sendEmail")} onPress={formikProps.handleSubmit} />
+                                            <Button title={t("sendEmail")} onPress={formikProps.handleSubmit} />
                                         </View>
                                     )}
                                 </View>

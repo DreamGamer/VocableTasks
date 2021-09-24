@@ -10,11 +10,10 @@ import * as yup from "yup";
 import GlobalStyles from "../../constants/GlobalStyles";
 import * as authActions from "../../store/actions/auth";
 import { useDispatch, useSelector } from "react-redux";
-
-// Import Translation function
-import I18n from "../../i18n/translation";
+import { useTranslation } from "react-i18next";
 
 const LoginScreen = props => {
+    const { t } = useTranslation();
     // States
     const [isLoading, setIsLoading] = useState(false);
     const [hasError, setHasError] = useState(null);
@@ -23,8 +22,8 @@ const LoginScreen = props => {
     let isMounted = true;
 
     const yupSchema = yup.object({
-        Email: yup.string(I18n.t("emailMustBeAString")).email(I18n.t("emailMustBeAValidEmail")).required(I18n.t("emailIsRequired")).min(5),
-        Password: yup.string(I18n.t("passwordMustBeAString")).required(I18n.t("passwordIsRequired")),
+        Email: yup.string(t("emailMustBeAString")).email(t("emailMustBeAValidEmail")).required(t("emailIsRequired")).min(5),
+        Password: yup.string(t("passwordMustBeAString")).required(t("passwordIsRequired")),
     });
 
     // Redux Dispatch
@@ -34,7 +33,7 @@ const LoginScreen = props => {
 
     useEffect(() => {
         if (hasError && isMounted) {
-            Alert.alert(I18n.t("anErrorOccurred"), hasError, [{ text: I18n.t("okay") }]);
+            Alert.alert(t("anErrorOccurred"), hasError, [{ text: t("okay") }]);
         }
         return () => {
             isMounted = false;
@@ -47,7 +46,7 @@ const LoginScreen = props => {
                 <ScrollView contentContainerStyle={styles.scrollViewCentered} keyboardShouldPersistTaps="handled">
                     <View style={styles.container}>
                         <View style={GlobalStyles.centered}>
-                            <Text style={GlobalStyles.h1}>{I18n.t("labelLogin")}</Text>
+                            <Text style={GlobalStyles.h1}>{t("labelLogin")}</Text>
                         </View>
                         <Formik
                             initialValues={{
@@ -69,9 +68,9 @@ const LoginScreen = props => {
                             }}>
                             {formikProps => (
                                 <View>
-                                    <Label title={I18n.t("labelEmail") + ":"} style={styles.label} />
+                                    <Label title={t("labelEmail") + ":"} style={styles.label} />
                                     <Input
-                                        placeholder={I18n.t("labelEmail")}
+                                        placeholder={t("labelEmail")}
                                         onBlur={formikProps.handleBlur("Email")}
                                         onChangeText={formikProps.handleChange("Email")}
                                         value={formikProps.values.Email}
@@ -86,9 +85,9 @@ const LoginScreen = props => {
                                     />
                                     {formikProps.errors.Email && formikProps.touched.Email ? <Text style={GlobalStyles.errorText}>{formikProps.touched.Email && formikProps.errors.Email}</Text> : null}
 
-                                    <Label title={I18n.t("labelPassword") + ":"} style={styles.label} />
+                                    <Label title={t("labelPassword") + ":"} style={styles.label} />
                                     <Input
-                                        placeholder={I18n.t("labelPassword")}
+                                        placeholder={t("labelPassword")}
                                         onBlur={formikProps.handleBlur("Password")}
                                         onChangeText={formikProps.handleChange("Password")}
                                         value={formikProps.values.Password}
@@ -112,7 +111,7 @@ const LoginScreen = props => {
                                         onPress={() => {
                                             props.navigation.navigate("forgotPassword");
                                         }}>
-                                        <Text style={styles.forgetPasswordText}>{I18n.t("forgotPassword")}</Text>
+                                        <Text style={styles.forgetPasswordText}>{t("forgotPassword")}</Text>
                                     </Pressable>
 
                                     {isLoading ? (
@@ -127,12 +126,12 @@ const LoginScreen = props => {
                         </Formik>
 
                         <View style={styles.signupContainer}>
-                            <Text style={styles.signupText}>{I18n.t("noAccountYet")}</Text>
+                            <Text style={styles.signupText}>{t("noAccountYet")}</Text>
                             <Pressable
                                 onPress={() => {
                                     props.navigation.navigate("signup");
                                 }}>
-                                <Text style={styles.signupTextLink}> {I18n.t("signUpHere")}</Text>
+                                <Text style={styles.signupTextLink}> {t("signUpHere")}</Text>
                             </Pressable>
                         </View>
                     </View>

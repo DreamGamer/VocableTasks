@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Alert, Button, KeyboardAvoidingView, ScrollView, StyleSheet, Text, View } from "react-native";
-import I18n from "../../i18n/translation";
+import { useTranslation } from "react-i18next";
 import Auth from "@react-native-firebase/auth";
 import GlobalStyles from "../../constants/GlobalStyles";
 import Input from "../../components/Input";
@@ -12,19 +12,13 @@ import Modal from "react-native-modal";
 import Spinner from "react-native-loading-spinner-overlay";
 import Label from "../../components/Label";
 import Bugsnag from "@bugsnag/react-native";
+import { Translation } from "../../i18n/translation";
 
 const TAG = "[ChangePasswordScreen]: "; // Console Log Tag
 
-const yupSchema = yup.object({
-    currentPassword: yup.string(I18n.t("currentPasswordMustBeAString")).required(I18n.t("currentPasswordIsRequired")),
-    newPassword: yup.string(I18n.t("newPasswordMustBeAString")).required(I18n.t("newPasswordIsRequired")).min(6, I18n.t("newPasswordMustBeAtLeast6Characters")),
-    confirmNewPassword: yup
-        .string(I18n.t("confirmNewPasswordMustBeAString"))
-        .required(I18n.t("confirmNewPasswordIsRequired"))
-        .oneOf([yup.ref("newPassword"), null], I18n.t("passwordsMustMatch")),
-});
 
 const ChangePasswordScreen = props => {
+    const { t } = useTranslation();
     const [formButtonClicked, setFormButtonClicked] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [hasError, setHasError] = useState(null);
@@ -32,10 +26,19 @@ const ChangePasswordScreen = props => {
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
+    
+    const yupSchema = yup.object({
+        currentPassword: yup.string(t("currentPasswordMustBeAString")).required(t("currentPasswordIsRequired")),
+        newPassword: yup.string(t("newPasswordMustBeAString")).required(t("newPasswordIsRequired")).min(6, t("newPasswordMustBeAtLeast6Characters")),
+        confirmNewPassword: yup
+            .string(t("confirmNewPasswordMustBeAString"))
+            .required(t("confirmNewPasswordIsRequired"))
+            .oneOf([yup.ref("newPassword"), null], t("passwordsMustMatch")),
+    });
 
     useEffect(() => {
         if (hasError) {
-            Alert.alert(I18n.t("anErrorOccurred"), hasError, [{ text: I18n.t("okay") }]);
+            Alert.alert(t("anErrorOccurred"), hasError, [{ text: t("okay") }]);
         }
     }, [hasError]);
 
@@ -47,10 +50,10 @@ const ChangePasswordScreen = props => {
                 <Modal isVisible={changedPassword} animationIn="slideInUp" animationOut="slideOutDown" backdropTransitionOutTiming={0} style={styles.modal}>
                     <View style={styles.modalContainer}>
                         <View style={styles.modalContent}>
-                            <Text style={styles.headerText}>{I18n.t("passwordChanged")}</Text>
-                            <Text style={styles.text}>{I18n.t("yourPasswordHasBeenChangedSuccessfully")}</Text>
+                            <Text style={styles.headerText}>{t("passwordChanged")}</Text>
+                            <Text style={styles.text}>{t("yourPasswordHasBeenChangedSuccessfully")}</Text>
                             <Button
-                                title={I18n.t("continue")}
+                                title={t("continue")}
                                 onPress={() => {
                                     props.navigation.goBack();
                                 }}
@@ -82,37 +85,37 @@ const ChangePasswordScreen = props => {
                                         switch (error.code) {
                                             case "auth/wrong-password":
                                                 setIsLoading(false);
-                                                setHasError(I18n.t("currentPasswordWrong"));
+                                                setHasError(t("currentPasswordWrong"));
                                                 console.info(TAG + `Handled error: '${error.code}'`);
                                                 break;
                                             case "auth/too-many-requests":
                                                 setIsLoading(false);
-                                                setHasError(I18n.t("authTooManyRequests"));
+                                                setHasError(t("authTooManyRequests"));
                                                 console.info(TAG + `Handled error: '${error.code}'`);
                                                 break;
                                             default:
                                                 setIsLoading(false);
-                                                setHasError(I18n.t("somethingWentWrong"));
+                                                setHasError(t("somethingWentWrong"));
                                                 console.warn(TAG + "Catched error in change password form: " + error);
                                                 Bugsnag.notify(error);
                                         }
                                     });
                             } else {
                                 setIsLoading(false);
-                                setHasError(I18n.t("passwordsDontMatch"));
+                                setHasError(t("passwordsDontMatch"));
                             }
                         } catch (error) {
                             setIsLoading(false);
-                            setHasError(I18n.t("somethingWentWrong"));
+                            setHasError(t("somethingWentWrong"));
                             console.warn(TAG + "Catched error in change password form: " + error);
                             Bugsnag.notify(error);
                         }
                     }}>
                     {formikProps => (
                         <View style={styles.container}>
-                            <Text style={styles.resetPasswordText}>{I18n.t("changePassword")}</Text>
+                            <Text style={styles.resetPasswordText}>{t("changePassword")}</Text>
                             <Input
-                                title={I18n.t("currentPassword")}
+                                title={t("currentPassword")}
                                 onChangeText={formikProps.handleChange("currentPassword")}
                                 value={formikProps.values.currentPassword}
                                 editable={!isLoading}
@@ -128,7 +131,7 @@ const ChangePasswordScreen = props => {
                             ) : null}
 
                             <Input
-                                title={I18n.t("newPassword")}
+                                title={t("newPassword")}
                                 onChangeText={formikProps.handleChange("newPassword")}
                                 value={formikProps.values.newPassword}
                                 editable={!isLoading}
@@ -142,7 +145,7 @@ const ChangePasswordScreen = props => {
                             {formikProps.errors.newPassword && formikProps.touched.newPassword ? <Text style={GlobalStyles.errorText}>{formikProps.touched.newPassword && formikProps.errors.newPassword}</Text> : null}
 
                             <Input
-                                title={I18n.t("confirmNewPassword")}
+                                title={t("confirmNewPassword")}
                                 onChangeText={formikProps.handleChange("confirmNewPassword")}
                                 value={formikProps.values.confirmNewPassword}
                                 editable={!isLoading}
@@ -158,7 +161,7 @@ const ChangePasswordScreen = props => {
                             ) : null}
                             <View style={styles.submitButtonContainer}>
                                 <Button
-                                    title={I18n.t("changePassword")}
+                                    title={t("changePassword")}
                                     onPress={() => {
                                         setFormButtonClicked(true);
                                         formikProps.handleSubmit();
@@ -213,7 +216,7 @@ const styles = StyleSheet.create({
 
 export const ChangePasswordScreenOptions = navigationData => {
     return {
-        title: I18n.t("changePassword"),
+        title: <Translation name="changePassword" />,
     };
 };
 

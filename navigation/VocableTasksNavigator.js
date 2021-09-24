@@ -6,7 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
 import * as authActions from "../store/actions/auth";
 import DrawerContent from "./DrawerContent";
-import I18n from "i18n-js";
+import { useTranslation } from "react-i18next";
 
 // Screens
 import VocabularysScreen, { VocabularysScreenOptions } from "../screens/learning/vocabulary/VocabularysScreen";
@@ -29,6 +29,7 @@ import HelpAndSupportScreen, { HelpAndSupportScreenOptions } from "../screens/se
 const VocableTasksDrawerNavigator = createDrawerNavigator();
 
 export const VocableTasksNavigator = () => {
+    const { t } = useTranslation();
     const dispatch = useDispatch();
     return (
         <VocableTasksDrawerNavigator.Navigator
@@ -46,7 +47,7 @@ export const VocableTasksNavigator = () => {
                 name="learning"
                 component={LearningNavigator}
                 options={{
-                    title: I18n.t("learn"),
+                    title: t("learn"),
                     drawerIcon: ({ color, size }) => <Ionicons name="book-outline" size={size} color={color} />,
                 }}
             />
@@ -54,7 +55,7 @@ export const VocableTasksNavigator = () => {
                 name="settings"
                 component={SettingsNavigator}
                 options={{
-                    title: I18n.t("settings"),
+                    title: t("settings"),
                     drawerIcon: ({ color, size }) => <Ionicons name="settings-outline" size={size} color={color} />,
                 }}
             />
@@ -65,13 +66,14 @@ export const VocableTasksNavigator = () => {
 const LearningBottomTabsNavigator = createBottomTabNavigator();
 
 const LearningNavigator = () => {
+    const { t } = useTranslation();
     return (
         <LearningBottomTabsNavigator.Navigator>
             <LearningBottomTabsNavigator.Screen
                 name="vocabulary"
                 component={VocabularyNavigator}
                 options={{
-                    tabBarLabel: I18n.t("vocabulary"),
+                    tabBarLabel: t("vocabulary"),
                     tabBarIcon: tabInformation => {
                         return <Ionicons name="book" size={25} color={tabInformation.tintColor} />;
                     },
@@ -81,7 +83,7 @@ const LearningNavigator = () => {
                 name="learn"
                 component={LearnNavigator}
                 options={{
-                    tabBarLabel: I18n.t("learn"),
+                    tabBarLabel: t("learn"),
                     tabBarIcon: tabInformation => {
                         return <Ionicons name="create" size={25} color={tabInformation.tintColor} />;
                     },

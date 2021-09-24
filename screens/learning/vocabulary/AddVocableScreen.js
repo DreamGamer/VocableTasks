@@ -12,22 +12,24 @@ import GlobalStyles from "../../../constants/GlobalStyles";
 import * as environments from "../../../environments/env";
 import algoliasearch from "algoliasearch/lite";
 import SearchHits from "../../../components/SearchHits";
+import { Translation } from "../../../i18n/translation";
 
-import I18n from "../../../i18n/translation";
+import { useTranslation } from "react-i18next";
 
 const TAG = "[AddVocable Screen]: "; // Console Log Tag
 
-const yupSchema = yup.object({
-    wordENG: yup.string(I18n.t("wordENGMustBeAString")).required(I18n.t("wordENGIsRequired")),
-    wordDE: yup.string(I18n.t("wordDEMustBeAString")).required(I18n.t("wordDEIsRequired")),
-});
-
 const AddVocableScreen = props => {
+    const { t } = useTranslation();
     // States
     const [hasError, setHasError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [searchedEnglishWords, setSearchedEnglishWords] = useState({});
     const [searchedGermanWords, setSearchedGermanWords] = useState({});
+
+    const yupSchema = yup.object({
+        wordENG: yup.string(t("wordENGMustBeAString")).required(t("wordENGIsRequired")),
+        wordDE: yup.string(t("wordDEMustBeAString")).required(t("wordDEIsRequired")),
+    });
 
     const secondInput = useRef();
 
@@ -72,7 +74,7 @@ const AddVocableScreen = props => {
 
     useEffect(() => {
         if (hasError) {
-            Alert.alert(I18n.t("anErrorOccurred"), hasError, [{ text: I18n.t("okay") }]);
+            Alert.alert(t("anErrorOccurred"), hasError, [{ text: t("okay") }]);
         }
     }, [hasError]);
 
@@ -96,9 +98,9 @@ const AddVocableScreen = props => {
                 {formikProps => (
                     <View>
                         <Input
-                            title={I18n.t("english")}
+                            title={t("english")}
                             onBlur={formikProps.handleBlur("wordENG")}
-                            placeholder={I18n.t("enterTheEnglishWord")}
+                            placeholder={t("enterTheEnglishWord")}
                             onChangeText={value => {
                                 formikProps.setFieldValue("wordENG", value);
                                 searchVocable(value, "en");
@@ -135,9 +137,9 @@ const AddVocableScreen = props => {
                         {formikProps.errors.wordENG && formikProps.touched.wordENG ? <Text style={GlobalStyles.errorText}>{formikProps.errors.wordENG}</Text> : null}
                         <View style={styles.placeholder} />
                         <Input
-                            title={I18n.t("german")}
+                            title={t("german")}
                             onBlur={formikProps.handleBlur("wordDE")}
-                            placeholder={I18n.t("enterTheGermanWord")}
+                            placeholder={t("enterTheGermanWord")}
                             onChangeText={value => {
                                 formikProps.setFieldValue("wordDE", value);
                                 searchVocable(value, "de");
@@ -172,7 +174,7 @@ const AddVocableScreen = props => {
 
                         <Text style={GlobalStyles.errorText}>{formikProps.touched.wordDE && formikProps.errors.wordDE}</Text>
 
-                        {isLoading ? <ActivityIndicator size="small" color={Colors.grey} /> : <Button title={I18n.t("addButton")} onPress={formikProps.handleSubmit} />}
+                        {isLoading ? <ActivityIndicator size="small" color={Colors.grey} /> : <Button title={t("addButton")} onPress={formikProps.handleSubmit} />}
                     </View>
                 )}
             </Formik>
@@ -182,7 +184,7 @@ const AddVocableScreen = props => {
 
 export const AddVocableScreenOptions = navigationData => {
     return {
-        title: I18n.t("addVocable"),
+        title: <Translation name="addVocable" />,
     };
 };
 

@@ -10,23 +10,25 @@ import * as yup from "yup";
 import GlobalStyles from "../../constants/GlobalStyles";
 import * as authActions from "../../store/actions/auth";
 import { useDispatch } from "react-redux";
-import I18n from "../../i18n/translation";
+import { useTranslation } from "react-i18next";
 
-const yupSchema = yup.object({
-    Email: yup.string().email().required().min(5),
-    Password: yup.string().required().min(6),
-    Confirm_Password: yup
-        .string()
-        .required(I18n.t("confirmPasswordIsRequired"))
-        .oneOf([yup.ref("Password"), null], I18n.t("passwordsMustMatch")),
-});
 
 const SignUpScreen = props => {
+    const { t } = useTranslation();
     // States
     const [isLoading, setIsLoading] = useState(false);
     const [hasError, setHasError] = useState(null);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    const yupSchema = yup.object({
+        Email: yup.string().email().required().min(5),
+        Password: yup.string().required().min(6),
+        Confirm_Password: yup
+            .string()
+            .required(t("confirmPasswordIsRequired"))
+            .oneOf([yup.ref("Password"), null], t("passwordsMustMatch")),
+    });
 
     const passwordInput = useRef();
     const confirmPasswordInput = useRef();
@@ -35,7 +37,7 @@ const SignUpScreen = props => {
 
     useEffect(() => {
         if (hasError) {
-            Alert.alert(I18n.t("anErrorOccurred"), hasError, [{ text: I18n.t("okay") }]);
+            Alert.alert(t("anErrorOccurred"), hasError, [{ text: t("okay") }]);
         }
     }, [hasError]);
 
@@ -45,7 +47,7 @@ const SignUpScreen = props => {
                 <ScrollView contentContainerStyle={styles.scrollViewCentered} keyboardShouldPersistTaps="handled">
                     <View style={styles.container}>
                         <View style={GlobalStyles.centered}>
-                            <Text style={GlobalStyles.h1}>{I18n.t("createAccount")}</Text>
+                            <Text style={GlobalStyles.h1}>{t("createAccount")}</Text>
                         </View>
                         <Formik
                             initialValues={{
@@ -72,9 +74,9 @@ const SignUpScreen = props => {
                             }}>
                             {formikProps => (
                                 <View>
-                                    <Label title={I18n.t("labelEmail") + ":"} style={styles.label} />
+                                    <Label title={t("labelEmail") + ":"} style={styles.label} />
                                     <Input
-                                        placeholder={I18n.t("labelEmail")}
+                                        placeholder={t("labelEmail")}
                                         onBlur={formikProps.handleBlur("Email")}
                                         onChangeText={formikProps.handleChange("Email")}
                                         value={formikProps.values.Email}
@@ -89,9 +91,9 @@ const SignUpScreen = props => {
                                     />
                                     {formikProps.errors.Email && formikProps.touched.Email ? <Text style={GlobalStyles.errorText}>{formikProps.touched.Email && formikProps.errors.Email}</Text> : null}
 
-                                    <Label title={I18n.t("labelPassword") + ":"} style={styles.label} />
+                                    <Label title={t("labelPassword") + ":"} style={styles.label} />
                                     <Input
-                                        placeholder={I18n.t("labelPassword")}
+                                        placeholder={t("labelPassword")}
                                         onBlur={formikProps.handleBlur("Password")}
                                         onChangeText={formikProps.handleChange("Password")}
                                         value={formikProps.values.Password}
@@ -113,9 +115,9 @@ const SignUpScreen = props => {
                                     />
                                     {formikProps.errors.Password && formikProps.touched.Password ? <Text style={GlobalStyles.errorText}>{formikProps.touched.Password && formikProps.errors.Password}</Text> : null}
 
-                                    <Label title={I18n.t("confirmPassword") + ":"} style={styles.label} />
+                                    <Label title={t("confirmPassword") + ":"} style={styles.label} />
                                     <Input
-                                        placeholder={I18n.t("confirmPassword")}
+                                        placeholder={t("confirmPassword")}
                                         onBlur={formikProps.handleBlur("Confirm_Password")}
                                         onChangeText={formikProps.handleChange("Confirm_Password")}
                                         value={formikProps.values.Confirm_Password}
@@ -140,19 +142,19 @@ const SignUpScreen = props => {
                                         <ActivityIndicator size="small" color={Colors.ActivityIndicatorWhite} />
                                     ) : (
                                         <View style={styles.buttonContainer}>
-                                            <Button title={I18n.t("signUp")} onPress={formikProps.handleSubmit} />
+                                            <Button title={t("signUp")} onPress={formikProps.handleSubmit} />
                                         </View>
                                     )}
                                 </View>
                             )}
                         </Formik>
                         <View style={styles.loginContainer}>
-                            <Text style={styles.loginText}>{I18n.t("alreadySignedUp")}</Text>
+                            <Text style={styles.loginText}>{t("alreadySignedUp")}</Text>
                             <Pressable
                                 onPress={() => {
                                     props.navigation.goBack();
                                 }}>
-                                <Text style={styles.LoginTextLink}> {I18n.t("loginHere")}</Text>
+                                <Text style={styles.LoginTextLink}> {t("loginHere")}</Text>
                             </Pressable>
                         </View>
                     </View>

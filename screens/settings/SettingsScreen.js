@@ -8,19 +8,21 @@ import GlobalStyles from "../../constants/GlobalStyles";
 import SettingsButton from "../../components/SettingsButton";
 import { useDispatch } from "react-redux";
 import * as authActions from "../../store/actions/auth";
-import I18n from "../../i18n/translation";
+import { useTranslation } from "react-i18next";
+import { Translation } from "../../i18n/translation";
 
 const SettingsScreen = props => {
+    const { t } = useTranslation();
     const dispatch = useDispatch();
     return (
         <View style={GlobalStyles.flex1}>
             <ScrollView contentContainerStyle={styles.scrollView}>
                 <View style={styles.topContent}>
-                    <Text style={styles.title}>{I18n.t("account")}</Text>
+                    <Text style={styles.title}>{t("account")}</Text>
                     <View style={styles.whiteBox}>
                         <SettingsButton
                             iconName="person-outline"
-                            title={I18n.t("editProfile")}
+                            title={t("editProfile")}
                             arrow
                             onPress={() => {
                                 props.navigation.navigate("editProfile");
@@ -28,7 +30,7 @@ const SettingsScreen = props => {
                         />
                         <SettingsButton
                             iconName="key-outline"
-                            title={I18n.t("changePassword")}
+                            title={t("changePassword")}
                             arrow
                             onPress={() => {
                                 props.navigation.navigate("changePassword");
@@ -36,11 +38,11 @@ const SettingsScreen = props => {
                         />
                     </View>
 
-                    <Text style={styles.title}>{I18n.t("general")}</Text>
+                    <Text style={styles.title}>{t("general")}</Text>
                     <View style={styles.whiteBox}>
                         <SettingsButton
                             iconName="globe-outline"
-                            title={I18n.t("changeLanguage")}
+                            title={t("changeLanguage")}
                             arrow
                             onPress={() => {
                                 props.navigation.navigate("changeLanguage");
@@ -48,7 +50,7 @@ const SettingsScreen = props => {
                         />
                         <SettingsButton
                             iconName="help-buoy-outline"
-                            title={I18n.t("helpAndSupport")}
+                            title={t("helpAndSupport")}
                             arrow
                             onPress={() => {
                                 props.navigation.navigate("helpAndSupport");
@@ -61,7 +63,7 @@ const SettingsScreen = props => {
                         <SettingsButton
                             iconName="log-out-outline"
                             iconColor={Colors.red}
-                            title={I18n.t("logout")}
+                            title={t("logout")}
                             titleColor={Colors.red}
                             onPress={() => {
                                 dispatch(authActions.logout());
@@ -76,7 +78,7 @@ const SettingsScreen = props => {
 
 export const SettingsScreenOptions = navigationData => {
     return {
-        title: I18n.t("settings"),
+        title: <Translation name="settings" />,
         headerLeft: () => (
             // HeaderButton to toggle the Drawer
             <HeaderButtons HeaderButtonComponent={HeaderButton}>

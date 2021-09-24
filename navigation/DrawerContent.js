@@ -9,10 +9,11 @@ import Colors from "../constants/Colors";
 import * as authActions from "../store/actions/auth";
 import auth from "@react-native-firebase/auth";
 import DefaultValues from "../constants/DefaultValues";
-import I18n from "i18n-js";
+import { useTranslation } from "react-i18next";
 import Auth from "@react-native-firebase/auth";
 
 const DrawerContent = props => {
+    const { t } = useTranslation();
     const dispatch = useDispatch();
     const photoURL = Auth().currentUser.photoURL;
     const firstLetter = Auth().currentUser.displayName.charAt(0);
@@ -34,7 +35,7 @@ const DrawerContent = props => {
             <Drawer.Section style={styles.bottomSection}>
                 <Drawer.Item
                     icon={({ color, size }) => <Ionicons name="log-out-outline" size={size} color={color} />}
-                    label={I18n.t("logout")}
+                    label={t("logout")}
                     onPress={() => {
                         dispatch(authActions.logout());
                     }}

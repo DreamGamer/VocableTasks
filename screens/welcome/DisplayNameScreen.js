@@ -10,13 +10,14 @@ import GlobalStyles from "../../constants/GlobalStyles";
 import { Formik } from "formik";
 import Label from "../../components/Label";
 import * as yup from "yup";
-import I18n from "../../i18n/translation";
+import { useTranslation } from "react-i18next";
 
 const yupSchema = yup.object({
     name: yup.string("Name must be a string").required("Name is required").matches("^[A-z0-9]+$", "Name can't have symbols"),
 });
 
 const DisplayNameScreen = props => {
+    const { t } = useTranslation();
     // React States
     const [isLoading, setIsLoading] = useState(false);
     const [hasError, setHasError] = useState(null);
@@ -43,7 +44,7 @@ const DisplayNameScreen = props => {
     // Only appears if hasError change
     useEffect(() => {
         if (hasError) {
-            Alert.alert(I18n.t("anErrorOccurred"), hasError.message, [{ text: I18n.t("okay") }]);
+            Alert.alert(t("anErrorOccurred"), hasError.message, [{ text: t("okay") }]);
         }
     }, [hasError]);
 

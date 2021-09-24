@@ -8,25 +8,27 @@ import * as vocableActions from "../../../store/actions/vocables";
 import Colors from "../../../constants/Colors";
 import * as yup from "yup";
 import GlobalStyles from "../../../constants/GlobalStyles";
-import I18n from "../../../i18n/translation";
+import { useTranslation } from "react-i18next";
+import { Translation } from "../../../i18n/translation"
 
-const yupSchema = yup.object({
-  wordENG: yup.string().required(),
-  wordDE: yup.string().required(),
-});
 
 const EditVocableScreen = props => {
+  const { t } = useTranslation();
   // States
   const [hasError, setHasError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
+  const yupSchema = yup.object({
+    wordENG: yup.string().required(),
+    wordDE: yup.string().required(),
+  });
+  
   const { vocable } = props.route.params ? props.route.params : null;
 
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (hasError) {
-      Alert.alert(I18n.t("anErrorOccurred"), hasError.message, [{ text: I18n.t("okay") }]);
+      Alert.alert(t("anErrorOccurred"), hasError.message, [{ text: t("okay") }]);
     }
   }, [hasError]);
 
@@ -84,7 +86,7 @@ const EditVocableScreen = props => {
 
 export const EditVocableScreenOptions = (navigationData) => {
   return {
-    title: I18n.t("editVocable"),
+    title: <Translation name="editVocable" />,
   };
 };
 

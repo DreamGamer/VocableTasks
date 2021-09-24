@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import I18n from "../../i18n/translation";
+import { useTranslation } from "react-i18next";
+import { Translation } from "../../i18n/translation";
 
 const HelpAndSupportScreen = props => {
     return (
@@ -14,7 +15,7 @@ const styles = StyleSheet.create({});
 
 export const HelpAndSupportScreenOptions = navigationData => {
     return {
-        title: I18n.t("helpAndSupport"),
+        title: <Translation name="helpAndSupport" />,
     };
 };
 

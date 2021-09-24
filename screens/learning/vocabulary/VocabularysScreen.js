@@ -10,9 +10,11 @@ import Colors from "../../../constants/Colors";
 import DefaultValues from "../../../constants/DefaultValues";
 import GlobalStyles from "../../../constants/GlobalStyles";
 import * as authActions from "../../../store/actions/auth";
-import I18n from "../../../i18n/translation";
+import { useTranslation } from "react-i18next";
+import { Translation } from "../../../i18n/translation"
 
 const VocabularysScreen = props => {
+    const { t } = useTranslation();
     // States
     const [isLoading, setIsLoading] = useState(false);
     const [hasError, setHasError] = useState("");
@@ -71,10 +73,10 @@ const VocabularysScreen = props => {
     */
 
     const handleLongPress = id => {
-        Alert.alert(I18n.t("areYouSure"), I18n.t("doYouReallyWantToDeleteThisVocable"), [
-            { text: I18n.t("no"), style: "default" },
+        Alert.alert(t("areYouSure"), t("doYouReallyWantToDeleteThisVocable"), [
+            { text: t("no"), style: "default" },
             {
-                text: I18n.t("yes"),
+                text: t("yes"),
                 style: "destructive",
                 onPress: async () => {
                     setHasError("");
@@ -99,7 +101,7 @@ const VocabularysScreen = props => {
     if (vocables.length === 0) {
         return (
             <View style={GlobalStyles.screen}>
-                <Text style={GlobalStyles.centerText}>{I18n.t("noVocablesFoundMaybeStartAddSome")}</Text>
+                <Text style={GlobalStyles.centerText}>{t("noVocablesFoundMaybeStartAddSome")}</Text>
             </View>
         );
     }
@@ -107,9 +109,9 @@ const VocabularysScreen = props => {
     if (hasError) {
         return (
             <View style={GlobalStyles.screen}>
-                <Text style={styles.text}>{I18n.t("anErrorOccurred")}</Text>
+                <Text style={styles.text}>{t("anErrorOccurred")}</Text>
                 <Text style={styles.text}>
-                    {I18n.t("error")}: {hasError.message ? hasError.message : hasError}
+                    {t("error")}: {hasError.message ? hasError.message : hasError}
                 </Text>
                 <Button title="Refresh" onPress={loadVocables} />
             </View>
@@ -163,7 +165,7 @@ const VocabularysScreen = props => {
 
 export const VocabularysScreenOptions = navigationData => {
     return {
-        title: I18n.t("vocabulary"),
+        title: <Translation name="vocabulary" />,
         headerLeft: () => (
             // HeaderButton to toggle the Drawer
             <HeaderButtons HeaderButtonComponent={HeaderButton}>
