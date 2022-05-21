@@ -1,4 +1,4 @@
-# VocabelTasks
+# VocableTasks
 My first own application for learning English.
 
 This application is an application to learn English, so you can learn vocabulary, sentences and play a few games to learn faster and better.
