@@ -34,13 +34,13 @@ export default StyleSheet.create({
         alignItems: "center",
     },
     h1: {
-        color: Colors.lightWhite,
-        fontSize: 32,
+        color: Colors.black,
+        fontSize: 36,
         fontFamily: DefaultValues.fontRegular,
     },
     h2: {
-        color: Colors.lightWhite,
-        fontSize: 28,
+        color: Colors.black,
+        fontSize: 30,
         fontFamily: DefaultValues.fontRegular,
     },
     h3: {

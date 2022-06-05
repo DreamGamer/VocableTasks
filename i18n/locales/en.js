@@ -1,10 +1,12 @@
 export default {
     translation: {
+        hello: "Hello",
+        loginWelcomeToVocableTasks: "Welcome to VocableTasks",
         forgotPassword: "Forgot Password?",
         noAccountYet: "Don't have an account yet?",
         signUpHere: "Signup here",
         labelLogin: "Login",
-        labelEmail: "Email",
+        labelEmail: "E-mail",
         labelPassword: "Password",
         resetPassword: "Reset Password",
         pleaseWait: "Please wait",

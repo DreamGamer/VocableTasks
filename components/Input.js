@@ -7,7 +7,8 @@ import GlobalStyles from "../constants/GlobalStyles";
 
 const Input = forwardRef((props, ref) => {
     const editable = !!props.editable;
-    const showIcon = !!props.showIcon;
+    const leftIconName = !!props.leftIconName;
+    const rightIconName = !!props.rightIconName;
 
     return (
         <View style={GlobalStyles.flex1}>
@@ -18,9 +19,17 @@ const Input = forwardRef((props, ref) => {
                     </Text>
                 </View>
             ) : null}
-            <View style={{ ...styles.inputContainer, ...(editable ? null : styles.inputContainerDisabled) }}>
-                <TextInput {...props} style={{ ...props.inputStyle, ...styles.input, ...(showIcon ? styles.inputWithIcon : null), ...(editable ? null : styles.inputDisabled) }} editable={editable} ref={ref} />
-                {props.showIcon ? <Ionicons name={props.iconName} size={23} color={Colors.grey} style={styles.icon} onPress={props.onPressIcon} /> : null}
+            <View style={{ ...styles.container, ...(editable ? null : styles.inputContainerDisabled) }}>
+                {leftIconName ? <Ionicons name={props.leftIconName} size={40} color={Colors.lightGrey} style={styles.icon} onPress={props.onPressLeftIcon} /> : null}
+                <View style={styles.inputContainer}>
+                    <TextInput
+                        {...props}
+                        style={{ ...props.inputStyle, ...styles.input, ...(rightIconName || leftIconName ? styles.inputWithIcon : null), ...(editable ? null : styles.inputDisabled) }}
+                        editable={editable}
+                        ref={ref}
+                    />
+                    {rightIconName ? <Ionicons name={props.rightIconName} size={23} color={Colors.lightGrey} style={styles.icon} onPress={props.onPressRightIcon} /> : null}
+                </View>
             </View>
         </View>
     );
@@ -28,14 +37,12 @@ const Input = forwardRef((props, ref) => {
 
 const styles = StyleSheet.create({
     input: {
-        fontSize: 18,
-        //borderRadius: 6,
+        fontSize: 20,
         paddingVertical: 10,
         color: Colors.black,
-        width: "100%",
     },
     inputWithIcon: {
-        flex: 1
+        flex: 1,
     },
     inputDisabled: {
         color: Colors.disabledText,
@@ -52,19 +59,21 @@ const styles = StyleSheet.create({
     labelContainer: {
         marginVertical: 5,
     },
-    inputContainer: {
+    container: {
         justifyContent: "space-between",
-        alignItems: "center",
+        alignItems: "flex-end",
         flexDirection: "row",
-        borderWidth: 1,
-        borderRadius: 5,
-        borderColor: Colors.lightGrey,
-        marginVertical: 5,
-        backgroundColor: Colors.lightWhite,
-        paddingHorizontal: 5
+    },
+    inputContainer: {
+        flex: 1,
+        flexDirection: "row",
+        alignItems: "center",
+        borderBottomColor: Colors.lightGrey,
+        borderBottomWidth: 1,
+        marginLeft: 5,
     },
     icon: {
-        padding: 5,
+        
     },
 });
 

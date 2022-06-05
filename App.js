@@ -49,7 +49,8 @@ export default function App() {
                 Bugsnag.start();
                 // Pre-load fonts
                 await Font.loadAsync({
-                    roboto: require("./assets/fonts/roboto-regular.ttf"),
+                    "roboto": require("./assets/fonts/roboto-regular.ttf"),
+                    "roboto-medium": require("./assets/fonts/roboto-medium.ttf"),
                     "roboto-bold": require("./assets/fonts/roboto-bold.ttf"),
                 });
                 // Artificially delay for two seconds to simulate a slow loading

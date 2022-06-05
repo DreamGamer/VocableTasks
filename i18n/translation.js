@@ -27,7 +27,8 @@ export const initLanguage = async () => {
         const savedLanguageCode = await AsyncStorage.getItem(APP_LANGUAGE);
 
         await i18next.use(initReactI18next).init({
-            debug: true,
+            compatibilityJSON: 'v3',
+            debug: false,
             lng: savedLanguageCode ? savedLanguageCode : deviceLanguageCode,
             fallbackLng: "en",
             resources: {
