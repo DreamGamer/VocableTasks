@@ -1,7 +1,8 @@
 import React from "react";
-import { Button, SafeAreaView, StyleSheet, View } from "react-native";
+import { Button, SafeAreaView, StyleSheet, Text, View } from "react-native";
 import GlobalStyles from "../constants/GlobalStyles";
-import { DrawerItemList, DrawerContentScrollView } from "@react-navigation/drawer";
+import { DrawerItemList } from "@react-navigation/drawer";
+import CustomDrawerContentScrollView from "../components/CustomDrawerContentScrollView";
 import { Drawer, Title, Avatar, Caption } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
@@ -12,7 +13,7 @@ import DefaultValues from "../constants/DefaultValues";
 import { useTranslation } from "react-i18next";
 import Auth from "@react-native-firebase/auth";
 
-const DrawerContent = props => {
+const DrawerContent = (props) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const photoURL = Auth().currentUser.photoURL;
@@ -20,7 +21,7 @@ const DrawerContent = props => {
 
     return (
         <View style={GlobalStyles.flex1}>
-            <DrawerContentScrollView {...props}>
+            <CustomDrawerContentScrollView {...props}>
                 <View style={GlobalStyles.flex1}>
                     <View style={styles.userInfoContainer}>
                         {photoURL ? <Avatar.Image source={{ uri: photoURL }} size={50} style={styles.avatarStyle} /> : <Avatar.Text size={50} label={firstLetter} style={styles.avatarStyle} />}
@@ -31,7 +32,7 @@ const DrawerContent = props => {
                     </View>
                     <DrawerItemList {...props} />
                 </View>
-            </DrawerContentScrollView>
+            </CustomDrawerContentScrollView>
             <Drawer.Section style={styles.bottomSection}>
                 <Drawer.Item
                     icon={({ color, size }) => <Ionicons name="log-out-outline" size={size} color={color} />}

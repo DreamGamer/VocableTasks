@@ -6,6 +6,9 @@ export default {
     //lightGrey: "#d3d3d3",
     black: "#000",
     white: "#fff",
+    lightBlack: "#0E0E0E",
+    grey: "#222222",
+
     success: "#28a745",
     red: "#ee1b12",
     danger: "#dc3545",
@@ -15,7 +18,6 @@ export default {
     dark: "#343a40",
     linkBlue: "#007bff",
     link: "#28d8a1",
-    grey: "#1b1b1b",
     shadowColor: "#000",
     HeaderButtonsColor: "#000",
     lightWhite: "#f8f8f8",
@@ -23,6 +25,8 @@ export default {
     backgroundBottom: "#363636",
     ActivityIndicatorDark: "#1b1b1b",
     ActivityIndicatorWhite: "#ffffff",
-    disabled: "#ddd",
-    disabledText: "#888",
+    disabled_light: "#dddddd",
+    disabled_dark: "#333333",
+    textWhite: "#ffffff",
+    textBlack: "#000000",
 };

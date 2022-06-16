@@ -1,6 +1,6 @@
-import { StatusBar } from "expo-status-bar";
 import React, { useCallback, useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, useColorScheme, View, StatusBar } from "react-native";
+//import { StatusBar } from "expo-status-bar";
 import { enableScreens } from "react-native-screens";
 import * as Font from "expo-font";
 import AppLoading from "expo-app-loading";
@@ -14,6 +14,9 @@ import { composeWithDevTools } from "redux-devtools-extension";
 import { Provider } from "react-redux";
 import { initLanguage } from "./i18n/translation";
 import Bugsnag from "@bugsnag/react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import Colors from "./constants/Colors";
+import GlobalStyles from "./constants/GlobalStyles";
 
 const TAG = "[App.js]: "; // Console Log Tag
 
@@ -22,7 +25,7 @@ const rootReducer = combineReducers({
     auth: authReducer,
 });
 
-const middlewares = [ReduxThunk];
+const middlewares = [ReduxThunk, composeWithDevTools];
 
 if (__DEV__) {
     console.info(TAG + "Developer mode enabled");
@@ -39,6 +42,8 @@ export default function App() {
     // States
     const [appIsReady, setAppIsReady] = useState(false);
 
+    const colorScheme = useColorScheme();
+
     useEffect(() => {
         async function prepareApp() {
             try {
@@ -53,11 +58,9 @@ export default function App() {
                     "roboto-medium": require("./assets/fonts/roboto-medium.ttf"),
                     "roboto-bold": require("./assets/fonts/roboto-bold.ttf"),
                 });
-                // Artificially delay for two seconds to simulate a slow loading
-                // experience. Please remove this if you copy and paste the code!
-                //await new Promise((resolve) => setTimeout(resolve, 2000));
-            } catch (e) {
-                console.log(e);
+            } catch (error) {
+                console.warn(TAG + "Catched fatal error in prepareApp: " + error);
+                Bugsnag.notify(error);
             } finally {
                 // Tell the application to render
                 setAppIsReady(true);
@@ -66,18 +69,6 @@ export default function App() {
 
         prepareApp();
     }, []);
-
-    /*
-    // Function to load Fonts
-    const fetchFonts = async () => {
-        await initLanguage();
-        Bugsnag.start();
-        return Font.loadAsync({
-            "roboto": require("./assets/fonts/roboto-regular.ttf"),
-            "roboto-bold": require("./assets/fonts/roboto-bold.ttf"),
-        });
-    };
-    */
 
     const onLayoutRootView = useCallback(async () => {
         if (appIsReady) {
@@ -97,6 +88,7 @@ export default function App() {
 
     return (
         <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+            <StatusBar translucent backgroundColor={"rgba(0,0,0,0)"} barStyle="light-content" />
             <Provider store={store}>
                 <AppNavigator />
             </Provider>

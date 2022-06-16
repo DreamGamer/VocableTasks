@@ -6,11 +6,11 @@ import DefaultValues from "../constants/DefaultValues";
 const SearchHits = props => {
     return (
         <View style={styles.container}>
-            <TouchableHighlight onPress={() => {
+            <TouchableOpacity onPress={() => {
                 props.onPress(props.word, props.secondWord);
             }}>
                 <Text style={styles.text}>{props.word}</Text>
-            </TouchableHighlight>
+            </TouchableOpacity>
         </View>
     );
 };

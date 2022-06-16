@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Dimensions, KeyboardAvoidingView, Pressable, StyleSheet, Text, View, Platform, TextInput, ActivityIndicator, Alert, ScrollView } from "react-native";
+import { Dimensions, KeyboardAvoidingView, Pressable, StyleSheet, Text, View, Platform, TextInput, ActivityIndicator, Alert, ScrollView, useColorScheme } from "react-native";
 import Input from "../../components/Input";
 import Button from "../../components/Button";
 import Colors from "../../constants/Colors";
@@ -19,6 +19,8 @@ const LoginScreen = (props) => {
     const [isLoading, setIsLoading] = useState(false);
     const [hasError, setHasError] = useState(null);
     const [showPassword, setShowPassword] = useState(false);
+
+    const colorScheme = useColorScheme();
 
     let isMounted = true;
 
@@ -42,14 +44,14 @@ const LoginScreen = (props) => {
     }, [hasError]);
 
     return (
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.screen}>
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={colorScheme === "light" ? styles.screen_light : styles.screen_dark}>
             <ScrollView contentContainerStyle={styles.scrollView} keyboardShouldPersistTaps="handled">
                 <View style={styles.welcomeTextContainer}>
-                    <Text style={styles.welcomeTextTop}>{t("hello")}!</Text>
+                    <Text style={colorScheme === "light" ? styles.welcomeTextTop_light : styles.welcomeTextTop_dark}>{t("hello")}!</Text>
                     <Text style={styles.welcomeTextBottom}>{t("loginWelcomeToVocableTasks")}</Text>
                 </View>
                 <View style={styles.loginLabel}>
-                    <Text style={styles.loginLabelText}>{t("labelLogin")}</Text>
+                    <Text style={colorScheme === "light" ? styles.loginLabelText_light : styles.loginLabelText_dark}>{t("labelLogin")}</Text>
                 </View>
                 <Formik
                     initialValues={{
@@ -134,7 +136,7 @@ const LoginScreen = (props) => {
                 </Formik>
 
                 <View style={styles.signupContainer}>
-                    <Text style={styles.signupText}>{t("noAccountYet")}</Text>
+                    <Text style={colorScheme === "light" ? styles.signupText_light : styles.signupText_dark}>{t("noAccountYet")}</Text>
                     <Pressable
                         onPress={() => {
                             props.navigation.navigate("signup");
@@ -155,18 +157,29 @@ export const LoginScreenOptions = (navigationData) => {
 };
 
 const styles = StyleSheet.create({
-    screen: {
+    screen_light: {
         flex: 1,
-        backgroundColor: Colors.white
+        backgroundColor: Colors.white,
+    },
+    screen_dark: {
+        flex: 1,
+        backgroundColor: Colors.lightBlack,
     },
     welcomeTextContainer: {
         marginVertical: 30,
         alignItems: "center",
     },
-    welcomeTextTop: {
+    welcomeTextTop_light: {
         fontFamily: DefaultValues.fontMedium,
         fontSize: 38,
         textAlign: "center",
+        color: Colors.black,
+    },
+    welcomeTextTop_dark: {
+        fontFamily: DefaultValues.fontMedium,
+        fontSize: 38,
+        textAlign: "center",
+        color: Colors.white,
     },
     welcomeTextBottom: {
         fontFamily: DefaultValues.fontRegular,
@@ -177,10 +190,15 @@ const styles = StyleSheet.create({
     loginLabel: {
         marginTop: 40,
     },
-    loginLabelText: {
+    loginLabelText_light: {
         fontFamily: DefaultValues.fontMedium,
         fontSize: 32,
         color: Colors.black,
+    },
+    loginLabelText_dark: {
+        fontFamily: DefaultValues.fontMedium,
+        fontSize: 32,
+        color: Colors.white,
     },
     buttonContainer: {
         marginVertical: 10,
@@ -203,8 +221,13 @@ const styles = StyleSheet.create({
         justifyContent: "flex-end",
         alignItems: "flex-end",
     },
-    signupText: {
+    signupText_light: {
         color: Colors.black,
+        fontSize: 15,
+        fontFamily: DefaultValues.fontRegular,
+    },
+    signupText_dark: {
+        color: Colors.white,
         fontSize: 15,
         fontFamily: DefaultValues.fontRegular,
     },
@@ -217,8 +240,8 @@ const styles = StyleSheet.create({
         marginVertical: 5,
     },
     submitButton: {
-        backgroundColor: "purple"
-    }, 
+        backgroundColor: "purple",
+    },
 });
 
 export default LoginScreen;
