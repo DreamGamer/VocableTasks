@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Alert, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import GlobalStyles from "../../constants/GlobalStyles";
-import { useTranslation } from "react-i18next";
+import { useTranslation, Trans } from "react-i18next";
 import { Avatar } from "react-native-paper";
 import Colors from "../../constants/Colors";
 import Auth from "@react-native-firebase/auth";
@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
 
 export const EditProfileScreenOptions = navigationData => {
     return {
-        title: <Translation name="editProfile" />,
+        title: <Trans i18nKey="editProfile" />
     };
 };
 

@@ -4,7 +4,7 @@ import * as Localization from "expo-localization";
 import en from "./locales/en";
 import de from "./locales/de";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useDispatch } from "react-redux";
+//import { useDispatch } from "react-redux";
 import { useState } from "react";
 import i18next from "i18next";
 import { initReactI18next, useTranslation } from "react-i18next";
@@ -15,43 +15,45 @@ const TAG = "[I18n Translation]: "; // Console Log Tag
 const APP_LANGUAGE = "app_language"; // AsyncStorage key
 
 export const Translation = ({ name }) => {
-    const { t } = useTranslation();
-    return <Text>{t(name)}</Text>;
+  const { t } = useTranslation();
+  return <Text>{t(name)}</Text>;
 };
 
 export const initLanguage = async () => {
-    try {
-        const deviceLanguageCode = RNLocalize.getLocales()[0].languageCode;
+  try {
+    const deviceLanguageCode = RNLocalize.getLocales()[0].languageCode;
 
-        // Gets current LanguageCode like 'en' from storage
-        const savedLanguageCode = await AsyncStorage.getItem(APP_LANGUAGE);
+    // Gets current LanguageCode like 'en' from storage
+    const savedLanguageCode = await AsyncStorage.getItem(APP_LANGUAGE);
 
-        await i18next.use(initReactI18next).init({
-            compatibilityJSON: 'v3',
-            debug: false,
-            lng: savedLanguageCode ? savedLanguageCode : deviceLanguageCode,
-            fallbackLng: "en",
-            resources: {
-                en,
-                de,
-            },
-        });
-    } catch (error) {
-        console.warn(TAG + "Catched error in initLanguage: " + error);
-        Bugsnag.notify(error);
+    await i18next.use(initReactI18next).init({
+      compatibilityJSON: "v3",
+      debug: false,
+      lng: savedLanguageCode ? savedLanguageCode : deviceLanguageCode,
+      fallbackLng: "en",
+      resources: {
+        en,
+        de,
+      },
+    });
+  } catch (error) {
+    console.warn(TAG + "Catched error in initLanguage: " + error);
+    Bugsnag.notify(error);
 
-        await i18next.use(initReactI18next).init({
-            debug: true,
-            lng: "en",
-            fallbackLng: "en",
-            resources: {
-                en,
-                de,
-            },
-        });
-        console.log(TAG + error);
-    }
+    await i18next.use(initReactI18next).init({
+      debug: true,
+      lng: "en",
+      fallbackLng: "en",
+      resources: {
+        en,
+        de,
+      },
+    });
+    console.log(TAG + error);
+  }
 };
+
+export default i18next;
 
 /*
 export const changeLanguage = async language => {

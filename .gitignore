@@ -80,6 +80,7 @@ buck-out/
 /vendor/bundle/
 
 # Expo
+.expo
 .expo/*
 web-build/
 
