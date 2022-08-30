@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet, Text, Pressable, ActivityIndicator } from "react-native";
+import { View, StyleSheet, Text, Pressable, ActivityIndicator, TouchableOpacity } from "react-native";
 import Colors from "../constants/Colors";
 import DefaultValues from "../constants/DefaultValues";
 import { normalize } from "../constants/GlobalStyles";
@@ -16,9 +16,9 @@ const CustomTextButton = (props) => {
         {isLoading ? (
           <ActivityIndicator size="small" color={Colors.neutral[3]} />
         ) : (
-          <Pressable onPress={props.onPress} style={styles.buttonItems}>
+          <TouchableOpacity onPress={props.onPress} style={styles.buttonItems}>
             <Text style={{ ...styles.text, ...{ color: disabled ? Colors.neutral[3] : color } }}>{props.title}</Text>
-          </Pressable>
+          </TouchableOpacity>
         )}
       </View>
     </View>
