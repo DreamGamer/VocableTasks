@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet, Text, Pressable, ActivityIndicator } from "react-native";
+import { View, StyleSheet, Text, Pressable, ActivityIndicator, useColorScheme } from "react-native";
 import Colors from "../constants/Colors";
 import DefaultValues from "../constants/DefaultValues";
 import { normalize } from "../constants/GlobalStyles";
@@ -11,15 +11,20 @@ const CustomButton = (props) => {
   const backgroundColor = customBackgroundColor ? customBackgroundColor : Colors.primary[1];
   const color = customColor ? customColor : Colors.white;
 
+  const colorScheme = useColorScheme();
+  const isDarkMode = colorScheme === "dark";
+
+  const containerDisabledOrLoadingBackgroundColor = isDarkMode ? Colors.neutral[4] : Colors.neutral[2];
+
   return (
     <View>
       <Pressable onPress={props.onPress} style={props.style}>
-        <View style={{ ...styles.container, ...{ backgroundColor: disabled || isLoading ? Colors.neutral[2] : backgroundColor } }}>
+        <View style={{ ...styles.container, ...{ backgroundColor: disabled || isLoading ? containerDisabledOrLoadingBackgroundColor : backgroundColor } }}>
           {isLoading ? (
             <ActivityIndicator size="small" color={Colors.neutral[3]} />
           ) : (
             <View style={styles.buttonItems}>
-              {!!leftIconName ? <Ionicons name={leftIconName} size={30} color={disabled ? Colors.neutral[3] : color} style={styles.icon}/> : null}
+              {!!leftIconName ? <Ionicons name={leftIconName} size={normalize(24)} color={disabled ? Colors.neutral[3] : color} style={styles.icon} /> : null}
               <Text style={{ ...styles.text, ...{ color: disabled ? Colors.neutral[3] : color } }}>{props.title}</Text>
               {!!rightIconName ? <Ionicons name={rightIconName} size={normalize(24)} color={disabled ? Colors.neutral[3] : color} style={styles.icon} /> : null}
             </View>
@@ -45,11 +50,11 @@ const styles = StyleSheet.create({
   },
   buttonItems: {
     flexDirection: "row",
-    alignItems: "center"
+    alignItems: "center",
   },
   icon: {
-    marginHorizontal: 5
-  }
+    marginHorizontal: 5,
+  },
 });
 
 export default CustomButton;
