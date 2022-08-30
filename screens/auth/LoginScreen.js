@@ -1,5 +1,5 @@
 import { Formik } from "formik";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Keyboard, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableWithoutFeedback, useColorScheme, View } from "react-native";
 import Input from "../../components/Input";
 import Colors from "../../constants/Colors";
@@ -10,6 +10,13 @@ import translation from "../../i18n/translation";
 import CustomTextButton from "../../components/CustomTextButton";
 import * as yup from "yup";
 import { Trans } from "react-i18next";
+import { useDispatch } from "react-redux";
+import * as authActions from "../../store/actions/auth";
+import auth from "@react-native-firebase/auth";
+import Bugsnag from "@bugsnag/react-native";
+import CustomAlert from "../../components/CustomAlert";
+
+const TAG = "[LoginScreen]";
 
 const yupSchema = (t) => {
   return yup.object({
@@ -19,15 +26,70 @@ const yupSchema = (t) => {
 
 const LoginScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [hasError, setHasError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  const email = props.route.params.email;
 
   const colorScheme = useColorScheme();
   const isDarkMode = colorScheme === "dark";
 
   const { t } = translation;
+  const dispatch = useDispatch();
+
+  let isMounted = true;
+
+  useEffect(() => {
+    isMounted = true;
+    return () => {
+      console.log(TAG, "Unmounted");
+      isMounted = false;
+    };
+  }, []);
+
+  const handleLogin = async (email, password) => {
+    try {
+      await auth().signInWithEmailAndPassword(email, password);
+    } catch (error) {
+      console.info(TAG, error.message);
+      switch (error.code) {
+        case "auth/invalid-email":
+          setHasError({ title: t("authInvalidEmailTitle", { ns: "login" }), message: t("authInvalidEmailMessage", { ns: "login" }) });
+          break;
+        case "auth/user-disabled":
+          setHasError({ title: t("authUserDisabledTitle", { ns: "login" }), message: t("authUserDisabledMessage", { ns: "login" }) });
+          break;
+        case "auth/user-not-found":
+          setHasError({ title: t("authUserNotFoundTitle", { ns: "login" }), message: t("authUserNotFoundMessage", { ns: "login" }) });
+          break;
+        case "auth/wrong-password":
+          setHasError({ title: t("authWrongPasswordTitle", { ns: "login" }), message: t("authWrongPasswordMessage", { ns: "login" }) });
+          break;
+        case "auth/too-many-requests":
+          setHasError({ title: t("authTooManyRequestsTitle", { ns: "login" }), message: t("authTooManyRequestsMessage", { ns: "login" }) });
+          break;
+        case "auth/network-request-failed":
+          setHasError({ title: t("authNetworkRequestFailedTitle", { ns: "login" }), message: t("authNetworkRequestFailedMessage", { ns: "login" }) });
+          break;
+        default:
+          Bugsnag.notify(error);
+          console.warn(TAG, "Undefined error while signUp: " + error.message);
+          setHasError({ title: t("unknownError", { ns: "login" }), message: error.message });
+      }
+    }
+  };
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+      <CustomAlert
+        visible={!!hasError}
+        title={hasError.title}
+        message={hasError.message}
+        rightButtonText={t("ok", { ns: "login" })}
+        onPressRightButton={() => {
+          setHasError("");
+        }}
+      />
       <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.container}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.content}>
@@ -48,7 +110,8 @@ const LoginScreen = (props) => {
                   setHasError("");
 
                   try {
-                    setIsLoading(false);
+                    await handleLogin(email, values.password);
+                    if (isMounted) setIsLoading(false);
                   } catch (error) {
                     console.log(error);
                     setIsLoading(false);
@@ -81,7 +144,7 @@ const LoginScreen = (props) => {
                       title={t("forgotPassword", { ns: "login" })}
                       color={Colors.danger}
                       onPress={() => {
-                        console.log("test");
+                        props.navigation.navigate("forgotPassword", { email: email });
                       }}
                     />
                   </View>

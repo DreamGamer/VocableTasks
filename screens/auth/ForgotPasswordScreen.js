@@ -1,155 +1,168 @@
-import React, { useEffect, useState } from "react";
-import { LinearGradient } from "expo-linear-gradient";
 import { Formik } from "formik";
-import { StyleSheet, View, Text, KeyboardAvoidingView, Dimensions, ScrollView, Button, ActivityIndicator, Alert } from "react-native";
-import Label from "../../components/Label";
+import React, { useEffect, useState } from "react";
+import { Trans } from "react-i18next";
+import { Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableWithoutFeedback, useColorScheme, View } from "react-native";
+import { useDispatch } from "react-redux";
+import CustomButton from "../../components/CustomButton";
+import CustomAlert from "../../components/CustomAlert";
 import Input from "../../components/Input";
 import Colors from "../../constants/Colors";
-import GlobalStyles from "../../constants/GlobalStyles";
+import DefaultValues from "../../constants/DefaultValues";
+import { normalize } from "../../constants/GlobalStyles";
+import translation from "../../i18n/translation";
 import * as yup from "yup";
-import * as authActions from "../../store/actions/auth";
-import { useDispatch } from "react-redux";
-import TimerMixin from "react-timer-mixin";
+import auth from "@react-native-firebase/auth";
+import Bugsnag from "@bugsnag/react-native";
 
-// Import Translation function
-import { useTranslation } from "react-i18next";
+const TAG = "[ForgotPasswordScreen]";
 
-const ForgotPasswordScreen = props => {
-    const { t } = useTranslation();
-    // States
-    const [isLoading, setIsLoading] = useState(false);
-    const [hasError, setHasError] = useState(null);
-    const [emailSended, setEmailSended] = useState(false);
-    const [waitTimer, setWaitTimer] = useState(0);
-
-    const yupSchema = yup.object({
-        email: yup.string(t("emailMustBeAString")).email(t("emailMustBeAValidEmail")).required(t("emailIsRequired")).min(5),
-    });
-
-    // Redux Dispatch
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-        if (hasError) {
-            Alert.alert(t("anErrorOccurred"), hasError, [{ text: "Okay" }]);
-        }
-    }, [hasError]);
-
-    // Init timer
-    let timer = null;
-
-    useEffect(() => {
-        // Start Timer to count down every second
-        timer = TimerMixin.setInterval(() => {
-            if (waitTimer > 0) {
-                setWaitTimer(state => state - 1);
-            } else {
-                setEmailSended(false);
-            }
-        }, 1000);
-        return () => {
-            // Clear interval timer
-            TimerMixin.clearInterval(timer);
-        };
-    }, [waitTimer, emailSended]);
-
-    return (
-        <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" : "height"} style={GlobalStyles.flex1}>
-            <LinearGradient colors={[Colors.backgroundTop, Colors.backgroundBottom]} style={GlobalStyles.flex1}>
-                <ScrollView contentContainerStyle={styles.scrollViewCentered} keyboardShouldPersistTaps="handled">
-                    <View style={styles.container}>
-                        <View style={GlobalStyles.centered}>
-                            <Text style={GlobalStyles.h1}>{t("resetPassword")}</Text>
-                        </View>
-
-                        <Formik
-                            initialValues={{
-                                email: "",
-                            }}
-                            validationSchema={yupSchema}
-                            onSubmit={async (values, actions) => {
-                                setIsLoading(true);
-                                setHasError("");
-                                try {
-                                    await dispatch(authActions.resetPasswordWithEmail(values.email));
-                                    setEmailSended(true);
-                                    setWaitTimer(10);
-                                    setIsLoading(false);
-                                } catch (error) {
-                                    setIsLoading(false);
-                                    setHasError(error);
-                                }
-                            }}>
-                            {formikProps => (
-                                <View>
-                                    <Label title={t("labelEmail") + ":"} style={styles.label} />
-                                    <Input
-                                        placeholder={t("labelEmail")}
-                                        onBlur={formikProps.handleBlur("email")}
-                                        onChangeText={formikProps.handleChange("email")}
-                                        value={formikProps.values.Email}
-                                        editable={isLoading || emailSended ? false : true}
-                                        keyboardType="email-address"
-                                        autoCapitalize="none"
-                                        returnKeyType="done"
-                                        onSubmitEditing={formikProps.handleSubmit}
-                                    />
-                                    {formikProps.errors.email && formikProps.touched.email ? <Text style={GlobalStyles.errorText}>{formikProps.touched.email && formikProps.errors.email}</Text> : null}
-
-                                    {emailSended ? (
-                                        <View>
-                                            <Text style={styles.timer}>
-                                                {t("pleaseWait")} {waitTimer} {t("seconds")}.
-                                            </Text>
-                                        </View>
-                                    ) : isLoading ? (
-                                        <ActivityIndicator size="small" color={Colors.ActivityIndicatorWhite} />
-                                    ) : (
-                                        <View style={styles.buttonContainer}>
-                                            <Button title={t("sendEmail")} onPress={formikProps.handleSubmit} />
-                                        </View>
-                                    )}
-                                </View>
-                            )}
-                        </Formik>
-                    </View>
-                </ScrollView>
-            </LinearGradient>
-        </KeyboardAvoidingView>
-    );
+const yupSchema = (t) => {
+  return yup.object({
+    email: yup.string(t("emailMustBeAString")).email(t("emailMustBeAValidEmail")).required(t("emailIsRequired")).min(5),
+  });
 };
 
-export const ForgotPasswordScreenOptions = navigationData => {
-    return {
-        title: "",
-        headerTransparent: true,
+const ForgotPasswordScreen = (props) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasError, setHasError] = useState("");
+
+  const emailFromParams = props.route.params.email;
+
+  const colorScheme = useColorScheme();
+  const isDarkMode = colorScheme === "dark";
+
+  const { t } = translation;
+  const dispatch = useDispatch();
+
+  let isMounted = true;
+
+  useEffect(() => {
+    isMounted = true;
+    return () => {
+      console.log(TAG, "Unmounted");
+      isMounted = false;
     };
+  }, []);
+
+  const handleResetPassword = async (email) => {
+    try {
+      await auth().sendPasswordResetEmail(email);
+      console.info(TAG, `Successfully send password reset mail to '${email}'`);
+      setHasError({ title: t("successfullySendEmailTitle", { ns: "forgotPassword" }), message: t("successfullySendEmailMessage", { ns: "forgotPassword" }) });
+    } catch (error) {
+      switch (error.code) {
+        case "auth/invalid-email":
+          setHasError({ title: t("authInvalidEmailTitle", { ns: "forgotPassword" }), message: t("authInvalidEmailMessage", { ns: "forgotPassword" }) });
+          break;
+        case "auth/user-not-found":
+          setHasError({ title: t("authUserNotFoundTitle", { ns: "forgotPassword" }), message: t("authUserNotFoundMessage", { ns: "forgotPassword" }) });
+          break;
+        case "auth/too-many-requests":
+            setHasError({ title: t("authTooManyRequestsTitle", { ns: "forgotPassword" }), message: t("authTooManyRequestsMessage", { ns: "forgotPassword" }) });
+          break;
+        default:
+          console.warn(TAG, "Catched fatal error in handleResetPassword: " + error);
+          Bugsnag.notify(error);
+          setHasError({ title: t("unknownError", { ns: "forgotPassword" }), message: error.message });
+      }
+    }
+  };
+
+  return (
+    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+      <CustomAlert
+        visible={!!hasError}
+        title={hasError.title}
+        message={hasError.message}
+        rightButtonText={t("ok", { ns: "forgotPassword" })}
+        onPressRightButton={() => {
+          setHasError("");
+        }}
+      />
+      <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.container}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.content}>
+            <View style={styles.header}>
+              <Text style={{ ...styles.title, ...{ color: isDarkMode ? Colors.white : Colors.black } }}>{t("yourEmail", { ns: "forgotPassword" })}</Text>
+            </View>
+
+            <View style={styles.form}>
+              <Formik
+                initialValues={{
+                  email: emailFromParams,
+                }}
+                validationSchema={() => {
+                  return yupSchema(t);
+                }}
+                onSubmit={async (values, actions) => {
+                  setIsLoading(true);
+                  setHasError("");
+
+                  try {
+                    await handleResetPassword(values.email);
+                    if (isMounted) setIsLoading(false);
+                  } catch (error) {
+                    console.log(error);
+                    setIsLoading(false);
+                    setHasError(error);
+                  }
+                }}>
+                {(formikProps) => (
+                  <View>
+                    <Input
+                      placeholder={t("email", { ns: "forgotPassword" })}
+                      onBlur={formikProps.handleBlur("email")}
+                      onChangeText={formikProps.handleChange("email")}
+                      value={formikProps.values.email}
+                      editable={!isLoading}
+                      keyboardType="default"
+                      autoCapitalize="none"
+                      returnKeyType="next"
+                      blurOnSubmit={false}
+                      onSubmitEditing={formikProps.handleSubmit}
+                      error={formikProps.errors.email}
+                      touched={formikProps.touched.email}
+                      autoComplete="email"
+                    />
+                    <CustomButton title={t("send", { ns: "forgotPassword" })} onPress={formikProps.handleSubmit} style={styles.continueButton} isLoading={isLoading} />
+                  </View>
+                )}
+              </Formik>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
+};
+
+export const ForgotPasswordScreenOptions = (navigationData) => {
+  return {
+    title: <Trans i18nKey="title" ns="forgotPassword" />,
+  };
 };
 
 const styles = StyleSheet.create({
-    container: {
-        width: Dimensions.get("window").width * 0.925,
-        backgroundColor: "rgba(3, 5, 8, 0.5)",
-        padding: 10,
-        overflow: "hidden",
-    },
-    gradient: {
-        flex: 1,
-    },
-    scrollViewCentered: {
-        flexGrow: 1,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    label: {
-        color: Colors.lightWhite,
-    },
-    buttonContainer: {
-        marginVertical: 10,
-    },
-    timer: {
-        color: Colors.lightWhite,
-    },
+  container: {
+    flexGrow: 1,
+  },
+  content: {
+    flex: 1,
+    padding: 24,
+    paddingTop: Platform.OS === "ios" ? 60 : 80 + 24,
+  },
+  header: {
+    marginBottom: 60,
+  },
+  title: {
+    fontFamily: DefaultValues.fontRegular,
+    fontSize: normalize(30),
+    textAlign: "center",
+  },
+  continueButton: {
+    marginTop: 25,
+    marginBottom: 10,
+  },
 });
 
 export default ForgotPasswordScreen;

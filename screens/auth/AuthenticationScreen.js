@@ -1,26 +1,10 @@
-import React, { useState } from "react";
-import {
-  Dimensions,
-  ActivityIndicator,
-  Keyboard,
-  KeyboardAvoidingView,
-  PixelRatio,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  useColorScheme,
-  View,
-} from "react-native";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, useColorScheme, View } from "react-native";
 import DefaultValues from "../../constants/DefaultValues";
 import auth from "@react-native-firebase/auth";
 import { Formik } from "formik";
 import Input from "../../components/Input";
 import * as yup from "yup";
-import { useTranslation } from "react-i18next";
 import Colors from "../../constants/Colors";
 import GlobalStyles, { normalize } from "../../constants/GlobalStyles";
 import Animated, { SlideInDown } from "react-native-reanimated";
@@ -30,6 +14,8 @@ import { SvgXml } from "react-native-svg";
 import CustomButton from "../../components/CustomButton";
 import translation from "../../i18n/translation";
 import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
+import CustomAlert from "../../components/CustomAlert";
+import Bugsnag from "@bugsnag/react-native";
 
 const TAG = "[AuthenticationScreen]";
 
@@ -46,25 +32,38 @@ const AuthenticationScreen = (props) => {
   const [hasError, setHasError] = useState("");
 
   const colorScheme = useColorScheme();
-  const isLight = colorScheme === "light" ? true : false;
+  const isDarkMode = colorScheme === "dark";
 
   const { t } = translation;
 
-  const checkMail = async (email) => {
+  let isMounted = true;
+
+  useEffect(() => {
+    isMounted = true;
+    return () => {
+      console.log(TAG, "Unmounted");
+      isMounted = false;
+    };
+  }, []);
+
+  const checkEmail = async (email) => {
     const methods = await auth().fetchSignInMethodsForEmail(email);
-    if (methods) {
+    if (methods.length !== 0) {
       const isRegisteredWithPassword = methods.some((value) => value === "password");
       if (isRegisteredWithPassword) {
+        console.log(TAG, `Email '${email}' exist with method 'password'. Forwarding to login screen`);
         props.navigation.navigate("login", { email });
       } else {
-        props.navigation.navigate("signup", { email });
+        console.log(TAG, "Registered with another platform");
+        setHasError({ title: t("youAlreadyHaveAnAccount", { ns: "authentication" }), message: t("yourEmailIsAlreadyRegisteredWithGoogleOrFacebook", { ns: "authentication" }) });
       }
     } else {
-      console.log(TAG, "Not Account");
+      console.log(TAG, `Email '${email}' don't exist. Forwarding to signup screen`);
+      props.navigation.navigate("signup", { email });
     }
   };
 
-  const signInWithGoogle = async () => {
+  const handleSignInWithGoogle = async () => {
     try {
       setIsLoadingGoogleAuthentication(true);
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: false });
@@ -72,18 +71,17 @@ const AuthenticationScreen = (props) => {
       const googleCredential = auth.GoogleAuthProvider.credential(userInfo.idToken);
       await auth().signInWithCredential(googleCredential);
     } catch (error) {
+      console.info(TAG, `Error while sign in with google: ${error.message}`);
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        // user cancelled the login flow
-        console.log(TAG, "SIGN_IN_CANCELLED: " + error.message);
+        // The user cancelled the sign in
       } else if (error.code === statusCodes.IN_PROGRESS) {
-        // operation (e.g. sign in) is in progress already
-        console.log(TAG, "IN_PROGRESS: " + error.code);
+        setHasError({ title: t("googleInProgressTitle", { ns: "authentication" }), message: t("googleInProgressMessage", { ns: "authentication" }) });
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        // play services not available or outdated
-        console.log(TAG, "PLAY_SERVICES_NOT_AVAILABLE: " + error.code);
+        setHasError({ title: t("googlePlayServicesNotAvailableTitle", { ns: "authentication" }), message: t("googlePlayServicesNotAvailableMessage", { ns: "authentication" }) });
       } else {
-        // some other error happened
-        console.log(TAG, "unknown: " + error);
+        console.warn(TAG, "Unknown error while sign in with google");
+        Bugsnag.notify(error);
+        setHasError({ title: t("unknownError", { ns: "authentication" }), message: error.message });
       }
     }
     setIsLoadingGoogleAuthentication(false);
@@ -91,14 +89,23 @@ const AuthenticationScreen = (props) => {
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+      <CustomAlert
+        visible={!!hasError}
+        title={hasError.title}
+        message={hasError.message}
+        rightButtonText={t("ok", { ns: "authentication" })}
+        onPressRightButton={() => {
+          setHasError("");
+        }}
+      />
       <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.container}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.content}>
             <View style={styles.header}>
-              <Animated.Text entering={SlideInDown} style={{ ...styles.firstTitle, ...{ color: isLight ? Colors.black : Colors.white } }}>
+              <Animated.Text entering={SlideInDown} style={{ ...styles.firstTitle, ...{ color: isDarkMode ? Colors.white : Colors.black } }}>
                 {t("hello", { ns: "authentication" })}
               </Animated.Text>
-              <Animated.Text entering={SlideInDown} style={{ ...styles.secondTitle, ...{ color: isLight ? Colors.black : Colors.white } }}>
+              <Animated.Text entering={SlideInDown} style={{ ...styles.secondTitle, ...{ color: isDarkMode ? Colors.white : Colors.black } }}>
                 {t("welcomeToVocableTasks", { ns: "authentication" })}
               </Animated.Text>
             </View>
@@ -114,11 +121,9 @@ const AuthenticationScreen = (props) => {
                 onSubmit={async (values, actions) => {
                   setIsLoadingContinueButton(true);
                   setHasError("");
-
                   try {
-                    //dispatch(await authActions.login(values.Email, values.Password));
-                    await checkMail(values.email);
-                    setIsLoadingContinueButton(false);
+                    await checkEmail(values.email);
+                    if (isMounted) setIsLoadingContinueButton(false);
                   } catch (error) {
                     console.log(error);
                     setIsLoadingContinueButton(false);
@@ -142,7 +147,13 @@ const AuthenticationScreen = (props) => {
                       error={formikProps.errors.email}
                       touched={formikProps.touched.email}
                     />
-                    <CustomButton rightIconName="arrow-forward-sharp" title={t("continue", { ns: "authentication" })} onPress={formikProps.handleSubmit} style={styles.continueButton} isLoading={isLoadingContinueButton} />
+                    <CustomButton
+                      rightIconName="arrow-forward-sharp"
+                      title={t("continue", { ns: "authentication" })}
+                      onPress={formikProps.handleSubmit}
+                      style={styles.continueButton}
+                      isLoading={isLoadingContinueButton}
+                    />
                   </View>
                 )}
               </Formik>
@@ -150,19 +161,19 @@ const AuthenticationScreen = (props) => {
 
             <View style={styles.otherLogin}>
               <View style={styles.orContainer}>
-                <View style={{ ...styles.orLine, ...{ backgroundColor: isLight ? Colors.neutral[2] : Colors.neutral[4] } }}></View>
-                <Text style={{ ...styles.orText, ...{ color: isLight ? Colors.black : Colors.white } }}>{t("or", { ns: "authentication" })}</Text>
-                <View style={{ ...styles.orLine, ...{ backgroundColor: isLight ? Colors.neutral[2] : Colors.neutral[4] } }}></View>
+                <View style={{ ...styles.orLine, ...{ backgroundColor: isDarkMode ? Colors.neutral[4] : Colors.neutral[2] } }}></View>
+                <Text style={{ ...styles.orText, ...{ color: isDarkMode ? Colors.white : Colors.black } }}>{t("or", { ns: "authentication" })}</Text>
+                <View style={{ ...styles.orLine, ...{ backgroundColor: isDarkMode ? Colors.neutral[4] : Colors.neutral[2] } }}></View>
               </View>
 
               <View style={styles.externalSignInContainer}>
                 <View style={styles.externalSignInItem}>
-                  <TouchableOpacity style={styles.externalSignInContainerOuter} onPress={signInWithGoogle}>
+                  <TouchableOpacity style={styles.externalSignInContainerOuter} onPress={handleSignInWithGoogle}>
                     <View style={styles.externalSignInContainerInner}>
                       {isLoadingGoogleAuthentication ? <ActivityIndicator size="large" color={Colors.primary} /> : <SvgXml width="100%" height="100%" xml={g_logo} />}
                     </View>
                   </TouchableOpacity>
-                  <Text style={{ ...styles.externalSignInText, ...{ color: isLight ? Colors.black : Colors.white } }}>{t("google", { ns: "authentication" })}</Text>
+                  <Text style={{ ...styles.externalSignInText, ...{ color: isDarkMode ? Colors.white : Colors.black } }}>{t("google", { ns: "authentication" })}</Text>
                 </View>
                 <View style={styles.externalSignInItem}>
                   <TouchableOpacity style={styles.externalSignInContainerOuter}>
@@ -170,7 +181,7 @@ const AuthenticationScreen = (props) => {
                       {isLoadingFacebookAuthentication ? <ActivityIndicator size="large" color={Colors.primary} /> : <SvgXml width="100%" height="100%" xml={f_logo} />}
                     </View>
                   </TouchableOpacity>
-                  <Text style={{ ...styles.externalSignInText, ...{ color: isLight ? Colors.black : Colors.white } }}>{t("facebook", { ns: "authentication" })}</Text>
+                  <Text style={{ ...styles.externalSignInText, ...{ color: isDarkMode ? Colors.white : Colors.black } }}>{t("facebook", { ns: "authentication" })}</Text>
                 </View>
               </View>
             </View>
@@ -238,7 +249,7 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     borderRadius: 70,
     backgroundColor: "#fff",
-    elevation: 4,
+    elevation: 5,
     justifyContent: "center",
     alignItems: "center",
   },
