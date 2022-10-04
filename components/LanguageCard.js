@@ -1,59 +1,179 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Dimensions, StyleSheet, Text, TouchableOpacity, useColorScheme, View } from "react-native";
+import Animated, { Extrapolation, FadeIn, interpolate, runOnJS, SlideInUp, useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import { SvgXml } from "react-native-svg";
+import Flags from "../constants/Flags";
+import translation from "../i18n/translation";
 import Colors from "../constants/Colors";
-import Flag from "react-native-flags";
 import { Ionicons } from "@expo/vector-icons";
+import { PanGestureHandler } from "react-native-gesture-handler";
 import DefaultValues from "../constants/DefaultValues";
+import { normalize } from "../constants/GlobalStyles";
+import firestore from "@react-native-firebase/firestore";
+import auth from "@react-native-firebase/auth";
+import Bugsnag from "@bugsnag/react-native";
 
-const LanguageCard = props => {
-    return (
-        <TouchableOpacity onPress={props.onPress}>
-            <View style={{ ...styles.container, ...(props.choosedLanguage ? styles.choosedContainer : null) }}>
-                <View style={styles.box}>
-                    <View style={styles.leftSide}>
-                        <Flag code={props.code} size={32} style={styles.flag} />
-                        <Text style={{ ...styles.title, ...(props.choosedLanguage ? styles.choosedTitle : null) }}>{props.title}</Text>
-                    </View>
-                    <View style={styles.rightSide}></View>
-                    {props.choosedLanguage ? <Ionicons name="checkmark" size={23} color={Colors.white} /> : null}
-                </View>
-            </View>
+const TAG = "[LanguageCard]";
+
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+const TRANSLATEX_THRESHOLD = -SCREEN_WIDTH * 0.1;
+const ITEM_HEIGHT = 125;
+
+const LanguageCard = (props) => {
+  const { t } = translation;
+  const { itemId, flag, language, icon, onPress } = props;
+  const Flag = Flags[flag] || Flags["unkown"];
+
+  const colorScheme = useColorScheme();
+  const isDarkMode = colorScheme === "dark";
+
+  const translateX = useSharedValue(0);
+  const itemHeight = useSharedValue(ITEM_HEIGHT);
+  const marginVertical = useSharedValue(12);
+
+  const deleteCard = async () => {
+    const uid = auth().currentUser.uid;
+    firestore()
+      .collection("users")
+      .doc(uid)
+      .collection("cards")
+      .doc(itemId)
+      .delete()
+      .then(() => {
+        console.info(TAG, `Deleted Card with id '${itemId}', language '${language}'`);
+      })
+      .catch((error) => {
+        console.warn(TAG, error);
+        Bugsnag.notify(error);
+      });
+  };
+
+  const dismissItem = (item) => {
+    itemHeight.value = withTiming(0);
+    marginVertical.value = withTiming(0, undefined, async (isFinished) => {
+      if (isFinished) {
+        runOnJS(deleteCard)();
+      }
+    });
+  };
+
+  const panGestureEventHandler = useAnimatedGestureHandler({
+    onStart: (event, context) => {
+      context.translateX = translateX.value;
+    },
+    onActive: (event, context) => {
+      const currentPosition = event.translationX + context.translateX;
+      if (currentPosition < 0) {
+        translateX.value = currentPosition;
+      } else {
+        translateX.value = withTiming(0);
+      }
+    },
+    onEnd: () => {
+      const thresholdReached = translateX.value < TRANSLATEX_THRESHOLD;
+      if (thresholdReached) {
+        translateX.value = withTiming(-SCREEN_WIDTH * 0.2);
+      } else {
+        translateX.value = withTiming(0);
+      }
+    },
+  });
+
+  const reanimatedActionStyle = useAnimatedStyle(() => {
+    // const opacity = withTiming(translateX.value < TRANSLATEX_THRESHOLD ? 1 : 0);
+    const opacity = interpolate(translateX.value, [TRANSLATEX_THRESHOLD, 0], [1, 0], { extrapolateLeft: Extrapolation.CLAMP });
+    return {
+      opacity,
+    };
+  });
+
+  const reanimatedCardStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateX: translateX.value,
+        },
+      ],
+    };
+  });
+
+  const renaimatedItemHeight = useAnimatedStyle(() => {
+    return {
+      height: itemHeight.value,
+      marginVertical: marginVertical.value,
+    };
+  });
+
+  return (
+    <Animated.View style={[styles.container, renaimatedItemHeight]}>
+      {icon ? null : (
+        <View style={styles.actionsRightContainer}>
+          <Animated.View style={[styles.actionCard, reanimatedActionStyle]}>
+            <TouchableOpacity style={styles.centerAction} onPress={dismissItem}>
+              <Ionicons name="ios-trash-outline" size={23} color={Colors.danger} style={{ marginBottom: 5 }} />
+              <Text style={styles.actionText}>Delete</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        </View>
+      )}
+      {icon ? (
+        <TouchableOpacity onPress={onPress}>
+          <View style={{ ...styles.card, ...{ backgroundColor: isDarkMode ? Colors.neutral[4] : Colors.neutral[2] } }}>
+            <Ionicons name={icon} size={50} color={Colors.primary[1]} />
+          </View>
         </TouchableOpacity>
-    );
+      ) : (
+        <PanGestureHandler onGestureEvent={panGestureEventHandler} activeOffsetX={[-10, 10]}>
+          <Animated.View entering={FadeIn} exiting={SlideInUp} style={[reanimatedCardStyle]}>
+            <TouchableOpacity onPress={onPress}>
+              <View style={[styles.card, { backgroundColor: Colors.primary[1] }]}>
+                <SvgXml xml={Flag} height={32} width={32} />
+                <Text style={{ color: "#fff", fontSize: 24 }}>{t(language, { ns: "languageNames" })}</Text>
+              </View>
+            </TouchableOpacity>
+          </Animated.View>
+        </PanGestureHandler>
+      )}
+    </Animated.View>
+  );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        backgroundColor: Colors.white,
-        height: 60,
-        paddingHorizontal: 20,
-        justifyContent: "center",
-    },
-    choosedContainer: {
-        backgroundColor: Colors.info,
-    },
-    box: {
-        paddingHorizontal: 5,
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-    },
-    leftSide: {
-        flexDirection: "row",
-        alignItems: "center",
-    },
-    rightSide: {},
-    flag: {
-        marginRight: 10,
-    },
-    title: {
-        color: Colors.black,
-        fontFamily: DefaultValues.fontRegular,
-        fontSize: 16,
-    },
-    choosedTitle: {
-        color: Colors.white,
-    },
+  container: {
+    paddingHorizontal: 24,
+    marginVertical: 12,
+    overflow: "hidden",
+  },
+  card: {
+    height: ITEM_HEIGHT,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    // elevation: 5
+  },
+  actionsRightContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    height: ITEM_HEIGHT,
+    width: "45%",
+    position: "absolute",
+    right: 24,
+  },
+  actionCard: {
+    width: "45%",
+    borderRadius: 10,
+    backgroundColor: Colors.lightDanger,
+  },
+  centerAction: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  actionText: {
+    fontFamily: DefaultValues.fontMedium,
+    fontSize: normalize(13),
+    color: Colors.danger,
+  },
 });
 
 export default LanguageCard;

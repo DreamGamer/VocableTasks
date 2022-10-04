@@ -5,8 +5,7 @@ import HeaderButton from "../../../components/HeaderButton";
 import GlobalStyles from "../../../constants/GlobalStyles";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "../../../constants/Colors";
-import { useTranslation } from "react-i18next";
-import { Translation } from "../../../i18n/translation";
+import { Trans, useTranslation } from "react-i18next";
 
 const LearnScreen = props => {
     return (
@@ -41,7 +40,7 @@ const LearnScreen = props => {
 
 export const LearnScreenOptions = navigationData => {
     return {
-        title: <Translation name="learn" />,
+        title: <Trans name="learn" />,
         headerLeft: () => (
             // HeaderButton to toggle the Drawer
             <HeaderButtons HeaderButtonComponent={HeaderButton}>

@@ -8,11 +8,10 @@ import * as vocableActions from "../../../store/actions/vocables";
 import Colors from "../../../constants/Colors";
 import * as yup from "yup";
 import GlobalStyles from "../../../constants/GlobalStyles";
-import { useTranslation } from "react-i18next";
-import { Translation } from "../../../i18n/translation"
+import { Trans, useTranslation } from "react-i18next";
+import { Translation } from "../../../i18n/translation";
 
-
-const EditVocableScreen = props => {
+const EditVocableScreen = (props) => {
   const { t } = useTranslation();
   // States
   const [hasError, setHasError] = useState("");
@@ -21,7 +20,7 @@ const EditVocableScreen = props => {
     wordENG: yup.string().required(),
     wordDE: yup.string().required(),
   });
-  
+
   const { vocable } = props.route.params ? props.route.params : null;
 
   const dispatch = useDispatch();
@@ -54,9 +53,9 @@ const EditVocableScreen = props => {
             setIsLoading(false);
           }}>
           {(formikProps) => (
-            <View>
-              <Label title="English:" />
+            <View style={GlobalStyles.flex1}>
               <Input
+                title={t("english")}
                 onBlur={formikProps.handleBlur("wordENG")}
                 placeholder="Enter the english Word"
                 onChangeText={formikProps.handleChange("wordENG")}
@@ -65,8 +64,8 @@ const EditVocableScreen = props => {
               />
               <Text style={GlobalStyles.errorText}>{formikProps.touched.wordENG && formikProps.errors.wordENG}</Text>
 
-              <Label title="German:" />
               <Input
+                title={t("german")}
                 onBlur={formikProps.handleBlur("wordDE")}
                 placeholder="Enter the german Word"
                 onChangeText={formikProps.handleChange("wordDE")}
@@ -86,12 +85,13 @@ const EditVocableScreen = props => {
 
 export const EditVocableScreenOptions = (navigationData) => {
   return {
-    title: <Translation name="editVocable" />,
+    title: <Trans name="editVocable" />,
   };
 };
 
 const styles = StyleSheet.create({
   form: {
+    flex: 1,
     margin: 15,
   },
 });

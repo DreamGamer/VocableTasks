@@ -156,9 +156,8 @@ const EditProfileScreen = props => {
                                 value={formikProps.values.username}
                                 onChangeText={formikProps.handleChange("username")}
                                 editable={usernameEditable}
-                                showIcon
-                                iconName={usernameEditable ? "checkmark-sharp" : "pencil-sharp"}
-                                onPressIcon={formikProps.handleSubmit}
+                                rightIconName={usernameEditable ? "checkmark-sharp" : "pencil-sharp"}
+                                onPressRightIcon={formikProps.handleSubmit}
                                 returnKeyType="done"
                                 onSubmitEditing={formikProps.handleSubmit}
                             />

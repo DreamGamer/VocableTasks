@@ -47,19 +47,37 @@ const AuthenticationScreen = (props) => {
   }, []);
 
   const checkEmail = async (email) => {
-    const methods = await auth().fetchSignInMethodsForEmail(email);
-    if (methods.length !== 0) {
-      const isRegisteredWithPassword = methods.some((value) => value === "password");
-      if (isRegisteredWithPassword) {
-        console.log(TAG, `Email '${email}' exist with method 'password'. Forwarding to login screen`);
-        props.navigation.navigate("login", { email });
+    try {
+      const methods = await auth().fetchSignInMethodsForEmail(email);
+      // Check if user is registered
+      if (methods.length !== 0) {
+        // Check if the registered user is registered with email and password
+        const isRegisteredWithPassword = methods.some((value) => value === "password");
+        if (isRegisteredWithPassword) {
+          console.info(TAG, `Email '${email}' exist with method 'password'. Forwarding to login screen`);
+          props.navigation.navigate("login", { email });
+        } else {
+          console.info(TAG, `Email '${email}' is registered with another platform [${methods}]`);
+          setHasError({ title: t("youAlreadyHaveAnAccount", { ns: "authentication" }), message: t("yourEmailIsAlreadyRegisteredWithGoogleOrFacebook", { ns: "authentication" }) });
+        }
       } else {
-        console.log(TAG, "Registered with another platform");
-        setHasError({ title: t("youAlreadyHaveAnAccount", { ns: "authentication" }), message: t("yourEmailIsAlreadyRegisteredWithGoogleOrFacebook", { ns: "authentication" }) });
+        console.info(TAG, `Email '${email}' don't exist. Forwarding to signup screen`);
+        props.navigation.navigate("signup", { email });
       }
-    } else {
-      console.log(TAG, `Email '${email}' don't exist. Forwarding to signup screen`);
-      props.navigation.navigate("signup", { email });
+    } catch (error) {
+      switch (error.code) {
+        case "auth/invalid-email":
+          setHasError({ title: t("authInvalidEmailTitle", { ns: "authentication" }), message: t("authInvalidEmailMessage", { ns: "authentication" }) });
+          break;
+        case "auth/network-request-failed":
+          setHasError({ title: t("authNetworkRequestFailedTitle", { ns: "authentication" }), message: t("authNetworkRequestFailedMessage", { ns: "authentication" }) });
+          break;
+        default:
+          console.warn(TAG, "Unknown error while checking email: ", error);
+          Bugsnag.notify(error);
+          setHasError({ title: t("unknownError", { ns: "authentication" }), message: error.message });
+          break;
+      }
     }
   };
 
@@ -110,54 +128,46 @@ const AuthenticationScreen = (props) => {
               </Animated.Text>
             </View>
 
-            <View style={styles.form}>
-              <Formik
-                initialValues={{
-                  email: "",
-                }}
-                validationSchema={() => {
-                  return yupSchema(t);
-                }}
-                onSubmit={async (values, actions) => {
-                  setIsLoadingContinueButton(true);
-                  setHasError("");
-                  try {
-                    await checkEmail(values.email);
-                    if (isMounted) setIsLoadingContinueButton(false);
-                  } catch (error) {
-                    console.log(error);
-                    setIsLoadingContinueButton(false);
-                    setHasError(error);
-                  }
-                }}>
-                {(formikProps) => (
-                  <View>
-                    <Input
-                      placeholder={t("email", { ns: "authentication" })}
-                      onBlur={formikProps.handleBlur("email")}
-                      onChangeText={formikProps.handleChange("email")}
-                      value={formikProps.values.email}
-                      editable={!isLoadingContinueButton}
-                      keyboardType="email-address"
-                      autoCapitalize="none"
-                      returnKeyType="next"
-                      blurOnSubmit={false}
-                      leftIconName="mail-outline"
-                      onSubmitEditing={formikProps.handleSubmit}
-                      error={formikProps.errors.email}
-                      touched={formikProps.touched.email}
-                    />
-                    <CustomButton
-                      rightIconName="arrow-forward-sharp"
-                      title={t("continue", { ns: "authentication" })}
-                      onPress={formikProps.handleSubmit}
-                      style={styles.continueButton}
-                      isLoading={isLoadingContinueButton}
-                    />
-                  </View>
-                )}
-              </Formik>
-            </View>
+            <Formik
+              initialValues={{
+                email: "",
+              }}
+              validationSchema={() => {
+                return yupSchema(t);
+              }}
+              onSubmit={async (values, actions) => {
+                setIsLoadingContinueButton(true);
+                setHasError("");
+                try {
+                  await checkEmail(values.email);
+                  if (isMounted) setIsLoadingContinueButton(false);
+                } catch (error) {
+                  console.log(error);
+                  setIsLoadingContinueButton(false);
+                  setHasError(error);
+                }
+              }}>
+              {(formikProps) => (
+                <View>
+                  <Input
+                    placeholder={t("email", { ns: "authentication" })}
+                    onBlur={formikProps.handleBlur("email")}
+                    onChangeText={formikProps.handleChange("email")}
+                    value={formikProps.values.email}
+                    editable={!isLoadingContinueButton}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    returnKeyType="next"
+                    blurOnSubmit={false}
+                    leftIconName="mail-outline"
+                    onSubmitEditing={formikProps.handleSubmit}
+                    error={formikProps.errors.email}
+                    touched={formikProps.touched.email}
+                  />
+                  <CustomButton rightIconName="arrow-forward-sharp" title={t("continue", { ns: "authentication" })} onPress={formikProps.handleSubmit} style={styles.continueButton} isLoading={isLoadingContinueButton} />
+                </View>
+              )}
+            </Formik>
 
             <View style={styles.otherLogin}>
               <View style={styles.orContainer}>

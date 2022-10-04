@@ -13,6 +13,10 @@ export default {
     googlePlayServicesNotAvailableMessage: "Google play services are not available or outdated on this device. Please try another login method.",
     googleInProgressTitle: "Google sign in is already in progress",
     googleInProgressMessage: "Google sign in is already in progress. Please wait or restart the app.",
+    authInvalidEmailTitle: "Invalid E-Mail address",
+    authInvalidEmailMessage: "The E-Mail you entered is invalid.",
+    authNetworkRequestFailedTitle: "Network request failed",
+    authNetworkRequestFailedMessage: "Network request failed! Check your internet or try again later.",
     signup: "Sign up",
     back: "Back",
     youAlreadyHaveAnAccount: "You already have an account",
@@ -65,7 +69,34 @@ export default {
     authTooManyRequestsTitle: "Too many attempts",
     authTooManyRequestsMessage: "Too many attempts, try again later!",
     successfullySendEmailTitle: "Check your mailbox",
-    successfullySendEmailMessage: "You have received an email with a link, with this link you can choose a new password."
+    successfullySendEmailMessage: "You have received an email with a link, with this link you can choose a new password.",
+  },
+  HomeScreen: {
+    title: "Cards",
+    loadingText: "Loading cards..."
+  },
+  AddCard: {
+    title: "Choose a language",
+  },
+  languageNames: {
+    german: "German",
+    english: "English",
+    dutch: "Dutch",
+    italian: "Italian",
+    japanese: "Japanese",
+    norwegian: "Norwegian",
+    portuguese: "Portuguese",
+    russian: "Russian",
+    serbian: "Serbian",
+    spanish: "Spanish",
+    swedish: "Swedish",
+    thai: "Thai",
+  },
+  AppNavigator: {
+    ok: "Ok",
+    unknownError: "An unknown error occured",
+    firestoreUnavailableTitle: "The service is currently unavailable",
+    firestoreUnavailableMessage: "The firestore service is currently unavailable, please try again later or contact support!",
   },
   translation: {
     hello: "Hello",

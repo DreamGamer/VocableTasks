@@ -3,8 +3,7 @@
     "name": "VocableTasks",
     "slug": "VocableTasks",
     "version": "1.0.0",
-    "assetBundlePatterns": [
-      "**/*"
-    ]
+    "jsEngine": "hermes",
+    "assetBundlePatterns": ["**/*"]
   }
 }

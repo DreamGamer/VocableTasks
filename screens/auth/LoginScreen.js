@@ -20,7 +20,7 @@ const TAG = "[LoginScreen]";
 
 const yupSchema = (t) => {
   return yup.object({
-    password: yup.string(t("passwordMustBeAString")).required(t("passwordIsRequired")),
+    password: yup.string(t("passwordMustBeAString")).required(t("passwordIsRequired")).min(6),
   });
 };
 

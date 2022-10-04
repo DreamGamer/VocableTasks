@@ -8,12 +8,18 @@ import { useDispatch } from "react-redux";
 import * as authActions from "../store/actions/auth";
 import DrawerContent from "./DrawerContent";
 import { useTranslation } from "react-i18next";
+import { normalize } from "../constants/GlobalStyles";
+import translation from "../i18n/translation";
+import Colors from "../constants/Colors";
+import DefaultValues from "../constants/DefaultValues";
 
 // Screens
 import VocabularysScreen, { VocabularysScreenOptions } from "../screens/learning/vocabulary/VocabularysScreen";
 import AddVocableScreen, { AddVocableScreenOptions } from "../screens/learning/vocabulary/AddVocableScreen";
 import EditVocableScreen, { EditVocableScreenOptions } from "../screens/learning/vocabulary/EditVocableScreen";
 import LearnScreen, { LearnScreenOptions } from "../screens/learning/learn/LearnScreen";
+import HomeScreen, { HomeScreenOptions } from "../screens/vocableTasks/HomeScreen";
+import AddCardScreen, { AddCardOptions } from "../screens/vocableTasks/AddCard";
 import StartScreen, { StartScreenOptions } from "../screens/StartScreen";
 import LoginScreen, { LoginScreenOptions } from "../screens/auth/LoginScreen";
 import SignUpScreen, { SignUpScreenOptions } from "../screens/auth/SignUpScreen";
@@ -25,36 +31,89 @@ import EditProfileScreen, { EditProfileScreenOptions } from "../screens/settings
 import ChangePasswordScreen, { ChangePasswordScreenOptions } from "../screens/settings/ChangePasswordScreen";
 import ChangeLanguageScreen, { ChangeLanguageScreenOptions } from "../screens/settings/ChangeLanguageScreen";
 import HelpAndSupportScreen, { HelpAndSupportScreenOptions } from "../screens/settings/HelpAndSupportScreen";
-import Colors from "../constants/Colors";
-import DefaultValues from "../constants/DefaultValues";
-import { normalize } from "../constants/GlobalStyles";
 
 const useDefaultNavigationOptions = () => {
   const colorScheme = useColorScheme();
+  const isDarkMode = colorScheme === "dark";
   return {
-    headerTintColor: colorScheme === "light" ? Colors.textBlack : Colors.textWhite,
-    //headerStyle: { backgroundColor: colorScheme === "light" ? Colors.white : Colors.lightBlack },
-    headerStyle: { backgroundColor: colorScheme === "light" ? Colors.primary : Colors.grey },
-    headerTintColor: "#fff",
+    headerTintColor: isDarkMode ? Colors.white : Colors.black,
+    headerStyle: { backgroundColor: isDarkMode ? Colors.darkMode : Colors.white },
     headerShadowVisible: false,
+    headerTitleAlign: "center",
   };
 };
 
 //#region VocableTasks
 
-const VocableTasksDrawerNavigator = createDrawerNavigator();
+const DrawerNavigator = createDrawerNavigator();
+// const BottomTabNavigator = createBottomTabNavigator();
+
+// export const VocableTasksNavigator = () => {
+//   const { t } = useTranslation();
+//   const colorScheme = useColorScheme();
+//   const isDarkMode = colorScheme === "dark";
+
+//   return (
+//     <View style={{ flex: 1 }} collapsable={false}>
+//       <BottomTabNavigator.Navigator
+//         screenOptions={{
+//           tabBarStyle: { backgroundColor: isDarkMode ? Colors.neutral[4] : Colors.white, borderTopColor: isDarkMode ? Colors.neutral[4] : Colors.neutral[2], borderTopWidth: 0.2 },
+//           tabBarInactiveTintColor: isDarkMode ? Colors.white : Colors.neutral[4],
+//           tabBarActiveTintColor: Colors.primary[1],
+//           tabBarHideOnKeyboard: true,
+//           tabBarLabelStyle: { fontFamily: DefaultValues.fontRegular, fontSize: normalize(10) },
+//         }}>
+//         <BottomTabNavigator.Screen
+//           name="vocabulary"
+//           component={VocabularyNavigator}
+//           options={{
+//             tabBarLabel: t("vocabulary"),
+//             tabBarIcon: ({ focused, color, size }) => {
+//               return <Ionicons name={focused ? "book" : "book-outline"} size={size} color={color} />;
+//             },
+//             headerShown: false,
+//           }}
+//         />
+//         <BottomTabNavigator.Screen
+//           name="learnTab"
+//           component={LearnNavigator}
+//           options={{
+//             tabBarLabel: t("learn"),
+//             tabBarIcon: ({ focused, color, size }) => {
+//               return <Ionicons name={focused ? "create" : "create-outline"} size={size} color={color} />;
+//             },
+//             headerShown: false,
+//           }}
+//         />
+//         <BottomTabNavigator.Screen
+//           name="settings"
+//           component={SettingsNavigator}
+//           options={{
+//             tabBarLabel: t("settings"),
+//             tabBarIcon: ({ focused, color, size }) => {
+//               return <Ionicons name={focused ? "settings" : "settings-outline"} size={size} color={color} />;
+//             },
+//             headerShown: false,
+//           }}
+//         />
+//       </BottomTabNavigator.Navigator>
+//     </View>
+//   );
+// };
 
 export const VocableTasksNavigator = () => {
-  const { t } = useTranslation();
+  const { t } = translation;
   const dispatch = useDispatch();
 
   const DefaultScreenOptions = useDefaultNavigationOptions();
 
   return (
     <View style={{ flex: 1 }} collapsable={false}>
-      <VocableTasksDrawerNavigator.Navigator
+      <DrawerNavigator.Navigator
         screenOptions={{
-          headerTintColor: "#ffffff",
+          headerTintColor: "#fff",
+          drawerLabelStyle: { fontFamily: DefaultValues.fontRegular, fontSize: normalize(13) },
+          drawerActiveTintColor: Colors.primary[1],
         }}
         drawerContent={(props) => {
           return (
@@ -66,25 +125,28 @@ export const VocableTasksNavigator = () => {
             />
           );
         }}>
-        <VocableTasksDrawerNavigator.Screen
+        <DrawerNavigator.Screen
           name="learning"
           component={LearningNavigator}
           options={{
-            title: t("learn"),
-            drawerIcon: ({ color, size }) => <Ionicons name="book-outline" size={size} color={color} />,
+            title: t("learn", { ns: "navigation" }),
+            drawerIcon: ({ color, size, focused }) => <Ionicons name={focused ? "book" : "book-outline"} size={size} color={color} />,
             headerShown: false,
           }}
         />
-        <VocableTasksDrawerNavigator.Screen
+        <DrawerNavigator.Screen
           name="settings"
           component={SettingsNavigator}
           options={{
-            title: t("settings"),
-            drawerIcon: ({ color, size }) => <Ionicons name="settings-outline" size={size} color={color} />,
+            title: t("settings", { ns: "navigation" }),
+            drawerIcon: ({ color, size, focused }) => <Ionicons name={focused ? "settings" : "settings-outline"} size={size} color={color} />,
             headerShown: false,
+            drawerItemStyle: {
+              display: "none",
+            },
           }}
         />
-      </VocableTasksDrawerNavigator.Navigator>
+      </DrawerNavigator.Navigator>
     </View>
   );
 };
@@ -94,14 +156,17 @@ const LearningBottomTabsNavigator = createBottomTabNavigator();
 const LearningNavigator = () => {
   const { t } = useTranslation();
   const colorScheme = useColorScheme();
+  const isDarkMode = colorScheme === "dark";
+
   return (
     <View style={{ flex: 1 }} collapsable={false}>
       <LearningBottomTabsNavigator.Navigator
         screenOptions={{
-          tabBarStyle: { backgroundColor: colorScheme === "light" ? Colors.white : Colors.black, borderTopColor: Colors.lightGrey, borderTopWidth: 0.2 },
-          tabBarInactiveTintColor: colorScheme === "light" ? Colors.black : Colors.white,
-          tabBarActiveTintColor: colorScheme === "light" ? Colors.primary : Colors.primary,
+          tabBarStyle: { backgroundColor: isDarkMode ? Colors.darkMode : Colors.white, borderTopColor: isDarkMode ? Colors.neutral[4] : Colors.neutral[2], borderTopWidth: 0.2 },
+          tabBarInactiveTintColor: isDarkMode ? Colors.white : Colors.neutral[4],
+          tabBarActiveTintColor: Colors.primary[1],
           tabBarHideOnKeyboard: true,
+          tabBarLabelStyle: { fontFamily: DefaultValues.fontRegular, fontSize: normalize(10) },
         }}>
         <LearningBottomTabsNavigator.Screen
           name="vocabulary"
@@ -137,7 +202,8 @@ const VocabularyNavigator = () => {
   return (
     <View style={{ flex: 1 }} collapsable={false}>
       <VocabularyStackNavigator.Navigator screenOptions={DefaultScreenOptions}>
-        <VocabularyStackNavigator.Screen name="vocabularys" component={VocabularysScreen} options={VocabularysScreenOptions} />
+        <VocabularyStackNavigator.Screen name="home" component={HomeScreen} options={HomeScreenOptions} />
+        <VocabularyStackNavigator.Screen name="addCard" component={AddCardScreen} options={AddCardOptions} />
         <VocabularyStackNavigator.Screen name="addVocable" component={AddVocableScreen} options={AddVocableScreenOptions} />
         <VocabularyStackNavigator.Screen name="editVocable" component={EditVocableScreen} options={EditVocableScreenOptions} />
       </VocabularyStackNavigator.Navigator>
@@ -194,7 +260,7 @@ export const StartupNavigator = () => {
   return (
     <View style={{ flex: 1 }} collapsable={false}>
       <StartupStackNavigator.Navigator screenOptions={{ headerShown: false }}>
-        <StartupStackNavigator.Screen name="startup" component={StartScreen} options={StartScreenOptions} />
+        <StartupStackNavigator.Screen name="loading" component={StartScreen} options={StartScreenOptions} />
       </StartupStackNavigator.Navigator>
     </View>
   );
@@ -232,7 +298,7 @@ export const AuthNavigator = () => {
           transitionSpec: { open: config, close: config },
           headerTintColor: isDarkMode ? Colors.white : Colors.black,
           headerBackImage: () => (
-            <View style={styles.backButton}>
+            <View style={styles.customIcon}>
               <Ionicons size={24} color={isDarkMode ? Colors.white : Colors.black} name="arrow-back-outline" />
             </View>
           ),
@@ -266,7 +332,7 @@ export const WelcomeNavigator = () => {
 //#endregion
 
 const styles = StyleSheet.create({
-  backButton: Platform.select({
+  customIcon: Platform.select({
     ios: {
       height: 21,
       width: 13,

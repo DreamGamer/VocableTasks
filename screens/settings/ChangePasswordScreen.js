@@ -13,6 +13,7 @@ import Spinner from "react-native-loading-spinner-overlay";
 import Label from "../../components/Label";
 import Bugsnag from "@bugsnag/react-native";
 import { Translation } from "../../i18n/translation";
+import { Trans } from "react-i18next";
 
 const TAG = "[ChangePasswordScreen]: "; // Console Log Tag
 
@@ -216,7 +217,7 @@ const styles = StyleSheet.create({
 
 export const ChangePasswordScreenOptions = navigationData => {
     return {
-        title: <Translation name="changePassword" />,
+        title: <Trans name="changePassword" />,
     };
 };
 
