@@ -3,11 +3,6 @@
     "name": "VocableTasks",
     "slug": "VocableTasks",
     "version": "1.0.0",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "assetBundlePatterns": [
       "**/*"
     ]

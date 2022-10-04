@@ -13,7 +13,7 @@ class MainComponentsRegistry
  public:
   // Adapt it to the package you used for your Java class.
   constexpr static auto kJavaDescriptor =
-      "Lde.dreamgamer.vocabletasks/newarchitecture/components/MainComponentsRegistry;";
+      "Lde/dreamgamer/vocabletasks/newarchitecture/components/MainComponentsRegistry;";
 
   static void registerNatives();
 

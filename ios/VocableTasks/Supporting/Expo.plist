@@ -3,8 +3,8 @@
 <plist version="1.0">
 <dict>
         <key>EXUpdatesSDKVersion</key>
-        <string>45.0.0</string>
+        <string>YOUR-APP-SDK-VERSION-HERE</string>
         <key>EXUpdatesURL</key>
-        <string>https://exp.host/@dreamgamer/VocableTasks</string>
+        <string>YOUR-APP-URL-HERE</string>
 </dict>
 </plist>
