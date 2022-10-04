@@ -6,4 +6,4 @@ This application is to learn English, so you can learn vocabulary, sentences and
 This is my first application I've ever build without learning from course so please don't expect too much :=) And please let me know if you see some critical errors, thanks :=)
 
 
-Coded by: Maurice Bertram
+Made with ♥ in Cologne from Maurice Bertram
