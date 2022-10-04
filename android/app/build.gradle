@@ -245,10 +245,10 @@ android {
             keyPassword 'android'
         }
         release {
-            storeFile file(propertiesFile["MYAPP_UPLOAD_STORE_FILE"])
-            storePassword propertiesFile["MYAPP_UPLOAD_STORE_PASSWORD"]
-            keyAlias propertiesFile["MYAPP_UPLOAD_KEY_ALIAS"]
-            keyPassword propertiesFile["MYAPP_UPLOAD_KEY_PASSWORD"]
+            storeFile file(propertiesFile["VOCABLETASKS_UPLOAD_STORE_FILE"])
+            storePassword propertiesFile["VOCABLETASKS_UPLOAD_STORE_PASSWORD"]
+            keyAlias propertiesFile["VOCABLETASKS_UPLOAD_KEY_ALIAS"]
+            keyPassword propertiesFile["VOCABLETASKS_UPLOAD_KEY_PASSWORD"]
         }
     }
     buildTypes {
