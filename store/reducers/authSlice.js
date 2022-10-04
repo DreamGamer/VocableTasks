@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
+import Bugsnag from "@bugsnag/react-native";
 
 const TAG = "[Auth Slice]";
 
@@ -25,13 +26,14 @@ const authSlice = createSlice({
       state.displayName = action.payload.displayName;
     },
   },
-  extraReducers: (builder) =>
+  extraReducers: (builder) => {
     builder.addCase(initializeUser.fulfilled, (state, action) => {
       state.initialized = true;
       state.displayName = action.payload.displayName;
       state.photoURL = action.payload.photoURL;
       state.isAuth = true;
-    }),
+    });
+  },
 });
 
 export const { CHANGEDISPLAYNAME, INITIALSTATE, UPDATEUSERINFO } = authSlice.actions;

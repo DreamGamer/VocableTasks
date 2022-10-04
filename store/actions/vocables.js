@@ -4,27 +4,27 @@ import auth from "@react-native-firebase/auth";
 import database from "@react-native-firebase/database";
 import Bugsnag from "@bugsnag/react-native";
 
-import { ADD_VOCABLE, SET_VOCABLES, DELETE_VOCABLE, UPDATE_VOCABLE, END_REACHED, INITIALSTATES } from "../reducers/vocables";
+import { ADD_VOCABLE, SET_VOCABLES, DELETE_VOCABLE, UPDATE_VOCABLE, END_REACHED, INITIALSTATE } from "../reducers/vocables";
 
 const TAG = "[Vocables Action]: ";
 
 export const fetchVocables = () => {
   return async (dispatch, getState) => {
     try {
-        console.log("Timer", "0");
+      // console.log("Timer", "0");
       const UID = auth().currentUser.uid;
-      console.log("Timer", "1");
+      // console.log("Timer", "1");
       const vocables = await getState().vocables.vocables;
-      console.log("Timer", "2");
-      console.log("Timer", vocables);
-      console.log("Timer", vocables.length);
+      // console.log("Timer", "2");
+      // console.log("Timer", vocables);
+      // console.log("Timer", vocables.length);
       const lastVocable = vocables.slice().pop();
-      console.log("Timer", "3");
-      console.log("Timer", "4");
-      console.log(TAG + "Fetching Vocables");
-      console.log(TAG + "Last Vocable:");
-      console.log(lastVocable);
-      console.log("Timer", "5");
+      // console.log("Timer", "3");
+      // console.log("Timer", "4");
+      // console.log(TAG + "Fetching Vocables");
+      // console.log(TAG + "Last Vocable:");
+      // console.log(lastVocable);
+      // console.log("Timer", "5");
 
       await database()
         .ref(`vocables/${UID}`)
@@ -33,7 +33,7 @@ export const fetchVocables = () => {
         .limitToFirst(40)
         .once("value")
         .then((snap) => {
-            console.log("Timer", "6");
+          // console.log("Timer", "6");
           const responseData = snap.val();
           const loadedVocables = [];
           for (const key in responseData) {
@@ -67,7 +67,7 @@ export const fetchVocables = () => {
 
 export const initialStates = () => {
   return async (dispatch) => {
-    dispatch(INITIALSTATES);
+    dispatch(INITIALSTATE());
   };
 };
 

@@ -39,13 +39,11 @@ const vocablesSlice = createSlice({
     END_REACHED: (state, action) => {
       state.endReached = action.payload.endReached;
     },
-    INITIALSTATES: (state, action) => {
-      state = initialState;
-    },
+    INITIALSTATE: () => initialState,
   },
 });
 
-export const { ADD_VOCABLE, SET_VOCABLES, DELETE_VOCABLE, END_REACHED, INITIALSTATES, UPDATE_VOCABLE } = vocablesSlice.actions;
+export const { ADD_VOCABLE, SET_VOCABLES, DELETE_VOCABLE, END_REACHED, INITIALSTATE, UPDATE_VOCABLE } = vocablesSlice.actions;
 export default vocablesSlice.reducer;
 
 /*

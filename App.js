@@ -1,16 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { StyleSheet, Text, useColorScheme, View, StatusBar } from "react-native";
-//import { StatusBar } from "expo-status-bar";
+import { StyleSheet, Text, useColorScheme, View } from "react-native";
 import { enableScreens } from "react-native-screens";
 import * as Font from "expo-font";
-import AppLoading from "expo-app-loading";
 import * as SplashScreen from "expo-splash-screen";
 import AppNavigator from "./navigation/AppNavigator";
-import { combineReducers, createStore, applyMiddleware } from "redux";
-import vocableReducer from "./store/reducers/vocables";
-import authReducer from "./store/reducers/auth";
 import ReduxThunk from "redux-thunk";
-import { composeWithDevTools } from "redux-devtools-extension";
 import { Provider } from "react-redux";
 import store from "./store/store";
 import { initLanguage } from "./i18n/translation";
@@ -22,8 +16,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 const TAG = "[App.js]"; // Console Log Tag
-
-const middlewares = [ReduxThunk, composeWithDevTools];
 
 if (__DEV__) {
   console.info(TAG, "Developer mode enabled");
@@ -37,7 +29,7 @@ export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
 
   const colorScheme = useColorScheme();
-  const isLight = colorScheme === "light" ? true : false;
+  const isDarkMode = colorScheme === "dark";
 
   useEffect(() => {
     const prepareApp = async () => {
@@ -86,7 +78,6 @@ export default function App() {
 
   return (
     <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-      <StatusBar translucent backgroundColor={"rgba(0,0,0,0)"} barStyle={isLight ? "dark-content" : "light-content"} />
       <Provider store={store}>
         <AppNavigator />
       </Provider>

@@ -4,11 +4,12 @@ import * as environments from "../../environments/env";
 import Bugsnag from "@bugsnag/react-native";
 import auth from "@react-native-firebase/auth";
 import { useTranslation } from "react-i18next";
-import { firebase } from "@react-native-firebase/firestore";
+import firestore from "@react-native-firebase/firestore";
 
-import { CHANGEDISPLAYNAME, DELETEUSERINFO, UPDATEUSERINFO } from "../reducers/auth";
+import { CHANGEDISPLAYNAME, INITIALSTATE, UPDATEUSERINFO } from "../reducers/auth";
+import { createAsyncThunk } from "@reduxjs/toolkit";
 
-const TAG = "[Auth Action]: "; // Console Log Tag
+const TAG = "[Auth Action]"; // Console Log Tag
 
 export const changeDisplayName = (name) => {
   return async (dispatch) => {
@@ -45,11 +46,14 @@ export const sendEmail = () => {
 export const resetPasswordWithEmail = (email) => {
   return async (dispatch) => {
     const { t } = useTranslation();
-    await auth().fetchSignInMethodsForEmail(email).then((result) => {
-        console.log("result", result)
-    }).catch((error) => {
-        console.log("fetchTest" + error)
-    });
+    await auth()
+      .fetchSignInMethodsForEmail(email)
+      .then((result) => {
+        console.log("result", result);
+      })
+      .catch((error) => {
+        console.log("fetchTest" + error);
+      });
     await auth()
       .sendPasswordResetEmail(email)
       .then(() => {
@@ -93,21 +97,38 @@ export const resetPasswordWithEmail = (email) => {
   };
 };
 
-export const updateUserInfo = (user) => {
-  return async (dispatch) => {
+export const test = createAsyncThunk("auth/test", async (user, thunkAPI) => {
+    
+})
+
+export const initializeUser = (user) => {
+  return async (dispatch, getState) => {
     try {
-      let displayName = null;
-      let emailVerified = null;
+      const initialized = getState().auth.initialized;
+      const { displayName, photoURL, uid } = user;
 
-      if (user != null) {
-        displayName = user.displayName ? user.displayName : null;
-        emailVerified = user.emailVerified;
+      // Only runs one time, to reduce firstore usage
+      // So the profile / userData only updates on change in
+      // firestore, or in the first start of the application
+      if (!initialized) {
+        const userData = await firestore().collection("users").doc(uid).get();
+
+        if (!userData.exists) {
+          console.info(TAG, `Creating user in database with UID (${uid})`);
+          await userData.ref.set({
+            displayName,
+            photoURL,
+          });
+
+          await dispatch(UPDATEUSERINFO({ uid, displayName, photoURL }));
+          console.info(TAG, `Successfully created user in database [uid: '${uid}', displayName: '${displayName}', photoURL: '${photoURL}']`);
+        } else {
+          console.info(TAG, `Successfully got user data from database [uid: '${uid}', displayName: '${userData.data().displayName}', photoURL: '${userData.data().photoURL}']`);
+          await dispatch(UPDATEUSERINFO({ uid, displayName: userData.data().displayName, photoURL: userData.data().photoURL }));
+        }
       }
-
-      console.info(TAG + `Successfully updated user info to displayName: '${displayName}', emailVerified: '${emailVerified}'`);
-      await dispatch(UPDATEUSERINFO({ displayName, emailVerified }));
     } catch (error) {
-      console.log(TAG + "Catched error in updateUserInfo: " + error);
+      console.warn(TAG, "Catched error in initializeUser: " + error);
       Bugsnag.notify(error);
     }
   };
@@ -159,110 +180,108 @@ export const signUp = (email, password) => {
   };
 };
 
-export const login = (email, password) => {
-  return async (dispatch) => {
-    try {
-      await auth()
-        .signInWithEmailAndPassword(email, password)
-        .then((userInfo) => {
-          console.info(TAG + "Successfully logged in");
-          dispatch(UPDATEUSERINFO(userInfo.user));
-        })
-        .catch((error) => {
-          if (error.code) {
-            return Promise.reject(error.code);
-          } else {
-            Bugsnag.notify(error);
-            console.warn(TAG + "Error while dispatch login: " + error);
-            console.warn(error);
-            return Promise.reject(error);
-          }
-          switch (error.code) {
-            case "auth/invalid-email":
-              return Promise.reject(t("authInvalidEmail"));
+// export const login = (email, password) => {
+//   return async (dispatch) => {
+//     try {
+//       await auth()
+//         .signInWithEmailAndPassword(email, password)
+//         .then((userInfo) => {
+//           console.info(TAG + "Successfully logged in");
+//           dispatch(UPDATEUSERINFO(userInfo.user));
+//         })
+//         .catch((error) => {
+//           if (error.code) {
+//             return Promise.reject(error.code);
+//           } else {
+//             Bugsnag.notify(error);
+//             console.warn(TAG + "Error while dispatch login: " + error);
+//             console.warn(error);
+//             return Promise.reject(error);
+//           }
+//           switch (error.code) {
+//             case "auth/invalid-email":
+//               return Promise.reject(t("authInvalidEmail"));
 
-            case "auth/user-disabled":
-              return Promise.reject(t("authUserDisabled"));
+//             case "auth/user-disabled":
+//               return Promise.reject(t("authUserDisabled"));
 
-            case "auth/user-not-found":
-              return Promise.reject(t("authUserNotFound"));
+//             case "auth/user-not-found":
+//               return Promise.reject(t("authUserNotFound"));
 
-            case "auth/wrong-password":
-              return Promise.reject(t("authWrongPassword"));
+//             case "auth/wrong-password":
+//               return Promise.reject(t("authWrongPassword"));
 
-            case "auth/too-many-requests":
-              return Promise.reject(t("authTooManyRequests"));
+//             case "auth/too-many-requests":
+//               return Promise.reject(t("authTooManyRequests"));
 
-            case "auth/network-request-failed":
-              return Promise.reject(t("authNetworkRequestFailed"));
+//             case "auth/network-request-failed":
+//               return Promise.reject(t("authNetworkRequestFailed"));
 
-            default:
-              Bugsnag.notify(error);
-              console.warn(TAG + "Undefined error while signUp: " + error.message);
-              return Promise.reject(t("somethingWentWrong"));
-          }
-        });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-};
+//             default:
+//               Bugsnag.notify(error);
+//               console.warn(TAG + "Undefined error while signUp: " + error.message);
+//               return Promise.reject(t("somethingWentWrong"));
+//           }
+//         });
+//     } catch (error) {
+//       console.log(error);
+//     }
+//   };
+// };
 
 export const logout = () => {
   return async (dispatch) => {
     try {
-      await auth()
-        .signOut()
-        .catch((error) => {});
-      console.info(TAG + "Successfully logged out!");
+      await auth().signOut();
+      console.info(TAG, "Successfully logged out!");
     } catch (error) {
-      console.warn(TAG + "Catched fatal error in logout: " + error);
+      console.warn(TAG, "Catched fatal error in logout: " + error);
       Bugsnag.notify(error);
       throw error;
     }
   };
 };
 
-export const deleteUserInfo = () => {
+export const initialState = () => {
   return async (dispatch) => {
-    dispatch(DELETEUSERINFO);
+    dispatch(INITIALSTATE());
   };
 };
 
-export const saveUserToStorage = (idToken, refreshToken, UID, expireDate, displayName) => {
-  return async (dispatch) => {
-    try {
-      AsyncStorage.setItem(
-        "userData",
-        JSON.stringify({
-          idToken: idToken,
-          refreshToken: refreshToken,
-          UID: UID,
-          expireDate: expireDate.toISOString(),
-          displayName: displayName,
-        })
-      );
-      console.log(TAG + "Sucessfully saved user");
-    } catch (error) {
-      console.warn(TAG + "Catched fatal error in saveUserToStorage: " + error);
-      Bugsnag.notify(error);
-      throw error;
-    }
-  };
-};
+// export const saveUserToStorage = (idToken, refreshToken, UID, expireDate, displayName) => {
+//   return async (dispatch) => {
+//     try {
+//       AsyncStorage.setItem(
+//         "userData",
+//         JSON.stringify({
+//           idToken: idToken,
+//           refreshToken: refreshToken,
+//           UID: UID,
+//           expireDate: expireDate.toISOString(),
+//           displayName: displayName,
+//         })
+//       );
+//       console.log(TAG + "Sucessfully saved user");
+//     } catch (error) {
+//       console.warn(TAG + "Catched fatal error in saveUserToStorage: " + error);
+//       Bugsnag.notify(error);
+//       throw error;
+//     }
+//   };
+// };
 
-export const getRefreshTokenFromStorage = () => {
-  return async (dispatch) => {
-    try {
-      const userData = await AsyncStorage.getItem("userData");
-      const transformedUserData = JSON.parse(userData);
-      const refreshToken = transformedUserData.refreshToken;
+// export const getRefreshTokenFromStorage = () => {
+//   return async (dispatch) => {
+//     try {
+//       const userData = await AsyncStorage.getItem("userData");
+//       const transformedUserData = JSON.parse(userData);
+//       const refreshToken = transformedUserData.refreshToken;
 
-      return refreshToken;
-    } catch (error) {
-      console.warn(TAG + "Catched fatal error in getRefreshTokenFromStorage: " + error);
-      Bugsnag.notify(error);
-      throw error;
-    }
-  };
-};
+//       return refreshToken;
+//     } catch (error) {
+//       console.warn(TAG + "Catched fatal error in getRefreshTokenFromStorage: " + error);
+//       Bugsnag.notify(error);
+//       throw error;
+//     }
+//   };
+// };

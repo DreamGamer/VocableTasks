@@ -9,8 +9,10 @@ import { firebase } from "@react-native-firebase/firestore";
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
+  uid: null,
   displayName: null,
-  emailVerified: null,
+  photoURL: null,
+  initialized: false,
 };
 
 const authSlice = createSlice({
@@ -18,19 +20,20 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     UPDATEUSERINFO: (state, action) => {
+      state.uid = action.payload.uid;
       state.displayName = action.payload.displayName;
-      state.emailVerified = action.payload.emailVerified;
+      state.photoURL = action.payload.photoURL;
+      state.initialized = true;
     },
-    DELETEUSERINFO: (state, action) => {
-      state = initialState;
-    },
+    INITIALSTATE: () => initialState,
     CHANGEDISPLAYNAME: (state, action) => {
       state.displayName = action.payload.displayName;
     },
   },
+  extraReducers: (builder) => builder.addCase(),
 });
 
-export const { CHANGEDISPLAYNAME, DELETEUSERINFO, UPDATEUSERINFO } = authSlice.actions;
+export const { CHANGEDISPLAYNAME, INITIALSTATE, UPDATEUSERINFO } = authSlice.actions;
 export default authSlice.reducer;
 
 /*
