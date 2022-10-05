@@ -1,21 +1,16 @@
-import React, { useEffect, createRef } from "react";
-import { ActivityIndicator, Button, FlatList, SnapshotViewIOS, StyleSheet, Text, useColorScheme, View } from "react-native";
+import React, { useEffect, useRef, forwardRef } from "react";
+import { ActivityIndicator, FlatList, StyleSheet, Text, useColorScheme, View } from "react-native";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import HeaderButton from "../../components/HeaderButton";
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
-import { Ionicons } from "@expo/vector-icons";
 import Colors from "../../constants/Colors";
 import translation from "../../i18n/translation";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import Flags from "../../constants/Flags";
-import { SvgXml } from "react-native-svg";
 import { useDispatch, useSelector } from "react-redux";
 import { updateCards } from "../../store/reducers/vocablesSlice";
-import Animated, { FadeIn, SlideInDown, SlideInUp, SlideOutDown, SlideOutUp } from "react-native-reanimated";
-import { useScrollToTop } from "@react-navigation/native";
+import Animated, { FadeIn } from "react-native-reanimated";
 import { useState } from "react";
-import Spinner from "react-native-loading-spinner-overlay";
 import LanguageCard from "../../components/LanguageCard";
 
 const TAG = "[HomeScreen]";
@@ -29,7 +24,7 @@ const HomeScreen = (props) => {
   const colorScheme = useColorScheme();
   const isDarkMode = colorScheme === "dark";
 
-  const cardListRef = createRef();
+  const flatListRef = useRef(null);
 
   const { t } = translation;
   const dispatch = useDispatch();
@@ -41,10 +36,19 @@ const HomeScreen = (props) => {
       return bTime - aTime;
     });
 
+  let isMounted = true;
+
+  useEffect(() => {
+    isMounted = true;
+    return () => {
+      console.log(TAG, "Unmounted");
+      isMounted = false;
+    };
+  }, []);
+
   // Scrolls back to top, when cards changing
   useEffect(() => {
-    console.info(TAG, "Cards updated")
-    if (cardListRef.current) cardListRef.current.scrollToOffset({ animated: true, offset: 0 });
+    flatListRef?.current?.scrollToOffset({ animated: true, offset: 0 });
   }, [cards]);
 
   useEffect(() => {
@@ -108,19 +112,7 @@ const HomeScreen = (props) => {
 
   return (
     <View style={styles.container}>
-      <ReanimatedFlatList
-        ref={cardListRef}
-        data={cards}
-        contentContainerStyle={styles.flatList}
-        entering={SlideInUp}
-        renderItem={(item) => {
-          const language = item.item.flag;
-          const Flag = Flags[language] || Flags["unkown"];
-          return <LanguageCard itemId={item.item.id} flag={item.item.flag} language={item.item.language} />;
-        }}
-        ListFooterComponent={AddCardComponent}
-        showsVerticalScrollIndicator={false}
-      />
+      <CustomFlatList ref={flatListRef} AddCardComponent={AddCardComponent} cards={cards} />
     </View>
   );
 };
@@ -143,6 +135,24 @@ export const HomeScreenOptions = (navigationData) => {
     ),
   };
 };
+
+const CustomFlatList = forwardRef((props, ref) => {
+  return (
+    <ReanimatedFlatList
+      ref={ref}
+      data={props.cards}
+      contentContainerStyle={styles.flatList}
+      entering={FadeIn}
+      renderItem={(item) => {
+        const language = item.item.flag;
+        const Flag = Flags[language] || Flags["unkown"];
+        return <LanguageCard itemId={item.item.id} flag={item.item.flag} language={item.item.language} />;
+      }}
+      ListFooterComponent={props.AddCardComponent}
+      showsVerticalScrollIndicator={false}
+    />
+  );
+});
 
 const styles = StyleSheet.create({
   container: {

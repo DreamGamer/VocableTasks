@@ -29,6 +29,7 @@ const LanguageCard = (props) => {
 
   const translateX = useSharedValue(0);
   const itemHeight = useSharedValue(ITEM_HEIGHT);
+  const itemOpacity = useSharedValue(1);
   const marginVertical = useSharedValue(12);
 
   const deleteCard = async () => {
@@ -49,8 +50,9 @@ const LanguageCard = (props) => {
   };
 
   const dismissItem = (item) => {
-    itemHeight.value = withTiming(0);
-    marginVertical.value = withTiming(0, undefined, async (isFinished) => {
+    itemHeight.value = withTiming(0, {duration: 1000});
+    itemOpacity.value = withTiming(0, {duration: 1000});
+    marginVertical.value = withTiming(0, {duration: 1000}, async (isFinished) => {
       if (isFinished) {
         runOnJS(deleteCard)();
       }
@@ -80,7 +82,6 @@ const LanguageCard = (props) => {
   });
 
   const reanimatedActionStyle = useAnimatedStyle(() => {
-    // const opacity = withTiming(translateX.value < TRANSLATEX_THRESHOLD ? 1 : 0);
     const opacity = interpolate(translateX.value, [TRANSLATEX_THRESHOLD, 0], [1, 0], { extrapolateLeft: Extrapolation.CLAMP });
     return {
       opacity,
@@ -101,6 +102,7 @@ const LanguageCard = (props) => {
     return {
       height: itemHeight.value,
       marginVertical: marginVertical.value,
+      opacity: itemOpacity.value,
     };
   });
 
@@ -117,19 +119,15 @@ const LanguageCard = (props) => {
         </View>
       )}
       {icon ? (
-        <TouchableOpacity onPress={onPress}>
-          <View style={{ ...styles.card, ...{ backgroundColor: isDarkMode ? Colors.neutral[4] : Colors.neutral[2] } }}>
-            <Ionicons name={icon} size={50} color={Colors.primary[1]} />
-          </View>
+        <TouchableOpacity onPress={onPress} style={{ ...styles.card, ...{ backgroundColor: isDarkMode ? Colors.neutral[4] : Colors.neutral[2] } }}>
+          <Ionicons name={icon} size={50} color={Colors.primary[1]} />
         </TouchableOpacity>
       ) : (
         <PanGestureHandler onGestureEvent={panGestureEventHandler} activeOffsetX={[-10, 10]}>
           <Animated.View entering={FadeIn} exiting={SlideInUp} style={[reanimatedCardStyle]}>
-            <TouchableOpacity onPress={onPress}>
-              <View style={[styles.card, { backgroundColor: Colors.primary[1] }]}>
-                <SvgXml xml={Flag} height={32} width={32} />
-                <Text style={{ color: "#fff", fontSize: 24 }}>{t(language, { ns: "languageNames" })}</Text>
-              </View>
+            <TouchableOpacity onPress={onPress} style={[styles.card, { backgroundColor: Colors.primary[1] }]}>
+              <SvgXml xml={Flag} height={32} width={32} />
+              <Text style={{ color: "#fff", fontSize: 24 }}>{t(language, { ns: "languageNames" })}</Text>
             </TouchableOpacity>
           </Animated.View>
         </PanGestureHandler>
@@ -141,15 +139,13 @@ const LanguageCard = (props) => {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 24,
-    marginVertical: 12,
-    overflow: "hidden",
   },
   card: {
     height: ITEM_HEIGHT,
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
-    // elevation: 5
+    // elevation: 3,
   },
   actionsRightContainer: {
     flexDirection: "row",

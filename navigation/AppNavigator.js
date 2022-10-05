@@ -14,6 +14,7 @@ import Bugsnag from "@bugsnag/react-native";
 import deepDiffer from "react-native/Libraries/Utilities/differ/deepDiffer";
 import CustomAlert from "../components/CustomAlert";
 import translation from "../i18n/translation";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 const TAG = "[AppNavigator]";
 
@@ -93,22 +94,24 @@ const AppNavigator = (props) => {
   }, []);
 
   return (
-    <NavigationContainer theme={myCustomTheme}>
-      <StatusBar translucent backgroundColor={"rgba(0,0,0,0)"} barStyle={isDarkMode ? "light-content" : "dark-content"} />
-      <CustomAlert
-        visible={!!hasError}
-        title={hasError.title}
-        message={hasError.message}
-        rightButtonText={t("ok", { ns: "AppNavigator" })}
-        onPressRightButton={() => {
-          setHasError("");
-        }}
-      />
-      {isAuth && initializedAuth && hasDisplayName && <VocableTasksNavigator />}
-      {isAuth && initializedAuth && !hasDisplayName && <WelcomeNavigator />}
-      {!isAuth && initialized && <AuthNavigator />}
-      {!isAuth && !initialized && <StartupNavigator />}
-    </NavigationContainer>
+    <SafeAreaProvider>
+      <NavigationContainer theme={myCustomTheme}>
+        <StatusBar translucent backgroundColor={"rgba(0,0,0,0)"} barStyle={isDarkMode ? "light-content" : "dark-content"} />
+        <CustomAlert
+          visible={!!hasError}
+          title={hasError.title}
+          message={hasError.message}
+          rightButtonText={t("ok", { ns: "AppNavigator" })}
+          onPressRightButton={() => {
+            setHasError("");
+          }}
+        />
+        {isAuth && initializedAuth && hasDisplayName && <VocableTasksNavigator />}
+        {isAuth && initializedAuth && !hasDisplayName && <WelcomeNavigator />}
+        {!isAuth && initialized && <AuthNavigator />}
+        {!isAuth && !initialized && <StartupNavigator />}
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 };
 
