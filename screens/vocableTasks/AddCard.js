@@ -1,10 +1,8 @@
-import React, { useRef, useState, use, useEffect } from "react";
-import { ActivityIndicator, FlatList, Keyboard, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from "react-native";
+import React, { useState, useEffect } from "react";
+import { FlatList, Keyboard, KeyboardAvoidingView, StyleSheet, TouchableWithoutFeedback, View } from "react-native";
 import Input from "../../components/Input";
 import { Formik } from "formik";
 import translation from "../../i18n/translation";
-import * as yup from "yup";
-import Flags from "../../constants/Flags";
 import LanguageButton from "../../components/LanguageButton";
 import filter from "lodash.filter";
 import auth from "@react-native-firebase/auth";
@@ -68,19 +66,24 @@ const AddCard = (props) => {
     setIsLoading(true);
     try {
       const uid = auth().currentUser.uid;
-      const timestamp = firestore.FieldValue.serverTimestamp();
-      await firestore()
+      const timestamp = firestore.Timestamp.now();
+      const timestampCreated = firestore.FieldValue.serverTimestamp();
+
+      firestore()
         .collection("users")
         .doc(uid)
         .collection("cards")
         .add({
+          created: timestampCreated,
           lastModified: timestamp,
           flag: card.flag,
           language: card.language,
         })
-        .then(() => {
-          props.navigation.goBack();
+        .then((result) => {
+          console.info(TAG, `Successfully added card '${card.language}' to database with id '${result.id}'`);
         });
+      console.info(TAG, `Successfully added card '${card.language}' local`);
+      props.navigation.goBack();
     } catch (error) {
       console.warn(TAG, "Catched error while adding card: ", error);
       Bugsnag.notify(error);
@@ -130,7 +133,8 @@ const AddCard = (props) => {
               )}
             </Formik>
           </View>
-          {isLoading ? <Spinner visible={isLoading} /> : <FlatList keyExtractor={keyExtractor} data={data} keyboardShouldPersistTaps="handled" renderItem={renderItem} />}
+          <FlatList keyExtractor={keyExtractor} data={data} keyboardShouldPersistTaps="handled" renderItem={renderItem} />
+          <Spinner visible={isLoading} />
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>

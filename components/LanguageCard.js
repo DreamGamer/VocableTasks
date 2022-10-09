@@ -1,6 +1,6 @@
 import React from "react";
 import { Dimensions, StyleSheet, Text, TouchableOpacity, useColorScheme, View } from "react-native";
-import Animated, { Extrapolation, FadeIn, interpolate, runOnJS, SlideInUp, useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import Animated, { Extrapolation, FadeIn, FadeOut, interpolate, runOnJS, SlideInUp, useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { SvgXml } from "react-native-svg";
 import Flags from "../constants/Flags";
 import translation from "../i18n/translation";
@@ -15,13 +15,15 @@ import Bugsnag from "@bugsnag/react-native";
 
 const TAG = "[LanguageCard]";
 
+const ANIMATION_DURATION = 300;
+
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const TRANSLATEX_THRESHOLD = -SCREEN_WIDTH * 0.1;
 const ITEM_HEIGHT = 125;
 
 const LanguageCard = (props) => {
   const { t } = translation;
-  const { itemId, flag, language, icon, onPress } = props;
+  const { itemIndex, itemId, flag, language, icon, onPress } = props;
   const Flag = Flags[flag] || Flags["unkown"];
 
   const colorScheme = useColorScheme();
@@ -50,9 +52,9 @@ const LanguageCard = (props) => {
   };
 
   const dismissItem = (item) => {
-    itemHeight.value = withTiming(0, {duration: 1000});
-    itemOpacity.value = withTiming(0, {duration: 1000});
-    marginVertical.value = withTiming(0, {duration: 1000}, async (isFinished) => {
+    itemHeight.value = withTiming(0, { duration: ANIMATION_DURATION });
+    itemOpacity.value = withTiming(0, { duration: ANIMATION_DURATION });
+    marginVertical.value = withTiming(0, { duration: ANIMATION_DURATION }, async (isFinished) => {
       if (isFinished) {
         runOnJS(deleteCard)();
       }
@@ -107,7 +109,7 @@ const LanguageCard = (props) => {
   });
 
   return (
-    <Animated.View style={[styles.container, renaimatedItemHeight]}>
+    <Animated.View entering={FadeIn} exiting={FadeOut} style={[styles.container, icon ? null : renaimatedItemHeight]}>
       {icon ? null : (
         <View style={styles.actionsRightContainer}>
           <Animated.View style={[styles.actionCard, reanimatedActionStyle]}>
@@ -123,7 +125,7 @@ const LanguageCard = (props) => {
           <Ionicons name={icon} size={50} color={Colors.primary[1]} />
         </TouchableOpacity>
       ) : (
-        <PanGestureHandler onGestureEvent={panGestureEventHandler} activeOffsetX={[-10, 10]}>
+        <PanGestureHandler onGestureEvent={panGestureEventHandler} activeOffsetX={[-5, 5]}>
           <Animated.View entering={FadeIn} exiting={SlideInUp} style={[reanimatedCardStyle]}>
             <TouchableOpacity onPress={onPress} style={[styles.card, { backgroundColor: Colors.primary[1] }]}>
               <SvgXml xml={Flag} height={32} width={32} />
@@ -139,6 +141,7 @@ const LanguageCard = (props) => {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 24,
+    overflow: "hidden"
   },
   card: {
     height: ITEM_HEIGHT,

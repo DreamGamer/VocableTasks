@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, forwardRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { ActivityIndicator, FlatList, StyleSheet, Text, useColorScheme, View } from "react-native";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import HeaderButton from "../../components/HeaderButton";
@@ -6,16 +6,12 @@ import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
 import Colors from "../../constants/Colors";
 import translation from "../../i18n/translation";
-import Flags from "../../constants/Flags";
 import { useDispatch, useSelector } from "react-redux";
 import { updateCards } from "../../store/reducers/vocablesSlice";
-import Animated, { FadeIn } from "react-native-reanimated";
 import { useState } from "react";
 import LanguageCard from "../../components/LanguageCard";
 
 const TAG = "[HomeScreen]";
-
-const ReanimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
 const HomeScreen = (props) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -28,13 +24,7 @@ const HomeScreen = (props) => {
 
   const { t } = translation;
   const dispatch = useDispatch();
-  let cards = useSelector((state) => state.vocables.cards)
-    .slice()
-    .sort((a, b) => {
-      const aTime = a.lastModified ? a.lastModified.toMillis() : 0;
-      const bTime = b.lastModified ? b.lastModified.toMillis() : 0;
-      return bTime - aTime;
-    });
+  const cards = useSelector((state) => state.vocables.cards);
 
   let isMounted = true;
 
@@ -112,7 +102,16 @@ const HomeScreen = (props) => {
 
   return (
     <View style={styles.container}>
-      <CustomFlatList ref={flatListRef} AddCardComponent={AddCardComponent} cards={cards} />
+      <FlatList
+        ref={flatListRef}
+        data={cards}
+        contentContainerStyle={styles.flatList}
+        renderItem={(item) => {
+          return <LanguageCard itemIndex={item.index} itemId={item.item.id} flag={item.item.flag} language={item.item.language} />;
+        }}
+        ListFooterComponent={AddCardComponent}
+        showsVerticalScrollIndicator={false}
+      />
     </View>
   );
 };
@@ -135,24 +134,6 @@ export const HomeScreenOptions = (navigationData) => {
     ),
   };
 };
-
-const CustomFlatList = forwardRef((props, ref) => {
-  return (
-    <ReanimatedFlatList
-      ref={ref}
-      data={props.cards}
-      contentContainerStyle={styles.flatList}
-      entering={FadeIn}
-      renderItem={(item) => {
-        const language = item.item.flag;
-        const Flag = Flags[language] || Flags["unkown"];
-        return <LanguageCard itemId={item.item.id} flag={item.item.flag} language={item.item.language} />;
-      }}
-      ListFooterComponent={props.AddCardComponent}
-      showsVerticalScrollIndicator={false}
-    />
-  );
-});
 
 const styles = StyleSheet.create({
   container: {

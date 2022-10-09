@@ -21,7 +21,12 @@ const vocablesSlice = createSlice({
       state.loadingCards = true;
     });
     builder.addCase(updateCards.fulfilled, (state, action) => {
-      state.cards = action.payload;
+      const sortedCards = action.payload.sort((a, b) => {
+        const aTime = a.lastModified ? a?.lastModified.toMillis() : 0;
+        const bTime = b.lastModified ? b?.lastModified.toMillis() : 0;
+        return bTime - aTime;
+      });
+      state.cards = sortedCards;
       state.loadingCards = false;
     });
     builder.addCase(updateCards.rejected, (state, action) => {
@@ -49,8 +54,10 @@ export const updateCards = createAsyncThunk("vocables/updateCardsStatus", async 
       case "added":
         const newCard = new Card(card.id, card.flag, card.language, card.lastModified);
         if (cardIndex >= 0) {
+          console.info(TAG, `Updating card '${card.language}' with id '${card.id}'`);
           updatedCards[cardIndex] = newCard;
         } else {
+          console.info(TAG, `Adding card '${card.language}' with id '${card.id}'`);
           updatedCards.push(newCard);
         }
         break;
@@ -60,7 +67,7 @@ export const updateCards = createAsyncThunk("vocables/updateCardsStatus", async 
         }
         break;
       default:
-        console.warn(TAG, `Unkown type '${card.type}' of card ${card.id}`);
+        console.warn(TAG, `Unkown type '${card.type}' of cardId '${card.id}'`);
         Bugsnag.notify(new Error(`Unkown type '${card.type}' of card ${card.id}`));
         break;
     }
