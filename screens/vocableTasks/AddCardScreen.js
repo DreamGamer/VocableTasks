@@ -10,7 +10,7 @@ import firestore from "@react-native-firebase/firestore";
 import Bugsnag from "@bugsnag/react-native";
 import Spinner from "react-native-loading-spinner-overlay";
 
-const TAG = "[AddCard]";
+const TAG = "[AddCardScreen]";
 
 const keyExtractor = (item) => item.flag;
 
@@ -38,7 +38,7 @@ const flags = [
     return 0;
   });
 
-const AddCard = (props) => {
+const AddCardScreen = (props) => {
   const [data, setData] = useState(flags);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -113,7 +113,7 @@ const AddCard = (props) => {
               }}>
               {(formikProps) => (
                 <Input
-                  placeholder={t("title", { ns: "AddCard" })}
+                  placeholder={t("title", { ns: "AddCardScreen" })}
                   onBlur={formikProps.handleBlur("search")}
                   onChangeText={(event) => {
                     formikProps.handleChange("search")(event);
@@ -141,10 +141,10 @@ const AddCard = (props) => {
   );
 };
 
-export const AddCardOptions = (navigationData) => {
+export const AddCardScreenOptions = (navigationData) => {
   const { t } = translation;
   return {
-    title: t("title", { ns: "AddCard" }),
+    title: t("title", { ns: "AddCardScreen" }),
   };
 };
 
@@ -164,4 +164,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddCard;
+export default AddCardScreen;

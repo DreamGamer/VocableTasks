@@ -19,7 +19,7 @@ import AddVocableScreen, { AddVocableScreenOptions } from "../screens/learning/v
 import EditVocableScreen, { EditVocableScreenOptions } from "../screens/learning/vocabulary/EditVocableScreen";
 import LearnScreen, { LearnScreenOptions } from "../screens/learning/learn/LearnScreen";
 import HomeScreen, { HomeScreenOptions } from "../screens/vocableTasks/HomeScreen";
-import AddCardScreen, { AddCardOptions } from "../screens/vocableTasks/AddCard";
+import AddCardScreen, { AddCardScreenOptions } from "../screens/vocableTasks/AddCardScreen";
 import StartScreen, { StartScreenOptions } from "../screens/StartScreen";
 import LoginScreen, { LoginScreenOptions } from "../screens/auth/LoginScreen";
 import SignUpScreen, { SignUpScreenOptions } from "../screens/auth/SignUpScreen";
@@ -203,7 +203,7 @@ const VocabularyNavigator = () => {
     <View style={{ flex: 1 }} collapsable={false}>
       <VocabularyStackNavigator.Navigator screenOptions={DefaultScreenOptions}>
         <VocabularyStackNavigator.Screen name="home" component={HomeScreen} options={HomeScreenOptions} />
-        <VocabularyStackNavigator.Screen name="addCard" component={AddCardScreen} options={AddCardOptions} />
+        <VocabularyStackNavigator.Screen name="addCard" component={AddCardScreen} options={AddCardScreenOptions} />
         <VocabularyStackNavigator.Screen name="addVocable" component={AddVocableScreen} options={AddVocableScreenOptions} />
         <VocabularyStackNavigator.Screen name="editVocable" component={EditVocableScreen} options={EditVocableScreenOptions} />
       </VocabularyStackNavigator.Navigator>

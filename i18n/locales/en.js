@@ -75,7 +75,7 @@ export default {
     title: "Cards",
     loadingText: "Loading cards..."
   },
-  AddCard: {
+  AddCardScreen: {
     title: "Choose a language",
   },
   languageNames: {
