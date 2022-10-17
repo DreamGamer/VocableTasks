@@ -85,7 +85,7 @@ const EditVocableScreen = (props) => {
 
 export const EditVocableScreenOptions = (navigationData) => {
   return {
-    title: <Trans name="editVocable" />,
+    title: <Trans i18nKey="editVocable" />,
   };
 };
 

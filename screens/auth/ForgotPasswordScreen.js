@@ -1,6 +1,6 @@
 import { Formik } from "formik";
 import React, { useEffect, useState } from "react";
-import { Trans } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableWithoutFeedback, useColorScheme, View } from "react-native";
 import { useDispatch } from "react-redux";
 import CustomButton from "../../components/CustomButton";
@@ -31,7 +31,7 @@ const ForgotPasswordScreen = (props) => {
   const colorScheme = useColorScheme();
   const isDarkMode = colorScheme === "dark";
 
-  const { t } = translation;
+  const { t } = useTranslation();
   const dispatch = useDispatch();
 
   let isMounted = true;

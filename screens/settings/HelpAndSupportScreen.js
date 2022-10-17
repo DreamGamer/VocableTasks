@@ -16,7 +16,7 @@ const styles = StyleSheet.create({});
 
 export const HelpAndSupportScreenOptions = navigationData => {
     return {
-        title: <Trans name="helpAndSupport" />,
+        title: <Trans i18nKey="helpAndSupport" />,
     };
 };
 

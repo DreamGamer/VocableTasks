@@ -165,7 +165,7 @@ const VocabularysScreen = (props) => {
 
 export const VocabularysScreenOptions = (navigationData) => {
   return {
-    title: <Trans name="vocabulary" />,
+    title: <Trans i18nKey="vocabulary" />,
     headerLeft: () => (
       // HeaderButton to toggle the Drawer
       <HeaderButtons HeaderButtonComponent={HeaderButton}>

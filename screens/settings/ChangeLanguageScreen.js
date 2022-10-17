@@ -60,7 +60,7 @@ const styles = StyleSheet.create({});
 
 export const ChangeLanguageScreenOptions = (navigationData) => {
   return {
-    title: <Trans name="changeLanguage" />,
+    title: <Trans i18nKey="changeLanguage" />,
   };
 };
 

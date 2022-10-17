@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FlatList, Keyboard, KeyboardAvoidingView, StyleSheet, TouchableWithoutFeedback, View } from "react-native";
+import { FlatList, Keyboard, KeyboardAvoidingView, StyleSheet, TouchableWithoutFeedback, View, Text } from "react-native";
 import Input from "../../components/Input";
 import { Formik } from "formik";
 import translation from "../../i18n/translation";
@@ -9,6 +9,7 @@ import auth from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
 import Bugsnag from "@bugsnag/react-native";
 import Spinner from "react-native-loading-spinner-overlay";
+import { Trans, useTranslation } from "react-i18next";
 
 const TAG = "[AddCardScreen]";
 
@@ -42,7 +43,7 @@ const AddCardScreen = (props) => {
   const [data, setData] = useState(flags);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { t } = translation;
+  const { t } = useTranslation();
 
   let isMounted = true;
 
@@ -142,9 +143,8 @@ const AddCardScreen = (props) => {
 };
 
 export const AddCardScreenOptions = (navigationData) => {
-  const { t } = translation;
   return {
-    title: t("title", { ns: "AddCardScreen" }),
+    title: <Trans i18nKey="title" ns="AddCardScreen" />,
   };
 };
 

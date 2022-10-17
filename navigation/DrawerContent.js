@@ -15,7 +15,7 @@ import Auth from "@react-native-firebase/auth";
 import translation from "../i18n/translation";
 
 const DrawerContent = (props) => {
-  const { t } = translation;
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const photoURL = Auth().currentUser.photoURL;
   const firstLetter = Auth().currentUser.displayName.charAt(0);

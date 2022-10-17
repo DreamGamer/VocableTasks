@@ -16,6 +16,7 @@ import translation from "../../i18n/translation";
 import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
 import CustomAlert from "../../components/CustomAlert";
 import Bugsnag from "@bugsnag/react-native";
+import { useTranslation } from "react-i18next";
 
 const TAG = "[AuthenticationScreen]";
 
@@ -34,7 +35,7 @@ const AuthenticationScreen = (props) => {
   const colorScheme = useColorScheme();
   const isDarkMode = colorScheme === "dark";
 
-  const { t } = translation;
+  const { t } = useTranslation();
 
   let isMounted = true;
 

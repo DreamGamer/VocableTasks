@@ -78,7 +78,7 @@ const SettingsScreen = (props) => {
 
 export const SettingsScreenOptions = (navigationData) => {
   return {
-    title: <Trans name="settings" />,
+    title: <Trans i18nKey="settings" />,
     headerLeft: () => (
       // HeaderButton to toggle the Drawer
       <HeaderButtons HeaderButtonComponent={HeaderButton}>

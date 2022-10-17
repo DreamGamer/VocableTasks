@@ -40,7 +40,7 @@ const LearnScreen = props => {
 
 export const LearnScreenOptions = navigationData => {
     return {
-        title: <Trans name="learn" />,
+        title: <Trans i18nKey="learn" />,
         headerLeft: () => (
             // HeaderButton to toggle the Drawer
             <HeaderButtons HeaderButtonComponent={HeaderButton}>

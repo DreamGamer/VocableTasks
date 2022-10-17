@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
 
 export const ChangePasswordScreenOptions = navigationData => {
     return {
-        title: <Trans name="changePassword" />,
+        title: <Trans i18nKey="changePassword" />,
     };
 };
 

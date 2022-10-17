@@ -228,7 +228,7 @@ const AddVocableScreen = (props) => {
 
 export const AddVocableScreenOptions = (navigationData) => {
   return {
-    title: <Trans name="addVocable" />,
+    title: <Trans i18nKey="addVocable" />,
   };
 };
 

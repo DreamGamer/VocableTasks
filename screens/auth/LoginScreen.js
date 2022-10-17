@@ -9,7 +9,7 @@ import CustomButton from "../../components/CustomButton";
 import translation from "../../i18n/translation";
 import CustomTextButton from "../../components/CustomTextButton";
 import * as yup from "yup";
-import { Trans } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import * as authActions from "../../store/actions/auth";
 import auth from "@react-native-firebase/auth";
@@ -34,7 +34,7 @@ const LoginScreen = (props) => {
   const colorScheme = useColorScheme();
   const isDarkMode = colorScheme === "dark";
 
-  const { t } = translation;
+  const { t } = useTranslation();
   const dispatch = useDispatch();
 
   let isMounted = true;
