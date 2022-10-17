@@ -78,6 +78,9 @@ export default {
   AddCardScreen: {
     title: "Wähle eine Sprache aus",
   },
+  VocablesScreen: {
+    loadingText: "Lade Vokabeln"
+  },
   languageNames: {
     german: "Deutsch",
     english: "Englisch",

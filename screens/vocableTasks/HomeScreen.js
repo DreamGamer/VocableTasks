@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateCards } from "../../store/reducers/vocablesSlice";
 import { useState } from "react";
 import LanguageCard from "../../components/LanguageCard";
+import { Trans, useTranslation } from "react-i18next";
 
 const TAG = "[HomeScreen]";
 
@@ -22,21 +23,17 @@ const HomeScreen = (props) => {
 
   const flatListRef = useRef(null);
 
-  const { t } = translation;
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const cards = useSelector((state) => state.vocables.cards);
 
-  let isMounted = true;
-
-  useEffect(() => {
-    isMounted = true;
-    return () => {
-      console.log(TAG, "Unmounted");
-      isMounted = false;
-    };
-  }, []);
+  const handleCardPress = (card) => {
+    props.navigation.navigate("vocables", card);
+  };
 
   // Scrolls back to top, when cards changing
+  // When cards changing, the lastModified value will change,
+  // so the changed card will be always at the top with the current sorting
   useEffect(() => {
     flatListRef?.current?.scrollToOffset({ animated: true, offset: 0 });
   }, [cards]);
@@ -50,8 +47,8 @@ const HomeScreen = (props) => {
         let newCards = [];
         snap.docChanges().forEach((card) => {
           const id = card.doc.id;
-          const { flag, language, lastModified } = card.doc.data();
-          newCards.push({ id, type: card.type, flag, language, lastModified });
+          const { flag, language, created, lastModified } = card.doc.data();
+          newCards.push({ id, type: card.type, flag, language, created, lastModified });
         });
 
         await dispatch(updateCards(newCards))
@@ -107,7 +104,17 @@ const HomeScreen = (props) => {
         data={cards}
         contentContainerStyle={styles.flatList}
         renderItem={(item) => {
-          return <LanguageCard itemIndex={item.index} itemId={item.item.id} flag={item.item.flag} language={item.item.language} />;
+          return (
+            <LanguageCard
+              onPress={() => {
+                handleCardPress(item.item);
+              }}
+              itemIndex={item.index}
+              itemId={item.item.id}
+              flag={item.item.flag}
+              language={item.item.language}
+            />
+          );
         }}
         ListFooterComponent={AddCardComponent}
         showsVerticalScrollIndicator={false}
@@ -117,9 +124,8 @@ const HomeScreen = (props) => {
 };
 
 export const HomeScreenOptions = (navigationData) => {
-  const { t } = translation;
   return {
-    title: t("title", { ns: "HomeScreen" }),
+    title: <Trans i18nKey="title" ns="HomeScreen" />,
     headerLeft: () => (
       // HeaderButton to toggle the Drawer
       <HeaderButtons HeaderButtonComponent={HeaderButton}>

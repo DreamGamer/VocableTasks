@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Dimensions, StyleSheet, Text, TouchableOpacity, useColorScheme, View } from "react-native";
 import Animated, { Extrapolation, FadeIn, FadeOut, interpolate, runOnJS, SlideInUp, useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { SvgXml } from "react-native-svg";
@@ -12,6 +12,8 @@ import { normalize } from "../constants/GlobalStyles";
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
 import Bugsnag from "@bugsnag/react-native";
+import i18next from "i18next";
+import { useTranslation } from "react-i18next";
 
 const TAG = "[LanguageCard]";
 
@@ -22,8 +24,8 @@ const TRANSLATEX_THRESHOLD = -SCREEN_WIDTH * 0.1;
 const ITEM_HEIGHT = 125;
 
 const LanguageCard = (props) => {
-  const { t } = translation;
   const { itemIndex, itemId, flag, language, icon, onPress } = props;
+  const { t } = useTranslation();
   const Flag = Flags[flag] || Flags["unkown"];
 
   const colorScheme = useColorScheme();
@@ -54,7 +56,7 @@ const LanguageCard = (props) => {
   const dismissItem = (item) => {
     itemHeight.value = withTiming(0, { duration: ANIMATION_DURATION });
     itemOpacity.value = withTiming(0, { duration: ANIMATION_DURATION });
-    marginVertical.value = withTiming(0, { duration: ANIMATION_DURATION }, async (isFinished) => {
+    marginVertical.value = withTiming(0, { duration: ANIMATION_DURATION }, (isFinished) => {
       if (isFinished) {
         runOnJS(deleteCard)();
       }
@@ -141,7 +143,7 @@ const LanguageCard = (props) => {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 24,
-    overflow: "hidden"
+    overflow: "hidden",
   },
   card: {
     height: ITEM_HEIGHT,

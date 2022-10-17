@@ -1,9 +1,8 @@
 class Vocable {
-    constructor(id, wordENG, wordDE, known) {
+    constructor(id, firstWord, secondWord) {
         this.id = id;
-        this.wordENG = wordENG;
-        this.wordDE = wordDE;
-        this.known = known;
+        this.firstWord = firstWord;
+        this.secondWord = secondWord;
     }
 };
 

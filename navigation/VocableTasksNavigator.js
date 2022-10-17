@@ -31,6 +31,7 @@ import EditProfileScreen, { EditProfileScreenOptions } from "../screens/settings
 import ChangePasswordScreen, { ChangePasswordScreenOptions } from "../screens/settings/ChangePasswordScreen";
 import ChangeLanguageScreen, { ChangeLanguageScreenOptions } from "../screens/settings/ChangeLanguageScreen";
 import HelpAndSupportScreen, { HelpAndSupportScreenOptions } from "../screens/settings/HelpAndSupportScreen";
+import VocablesScreen, { VocablesScreenOptions } from "../screens/vocableTasks/VocablesScreen";
 
 const useDefaultNavigationOptions = () => {
   const colorScheme = useColorScheme();
@@ -102,7 +103,7 @@ const DrawerNavigator = createDrawerNavigator();
 // };
 
 export const VocableTasksNavigator = () => {
-  const { t } = translation;
+  const { t } = useTranslation();
   const dispatch = useDispatch();
 
   const DefaultScreenOptions = useDefaultNavigationOptions();
@@ -204,8 +205,9 @@ const VocabularyNavigator = () => {
       <VocabularyStackNavigator.Navigator screenOptions={DefaultScreenOptions}>
         <VocabularyStackNavigator.Screen name="home" component={HomeScreen} options={HomeScreenOptions} />
         <VocabularyStackNavigator.Screen name="addCard" component={AddCardScreen} options={AddCardScreenOptions} />
-        <VocabularyStackNavigator.Screen name="addVocable" component={AddVocableScreen} options={AddVocableScreenOptions} />
-        <VocabularyStackNavigator.Screen name="editVocable" component={EditVocableScreen} options={EditVocableScreenOptions} />
+        <VocabularyStackNavigator.Screen name="vocables" component={VocablesScreen} options={VocablesScreenOptions} />
+        {/* <VocabularyStackNavigator.Screen name="addVocable" component={AddVocableScreen} options={AddVocableScreenOptions} /> */}
+        {/* <VocabularyStackNavigator.Screen name="editVocable" component={EditVocableScreen} options={EditVocableScreenOptions} /> */}
       </VocabularyStackNavigator.Navigator>
     </View>
   );
