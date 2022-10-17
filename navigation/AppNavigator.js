@@ -15,6 +15,7 @@ import deepDiffer from "react-native/Libraries/Utilities/differ/deepDiffer";
 import CustomAlert from "../components/CustomAlert";
 import translation from "../i18n/translation";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 const TAG = "[AppNavigator]";
 
@@ -34,16 +35,16 @@ const AppNavigator = (props) => {
   const hasDisplayName = useSelector((state) => !!state.auth.displayName);
   const [initialized, setInitialized] = useState(false);
   const [hasError, setHasError] = useState("");
-  let savedUser = {};
+  const savedUser = useRef({});
 
-  const { t } = translation;
+  const { t } = useTranslation();
 
   const dispatch = useDispatch();
 
   const onAuthStateChanged = async (user) => {
     try {
-      const prevUser = savedUser;
-      savedUser = user;
+      const prevUser = savedUser.current;
+      savedUser.current = user;
 
       // Check if the previous user is equal to current user
       // to avoid double task e.g. on app start

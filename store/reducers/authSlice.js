@@ -28,6 +28,10 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(initializeUser.fulfilled, (state, action) => {
+      if (state.initialized) {
+        console.info(TAG, "initializeUser was triggered, but the user is already initialized");
+        return;
+      }
       state.initialized = true;
       state.displayName = action.payload.displayName;
       state.photoURL = action.payload.photoURL;
